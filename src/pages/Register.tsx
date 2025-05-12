@@ -66,6 +66,9 @@ const Register = () => {
         <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-vault-700 to-security-600">
           Trustchain
         </h1>
+        <span className="text-sm text-muted-foreground">
+          by Zentience
+        </span>
       </div>
       
       <Card className="w-full max-w-md shadow-card animate-fade-in">
