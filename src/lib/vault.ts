@@ -1,6 +1,5 @@
-
 import { Vault, VaultTable, VaultTableCreateRequest, AppRegistration, TokenizeRequest, TokenizeResponse, DetokenizeRequest, DetokenizeResponse } from '@/types';
-import { getCurrentUser } from './auth';
+import { getCurrentUser, generateAccessToken } from './auth';
 
 // Mock vault database
 let vaults: Vault[] = [
@@ -210,3 +209,6 @@ export const rejectApplication = async (appId: string): Promise<AppRegistration>
     }, 800);
   });
 };
+
+// Re-export the generateAccessToken function from auth
+export { generateAccessToken };

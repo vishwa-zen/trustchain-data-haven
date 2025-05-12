@@ -1,4 +1,3 @@
-
 import { User, UserRole } from '@/types';
 import { toast } from '@/hooks/use-toast';
 
@@ -113,3 +112,6 @@ export const hasRole = (requiredRoles: UserRole[]): boolean => {
 export const generateAccessToken = (): string => {
   return crypto.randomUUID();
 };
+
+// Export UserRole for external use
+export { UserRole };
