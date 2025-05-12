@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -236,7 +235,7 @@ const ApplicationDetail = () => {
                   <CardHeader>
                     <div className="flex justify-between items-center">
                       <CardTitle className="flex items-center">
-                        <Database className="h-5 w-5 mr-2 text-highlight-700" />
+                        <Server className="h-5 w-5 mr-2 text-highlight-700" />
                         {dataSet.name}
                       </CardTitle>
                       {getStatusBadge(dataSet.status)}
