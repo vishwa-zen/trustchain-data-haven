@@ -114,4 +114,4 @@ export const generateAccessToken = (): string => {
 };
 
 // Export UserRole for external use
-export { UserRole };
+export type { UserRole };

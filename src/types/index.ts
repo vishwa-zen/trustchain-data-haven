@@ -1,4 +1,5 @@
 
+// Make sure UserRole is properly exported
 export type UserRole = 'app-owner' | 'data-steward' | 'admin';
 
 export interface User {
