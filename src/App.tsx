@@ -16,6 +16,7 @@ import TokenManagement from "./pages/TokenManagement";
 import Settings from "./pages/Settings";
 import UserManagement from "./pages/UserManagement";
 import NotFound from "./pages/NotFound";
+import ApplicationDetail from "./pages/ApplicationDetail";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/vaults/:id" element={<VaultDetails />} />
           <Route path="/applications" element={<Applications />} />
           <Route path="/applications/new" element={<AppRegistration />} />
+          <Route path="/applications/:id" element={<ApplicationDetail />} />
           <Route path="/tokens" element={<TokenManagement />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/users" element={<UserManagement />} />

@@ -1,105 +1,82 @@
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle, Search } from 'lucide-react';
-import { getCurrentUser } from '@/lib/auth';
-import { toast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
-import { AppRegistration } from '@/types';
+import { Input } from '@/components/ui/input';
+import { Server, Plus, Search } from 'lucide-react';
+import { isAuthenticated, hasRole, getCurrentUser } from '@/lib/auth';
 
 const Applications = () => {
   const navigate = useNavigate();
-  const user = getCurrentUser();
+  const [loading, setLoading] = useState(true);
+  const [applications, setApplications] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // Mock application data
-  const [applications, setApplications] = useState<AppRegistration[]>([
-    {
-      id: 'app-1',
-      userId: user?.id || '',
-      vaultId: 'vault-1',
-      name: 'KYC Application',
-      description: 'Application for managing KYC verification processes',
-      status: 'approved',
-      dataSets: [
-        {
-          name: 'user_profile',
-          accessToken: '8731hijkhoas8971',
-          fields: [{ name: 'first_name' }, { name: 'last_name' }, { name: 'email' }],
-          purpose: ['verification'],
-          status: 'approved',
-          expiryDate: '2025-12-31T23:59:59Z'
-        }
-      ]
-    },
-    {
-      id: 'app-2',
-      userId: user?.id || '',
-      vaultId: 'vault-2',
-      name: 'Financial Analysis Tool',
-      description: 'Analyzes financial data for insights and reporting',
-      status: 'pending',
-      dataSets: [
-        {
-          name: 'finance_profile',
-          accessToken: '',
-          fields: [{ name: 'account_number' }, { name: 'transaction_history' }],
-          purpose: ['analysis', 'reporting'],
-          status: 'requested',
-          expiryDate: '2025-10-15T23:59:59Z'
-        }
-      ]
-    },
-    {
-      id: 'app-3',
-      userId: user?.id || '',
-      vaultId: 'vault-3',
-      name: 'Customer Support Portal',
-      description: 'Customer service and support management system',
-      status: 'rejected',
-      dataSets: [
-        {
-          name: 'support_tickets',
-          accessToken: '',
-          fields: [{ name: 'customer_id' }, { name: 'issue_details' }],
-          purpose: ['support'],
-          status: 'rejected',
-          expiryDate: '2025-08-22T23:59:59Z'
-        }
-      ]
-    }
-  ]);
 
-  React.useEffect(() => {
-    if (!user) {
+  useEffect(() => {
+    if (!isAuthenticated()) {
       navigate('/login');
-    } else if (user.role !== 'app-owner') {
-      toast({
-        title: 'Access Restricted',
-        description: 'Only application owners can access this page',
-        variant: 'destructive'
-      });
-      navigate('/dashboard');
+      return;
     }
-  }, [user, navigate]);
 
-  const getStatusBadge = (status: 'pending' | 'approved' | 'rejected') => {
-    switch (status) {
-      case 'approved':
-        return <Badge className="bg-green-500">Approved</Badge>;
-      case 'pending':
-        return <Badge variant="outline" className="text-amber-600 border-amber-600">Pending</Badge>;
-      case 'rejected':
-        return <Badge variant="destructive">Rejected</Badge>;
-      default:
-        return null;
+    const user = getCurrentUser();
+    if (!user || user.role !== 'app-owner') {
+      navigate('/dashboard');
+      return;
     }
+
+    // Mock data loading
+    const loadApplications = async () => {
+      setLoading(true);
+      try {
+        // In a real app, this would be an API call
+        setTimeout(() => {
+          setApplications([
+            {
+              id: 'app-1',
+              name: 'KYC Application',
+              description: 'Customer verification system',
+              status: 'approved',
+              vaultName: 'Customer Data Vault',
+              createdAt: '2025-04-10T08:30:00Z',
+              updatedAt: '2025-04-12T14:45:00Z'
+            },
+            {
+              id: 'app-2',
+              name: 'Risk Assessment Tool',
+              description: 'Financial risk analysis system',
+              status: 'pending',
+              vaultName: 'Financial Data Vault',
+              createdAt: '2025-05-01T10:15:00Z',
+              updatedAt: '2025-05-01T10:15:00Z'
+            },
+            {
+              id: 'app-3',
+              name: 'Compliance Monitor',
+              description: 'Regulatory compliance monitoring',
+              status: 'rejected',
+              vaultName: 'Regulatory Data Vault',
+              createdAt: '2025-03-22T16:40:00Z',
+              updatedAt: '2025-03-25T09:20:00Z'
+            }
+          ]);
+          setLoading(false);
+        }, 800);
+      } catch (error) {
+        console.error('Error loading applications:', error);
+        setLoading(false);
+      }
+    };
+
+    loadApplications();
+  }, [navigate]);
+
+  const handleCreateApplication = () => {
+    navigate('/applications/new');
   };
 
   const filteredApplications = applications.filter(app => 
@@ -107,92 +84,131 @@ const Applications = () => {
     app.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'approved':
+        return <Badge className="bg-green-500">Approved</Badge>;
+      case 'pending':
+        return <Badge className="bg-yellow-500">Pending</Badge>;
+      case 'rejected':
+        return <Badge className="bg-red-500">Rejected</Badge>;
+      default:
+        return <Badge className="bg-gray-500">Unknown</Badge>;
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="flex flex-1">
+      <div className="flex">
         <Sidebar />
         <main className="flex-1 p-6">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-2xl font-bold tracking-tight">Applications</h1>
               <p className="text-muted-foreground">
-                Manage your registered applications
+                Manage your data access applications
               </p>
             </div>
-            <Button onClick={() => navigate('/applications/new')}>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Register New Application
+            <Button onClick={handleCreateApplication}>
+              <Plus className="mr-2 h-4 w-4" />
+              New Application
             </Button>
           </div>
-
+          
           <div className="mb-6">
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
+                type="search"
                 placeholder="Search applications..."
+                className="pl-8 w-full md:max-w-sm"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8 max-w-sm"
               />
             </div>
           </div>
-
+          
           <Card>
             <CardHeader>
               <CardTitle>Your Applications</CardTitle>
               <CardDescription>
-                Applications registered with data vaults
+                Applications registered for data access
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {filteredApplications.length > 0 ? (
+              {loading ? (
+                <div className="text-center py-6">
+                  <p className="text-muted-foreground">Loading applications...</p>
+                </div>
+              ) : filteredApplications.length === 0 ? (
+                <div className="text-center py-6">
+                  <Server className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-20" />
+                  <h3 className="text-lg font-medium">No applications found</h3>
+                  {searchTerm ? (
+                    <p className="text-muted-foreground mt-1">
+                      Try adjusting your search or clear the filter
+                    </p>
+                  ) : (
+                    <p className="text-muted-foreground mt-1">
+                      Start by creating your first application
+                    </p>
+                  )}
+                  {!searchTerm && (
+                    <Button onClick={handleCreateApplication} className="mt-4">
+                      <Plus className="mr-2 h-4 w-4" />
+                      Create Application
+                    </Button>
+                  )}
+                </div>
+              ) : (
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>Name</TableHead>
-                      <TableHead>Description</TableHead>
+                      <TableHead>Vault</TableHead>
+                      <TableHead>Created</TableHead>
+                      <TableHead>Updated</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Data Sets</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead className="w-[100px]">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredApplications.map((app) => (
                       <TableRow key={app.id}>
-                        <TableCell className="font-medium">{app.name}</TableCell>
-                        <TableCell>{app.description}</TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{app.name}</p>
+                            <p className="text-sm text-muted-foreground">{app.description}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>{app.vaultName}</TableCell>
+                        <TableCell>{formatDate(app.createdAt)}</TableCell>
+                        <TableCell>{formatDate(app.updatedAt)}</TableCell>
                         <TableCell>{getStatusBadge(app.status)}</TableCell>
-                        <TableCell>{app.dataSets.length}</TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="outline"
+                        <TableCell>
+                          <Button 
+                            variant="outline" 
                             size="sm"
-                            onClick={() => navigate(`/applications/${app.id}`)}
+                            asChild
                           >
-                            View Details
+                            <Link to={`/applications/${app.id}`}>View</Link>
                           </Button>
                         </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
-              ) : (
-                <div className="text-center py-6">
-                  <p className="text-muted-foreground">No applications found</p>
-                </div>
               )}
             </CardContent>
-            {filteredApplications.length === 0 && (
-              <CardFooter className="justify-center">
-                <Button 
-                  variant="outline"
-                  onClick={() => navigate('/applications/new')}
-                >
-                  Register Your First Application
-                </Button>
-              </CardFooter>
-            )}
           </Card>
         </main>
       </div>
