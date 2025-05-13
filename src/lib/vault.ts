@@ -14,16 +14,221 @@ let vaults: Vault[] = [
 ];
 
 // Mock app registrations
-let appRegistrations: AppRegistration[] = [];
+let appRegistrations: AppRegistration[] = [
+  {
+    id: '550e8400-e29b-41d4-a716-446655440000',
+    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+    vaultId: '2288e11a-658f-421c-9359-79c969316303',
+    name: 'KYC Analysis Tool',
+    description: 'Tool for analyzing and verifying KYC data',
+    status: 'requested',
+    dataSets: [
+      {
+        name: 'customer_profile',
+        accessToken: '',
+        fields: [
+          { name: 'first_name', actions: ['read'] },
+          { name: 'last_name', actions: ['read'] },
+          { name: 'email', actions: ['read', 'write'] },
+          { name: 'phone_number', actions: ['read'] }
+        ],
+        purpose: ['Verification', 'Analysis'],
+        status: 'requested',
+        expiryDate: '2026-01-15T00:00:00Z'
+      }
+    ]
+  },
+  {
+    id: '550e8400-e29b-41d4-a716-446655440001',
+    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+    vaultId: '2288e11a-658f-421c-9359-79c969316303',
+    name: 'Financial Data Processor',
+    description: 'Application for processing financial data records',
+    status: 'requested',
+    dataSets: [
+      {
+        name: 'finance_records',
+        accessToken: '',
+        fields: [
+          { name: 'pan_number', actions: ['read'] },
+          { name: 'bank_account', actions: ['read'] },
+          { name: 'credit_score', actions: ['read'] }
+        ],
+        purpose: ['Risk Assessment', 'Credit Evaluation'],
+        status: 'requested',
+        expiryDate: '2025-12-31T00:00:00Z'
+      }
+    ]
+  }
+];
 
 // Mock consent requests - this would be stored in a database in a real system
-let consentRequests: ConsentRequest[] = [];
+let consentRequests: ConsentRequest[] = [
+  // KYC Analysis Tool Requests
+  {
+    appId: '550e8400-e29b-41d4-a716-446655440000',
+    appName: 'KYC Analysis Tool',
+    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+    vaultId: '2288e11a-658f-421c-9359-79c969316303',
+    dataSetName: 'customer_profile',
+    fieldName: 'first_name',
+    actions: ['read'],
+    purpose: ['Verification', 'Analysis'],
+    status: 'requested',
+    requestedAt: '2025-04-01T10:30:00Z',
+    expiryDate: '2026-01-15T00:00:00Z'
+  },
+  {
+    appId: '550e8400-e29b-41d4-a716-446655440000',
+    appName: 'KYC Analysis Tool',
+    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+    vaultId: '2288e11a-658f-421c-9359-79c969316303',
+    dataSetName: 'customer_profile',
+    fieldName: 'last_name',
+    actions: ['read'],
+    purpose: ['Verification', 'Analysis'],
+    status: 'requested',
+    requestedAt: '2025-04-01T10:30:00Z',
+    expiryDate: '2026-01-15T00:00:00Z'
+  },
+  {
+    appId: '550e8400-e29b-41d4-a716-446655440000',
+    appName: 'KYC Analysis Tool',
+    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+    vaultId: '2288e11a-658f-421c-9359-79c969316303',
+    dataSetName: 'customer_profile',
+    fieldName: 'email',
+    actions: ['read', 'write'],
+    purpose: ['Verification', 'Analysis'],
+    status: 'requested',
+    requestedAt: '2025-04-01T10:30:00Z',
+    expiryDate: '2026-01-15T00:00:00Z'
+  },
+  {
+    appId: '550e8400-e29b-41d4-a716-446655440000',
+    appName: 'KYC Analysis Tool',
+    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+    vaultId: '2288e11a-658f-421c-9359-79c969316303',
+    dataSetName: 'customer_profile',
+    fieldName: 'phone_number',
+    actions: ['read'],
+    purpose: ['Verification', 'Analysis'],
+    status: 'requested',
+    requestedAt: '2025-04-01T10:30:00Z',
+    expiryDate: '2026-01-15T00:00:00Z'
+  },
+  
+  // Financial Data Processor Requests
+  {
+    appId: '550e8400-e29b-41d4-a716-446655440001',
+    appName: 'Financial Data Processor',
+    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+    vaultId: '2288e11a-658f-421c-9359-79c969316303',
+    dataSetName: 'finance_records',
+    fieldName: 'pan_number',
+    actions: ['read'],
+    purpose: ['Risk Assessment', 'Credit Evaluation'],
+    status: 'requested',
+    requestedAt: '2025-04-05T14:20:00Z',
+    expiryDate: '2025-12-31T00:00:00Z'
+  },
+  {
+    appId: '550e8400-e29b-41d4-a716-446655440001',
+    appName: 'Financial Data Processor',
+    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+    vaultId: '2288e11a-658f-421c-9359-79c969316303',
+    dataSetName: 'finance_records',
+    fieldName: 'bank_account',
+    actions: ['read'],
+    purpose: ['Risk Assessment', 'Credit Evaluation'],
+    status: 'requested',
+    requestedAt: '2025-04-05T14:20:00Z',
+    expiryDate: '2025-12-31T00:00:00Z'
+  },
+  {
+    appId: '550e8400-e29b-41d4-a716-446655440001',
+    appName: 'Financial Data Processor',
+    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+    vaultId: '2288e11a-658f-421c-9359-79c969316303',
+    dataSetName: 'finance_records',
+    fieldName: 'credit_score',
+    actions: ['read'],
+    purpose: ['Risk Assessment', 'Credit Evaluation'],
+    status: 'requested',
+    requestedAt: '2025-04-05T14:20:00Z',
+    expiryDate: '2025-12-31T00:00:00Z'
+  },
+  
+  // Some approved and rejected examples
+  {
+    appId: '550e8400-e29b-41d4-a716-446655440002',
+    appName: 'Document Verifier',
+    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+    vaultId: '2288e11a-658f-421c-9359-79c969316303',
+    dataSetName: 'documents',
+    fieldName: 'passport',
+    actions: ['read'],
+    purpose: ['Verification'],
+    status: 'approved',
+    requestedAt: '2025-03-15T09:40:00Z',
+    expiryDate: '2025-09-15T00:00:00Z'
+  },
+  {
+    appId: '550e8400-e29b-41d4-a716-446655440002',
+    appName: 'Document Verifier',
+    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+    vaultId: '2288e11a-658f-421c-9359-79c969316303',
+    dataSetName: 'documents',
+    fieldName: 'driver_license',
+    actions: [],
+    purpose: ['Verification'],
+    status: 'rejected',
+    requestedAt: '2025-03-15T09:40:00Z',
+    expiryDate: '2025-09-15T00:00:00Z'
+  }
+];
 
 // Mock field level consents - this would be stored in a database in a real system
-let fieldLevelConsents: FieldLevelConsent[] = [];
+let fieldLevelConsents: FieldLevelConsent[] = [
+  {
+    appId: '550e8400-e29b-41d4-a716-446655440002',
+    dataSetName: 'documents',
+    fieldName: 'passport',
+    actions: ['read'],
+    approved: true
+  },
+  {
+    appId: '550e8400-e29b-41d4-a716-446655440002',
+    dataSetName: 'documents',
+    fieldName: 'driver_license',
+    actions: [],
+    approved: false
+  }
+];
 
 // Mock consent approvals - this would be stored in a database in a real system
-let consentApprovals: ConsentApproval[] = [];
+let consentApprovals: ConsentApproval[] = [
+  {
+    appId: '550e8400-e29b-41d4-a716-446655440002',
+    dataSetName: 'documents',
+    fieldName: 'passport',
+    actions: ['read'],
+    approved: true,
+    approvedBy: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+    approvedAt: '2025-03-20T11:25:00Z',
+    reason: 'Required for identity verification'
+  },
+  {
+    appId: '550e8400-e29b-41d4-a716-446655440002',
+    dataSetName: 'documents',
+    fieldName: 'driver_license',
+    actions: [],
+    approved: false,
+    approvedBy: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+    approvedAt: '2025-03-20T11:30:00Z',
+    reason: 'Not required for current purpose'
+  }
+];
 
 // Mock token storage - in a real system this would be an encrypted database
 const tokenStorage: Record<string, any> = {};
