@@ -40,14 +40,15 @@ export interface VaultTableCreateRequest {
   tables: VaultTable[];
 }
 
-export interface DataSetField {
+export interface DataSetFieldAction {
   name: string;
+  actions: ('read' | 'write')[];
 }
 
 export interface DataSet {
   name: string;
   accessToken: string;
-  fields: DataSetField[];
+  fields: DataSetFieldAction[];
   purpose: string[];
   status: 'requested' | 'approved' | 'rejected';
   expiryDate: string;

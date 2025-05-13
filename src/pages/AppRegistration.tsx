@@ -13,8 +13,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Server, CalendarDays, Plus, X } from 'lucide-react';
 import { getVaults, registerApplication, generateAccessToken } from '@/lib/vault';
 import { isAuthenticated, hasRole, getCurrentUser } from '@/lib/auth';
-import { Vault, AppRegistration, DataSet } from '@/types';
+import { Vault, AppRegistration, DataSet, DataSetFieldAction } from '@/types';
 import { toast } from '@/hooks/use-toast';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription } from '@/components/ui/form';
 
 const AppRegistrationPage = () => {
   const navigate = useNavigate();
@@ -84,7 +85,10 @@ const AppRegistrationPage = () => {
       const newDataSet: DataSet = {
         name: tableName,
         accessToken: generateAccessToken(),
-        fields: table.fields.map(field => ({ name: field.name })),
+        fields: table.fields.map(field => ({ 
+          name: field.name,
+          actions: ['read'] // Default to read-only
+        })),
         purpose: [...table.purpose],
         status: 'requested',
         expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString() // 1 year from now
@@ -118,10 +122,48 @@ const AppRegistrationPage = () => {
         ...selectedTables,
         [tableName]: {
           ...selectedTables[tableName],
-          fields: [...selectedTables[tableName].fields, { name: fieldName }]
+          fields: [...selectedTables[tableName].fields, { name: fieldName, actions: ['read'] }]
         }
       });
     }
+  };
+
+  // Toggle field action (read/write)
+  const toggleFieldAction = (tableName: string, fieldName: string, action: 'read' | 'write') => {
+    if (!selectedTables[tableName]) return;
+
+    const updatedFields = selectedTables[tableName].fields.map(field => {
+      if (field.name === fieldName) {
+        const hasAction = field.actions.includes(action);
+        let updatedActions: ('read' | 'write')[];
+        
+        if (hasAction) {
+          // Remove the action
+          updatedActions = field.actions.filter(a => a !== action);
+          // Ensure at least one action remains
+          if (updatedActions.length === 0) {
+            updatedActions = ['read']; // Default to read if all actions would be removed
+          }
+        } else {
+          // Add the action
+          updatedActions = [...field.actions, action];
+        }
+        
+        return {
+          ...field,
+          actions: updatedActions
+        };
+      }
+      return field;
+    });
+
+    setSelectedTables({
+      ...selectedTables,
+      [tableName]: {
+        ...selectedTables[tableName],
+        fields: updatedFields
+      }
+    });
   };
 
   // Handle purpose change
@@ -346,28 +388,71 @@ const AppRegistrationPage = () => {
                         <>
                           <div className="ml-6 space-y-4">
                             <div>
-                              <Label className="text-sm font-medium block mb-2">Fields</Label>
-                              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {table.fields.map((field, i) => (
-                                  <div key={i} className="flex items-center gap-2">
-                                    <Checkbox
-                                      id={`${table.tableName}-field-${field.name}`}
-                                      checked={selectedTables[table.tableName].fields.some(f => f.name === field.name)}
-                                      onCheckedChange={() => toggleFieldSelection(table.tableName, field.name)}
-                                    />
-                                    <div className="grid gap-0.5">
-                                      <Label 
-                                        htmlFor={`${table.tableName}-field-${field.name}`}
-                                        className="text-sm"
-                                      >
-                                        {field.name}
-                                      </Label>
-                                      <span className={`text-xs security-badge-${field.sensitivity.toLowerCase()}`}>
-                                        {field.sensitivity}
-                                      </span>
+                              <Label className="text-sm font-medium block mb-2">Fields & Access</Label>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {table.fields.map((field, i) => {
+                                  const selectedField = selectedTables[table.tableName].fields.find(f => f.name === field.name);
+                                  const isSelected = !!selectedField;
+
+                                  return (
+                                    <div key={i} className="border rounded-md p-3">
+                                      <div className="flex items-center gap-2 mb-2">
+                                        <Checkbox
+                                          id={`${table.tableName}-field-${field.name}`}
+                                          checked={isSelected}
+                                          onCheckedChange={() => toggleFieldSelection(table.tableName, field.name)}
+                                        />
+                                        <div className="grid gap-0.5">
+                                          <Label 
+                                            htmlFor={`${table.tableName}-field-${field.name}`}
+                                            className="text-sm font-medium"
+                                          >
+                                            {field.name}
+                                          </Label>
+                                          <span className={`text-xs security-badge-${field.sensitivity.toLowerCase()}`}>
+                                            {field.sensitivity}
+                                          </span>
+                                        </div>
+                                      </div>
+
+                                      {isSelected && (
+                                        <div className="mt-2 pl-6">
+                                          <Label className="text-xs text-muted-foreground mb-1 block">
+                                            Actions
+                                          </Label>
+                                          <div className="flex gap-3">
+                                            <div className="flex items-center gap-1.5">
+                                              <Checkbox
+                                                id={`${table.tableName}-field-${field.name}-read`}
+                                                checked={selectedField.actions.includes('read')}
+                                                onCheckedChange={() => toggleFieldAction(table.tableName, field.name, 'read')}
+                                              />
+                                              <Label
+                                                htmlFor={`${table.tableName}-field-${field.name}-read`}
+                                                className="text-xs"
+                                              >
+                                                Read
+                                              </Label>
+                                            </div>
+                                            <div className="flex items-center gap-1.5">
+                                              <Checkbox
+                                                id={`${table.tableName}-field-${field.name}-write`}
+                                                checked={selectedField.actions.includes('write')}
+                                                onCheckedChange={() => toggleFieldAction(table.tableName, field.name, 'write')}
+                                              />
+                                              <Label
+                                                htmlFor={`${table.tableName}-field-${field.name}-write`}
+                                                className="text-xs"
+                                              >
+                                                Write
+                                              </Label>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
                                     </div>
-                                  </div>
-                                ))}
+                                  );
+                                })}
                               </div>
                             </div>
                             
