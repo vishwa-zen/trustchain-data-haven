@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -58,13 +57,13 @@ const ApplicationDetail = () => {
             id: id || crypto.randomUUID(),
             name: `Demo App ${id}`,
             description: 'This is a demo application that showcases data access capabilities',
-            status: 'pending',
+            status: 'requested', // Changed from 'pending' to 'requested'
             userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
             vaultId: '2288e11a-658f-421c-9359-79c969316303',
             dataSets: [
               {
                 name: 'customers',
-                status: 'pending',
+                status: 'requested', // Changed from 'pending' to 'requested'
                 purpose: ['Analytics', 'Customer Service'],
                 fields: [
                   { name: 'id', actions: ['read'] },
@@ -77,7 +76,7 @@ const ApplicationDetail = () => {
               },
               {
                 name: 'transactions',
-                status: 'pending',
+                status: 'requested', // Changed from 'pending' to 'requested'
                 purpose: ['Analytics'],
                 fields: [
                   { name: 'id', actions: ['read'] },
@@ -134,8 +133,8 @@ const ApplicationDetail = () => {
     switch (status) {
       case 'approved':
         return <Badge className="bg-green-500">Approved</Badge>;
-      case 'pending':
-        return <Badge className="bg-yellow-500">Pending</Badge>;
+      case 'requested':
+        return <Badge className="bg-yellow-500">Requested</Badge>;
       case 'rejected':
         return <Badge className="bg-red-500">Rejected</Badge>;
       default:

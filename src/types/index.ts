@@ -1,4 +1,3 @@
-
 // Make sure UserRole is properly exported
 export type UserRole = 'app-owner' | 'data-steward' | 'admin';
 
@@ -60,7 +59,7 @@ export interface AppRegistration {
   vaultId: string;
   name: string;
   description: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'requested' | 'approved' | 'rejected' | 'pending';
   dataSets: DataSet[];
 }
 
