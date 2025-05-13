@@ -13,6 +13,7 @@ import VaultDetails from "./pages/VaultDetails";
 import AppRegistration from "./pages/AppRegistration";
 import Applications from "./pages/Applications";
 import TokenManagement from "./pages/TokenManagement";
+import ConsentManagement from "./pages/ConsentManagement";
 import Settings from "./pages/Settings";
 import UserManagement from "./pages/UserManagement";
 import NotFound from "./pages/NotFound";
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/applications/new" element={<AppRegistration />} />
           <Route path="/applications/:id" element={<ApplicationDetail />} />
           <Route path="/tokens" element={<TokenManagement />} />
+          <Route path="/consent" element={<ConsentManagement />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/users" element={<UserManagement />} />
           <Route path="*" element={<NotFound />} />

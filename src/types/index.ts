@@ -87,3 +87,36 @@ export interface DetokenizeRequest {
 export interface DetokenizeResponse {
   data: Record<string, any>;
 }
+
+export interface ConsentApproval {
+  appId: string;
+  dataSetName: string;
+  fieldName: string;
+  actions: ('read' | 'write')[];
+  approved: boolean;
+  approvedBy: string;
+  approvedAt: string;
+  reason?: string;
+}
+
+export interface ConsentRequest {
+  appId: string;
+  appName: string;
+  userId: string;
+  vaultId: string;
+  dataSetName: string;
+  fieldName: string;
+  actions: ('read' | 'write')[];
+  purpose: string[];
+  status: 'requested' | 'approved' | 'rejected';
+  requestedAt: string;
+  expiryDate: string;
+}
+
+export interface FieldLevelConsent {
+  appId: string;
+  dataSetName: string;
+  fieldName: string; 
+  actions: ('read' | 'write')[];
+  approved: boolean;
+}
