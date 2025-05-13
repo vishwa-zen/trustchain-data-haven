@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -49,6 +48,7 @@ const Register = () => {
       });
       navigate('/dashboard');
     } catch (error) {
+      console.error('Registration error:', error);
       toast({
         title: "Registration failed",
         description: error instanceof Error ? error.message : "An error occurred",

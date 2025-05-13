@@ -1,8 +1,8 @@
-import { User, UserRole } from '@/types';
-import { toast } from '@/hooks/use-toast';
 
-// Mock user database
-let users: User[] = [
+import { User, UserRole } from '@/types';
+
+// Mock user database for fallback
+const fallbackUsers: User[] = [
   {
     id: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
     firstName: 'Vishwanath',
@@ -26,7 +26,7 @@ let users: User[] = [
   }
 ];
 
-// Mock local storage functions for user sessions
+// Local storage functions for user sessions
 export const getCurrentUser = (): User | null => {
   const userJson = localStorage.getItem('trustchain_user');
   return userJson ? JSON.parse(userJson) : null;
@@ -40,25 +40,53 @@ export const clearCurrentUser = (): void => {
   localStorage.removeItem('trustchain_user');
 };
 
-// Login function
+// Login function using the provided API
 export const loginUser = async (email: string, password: string): Promise<User> => {
-  return new Promise((resolve, reject) => {
-    // In a real app, this would be an API call
-    setTimeout(() => {
-      const user = users.find(u => u.email === email);
-      
-      if (user) {
-        // Password check would happen server-side in a real app
-        setCurrentUser(user);
-        resolve(user);
-      } else {
-        reject(new Error('Invalid email or password'));
+  try {
+    const response = await fetch('http://127.0.0.1:3055/api/trustchain/v1/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Login failed');
+    }
+
+    const userData = await response.json();
+    
+    // Transform API response to match our User type
+    const user: User = {
+      id: userData.id || crypto.randomUUID(),
+      firstName: userData.firstName || userData.first_name || '',
+      lastName: userData.lastName || userData.last_name || '',
+      email: userData.email,
+      role: (userData.role as UserRole) || 'app-owner'
+    };
+    
+    setCurrentUser(user);
+    return user;
+  } catch (error) {
+    console.error('Login error:', error);
+    
+    // Fallback to mock login for development (can be removed in production)
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Falling back to mock login in development mode');
+      const mockUser = fallbackUsers.find(u => u.email === email);
+      if (mockUser) {
+        setCurrentUser(mockUser);
+        return mockUser;
       }
-    }, 800); // Simulate API delay
-  });
+    }
+    
+    throw error;
+  }
 };
 
-// Register function
+// Register function using the provided API
 export const registerUser = async (
   firstName: string,
   lastName: string,
@@ -66,15 +94,50 @@ export const registerUser = async (
   password: string,
   role: UserRole
 ): Promise<User> => {
-  return new Promise((resolve, reject) => {
-    // In a real app, this would be an API call
-    setTimeout(() => {
-      // Check if user already exists
-      if (users.some(u => u.email === email)) {
-        reject(new Error('User with this email already exists'));
-        return;
-      }
+  try {
+    const response = await fetch('http://127.0.0.1:4079/trustchain/v1/user/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        firstName,
+        lastName,
+        email,
+        password,
+        role
+      }),
+    });
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Registration failed');
+    }
+
+    const userData = await response.json();
+    
+    // Transform API response to match our User type
+    const user: User = {
+      id: userData.id || crypto.randomUUID(),
+      firstName: userData.firstName || userData.first_name || '',
+      lastName: userData.lastName || userData.last_name || '',
+      email: userData.email,
+      role: (userData.role as UserRole) || role
+    };
+    
+    setCurrentUser(user);
+    return user;
+  } catch (error) {
+    console.error('Registration error:', error);
+    
+    // Fallback to mock registration for development (can be removed in production)
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Falling back to mock registration in development mode');
+      // Check if user already exists in mock data
+      if (fallbackUsers.some(u => u.email === email)) {
+        throw new Error('User with this email already exists');
+      }
+      
       const newUser: User = {
         id: crypto.randomUUID(),
         firstName,
@@ -82,12 +145,13 @@ export const registerUser = async (
         email,
         role
       };
-
-      users = [...users, newUser];
+      
       setCurrentUser(newUser);
-      resolve(newUser);
-    }, 800); // Simulate API delay
-  });
+      return newUser;
+    }
+    
+    throw error;
+  }
 };
 
 // Logout function
