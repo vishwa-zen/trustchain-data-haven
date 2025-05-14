@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -13,11 +12,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Shield, Search, Check, X, Clock, ArrowUpRight } from 'lucide-react';
-import { getConsentRequests, approveFieldConsent, rejectFieldConsent } from '@/lib/vault';
+import { Shield, Search, Check, X, Clock, ArrowUpRight, FileText } from 'lucide-react';
+import { getConsentRequests, approveFieldConsent, rejectFieldConsent, approveBatchFieldConsent, rejectBatchFieldConsent } from '@/lib/vault';
 import { isAuthenticated, hasRole, getCurrentUser } from '@/lib/auth';
 import { toast } from '@/hooks/use-toast';
-import { ConsentRequest } from '@/types';
+import { ConsentRequest, BatchFieldConsent } from '@/types';
+import BatchConsentDialog from '@/components/BatchConsentDialog';
 
 const ConsentManagement = () => {
   const navigate = useNavigate();
@@ -31,6 +31,14 @@ const ConsentManagement = () => {
   const [selectedRequest, setSelectedRequest] = useState<ConsentRequest | null>(null);
   const [consentReason, setConsentReason] = useState('');
   const [selectedActions, setSelectedActions] = useState<('read' | 'write')[]>([]);
+  
+  // New state for batch approval
+  const [batchDialogOpen, setBatchDialogOpen] = useState(false);
+  const [currentAppId, setCurrentAppId] = useState<string>('');
+  const [currentAppName, setCurrentAppName] = useState<string>('');
+  const [batchFields, setBatchFields] = useState<BatchFieldConsent[]>([]);
+  const [isProcessingBatch, setIsProcessingBatch] = useState(false);
+  
   const currentUser = getCurrentUser();
 
   useEffect(() => {
@@ -241,6 +249,117 @@ const ConsentManagement = () => {
       setProcessingConsent(null);
     }
   };
+  
+  // New function to open batch consent dialog
+  const openBatchDialog = (appId: string, appName: string) => {
+    const appRequests = consentRequests.filter(
+      req => req.appId === appId && req.status === 'requested'
+    );
+    
+    if (appRequests.length === 0) {
+      toast({
+        title: 'No pending requests',
+        description: 'There are no pending consent requests for this application',
+      });
+      return;
+    }
+    
+    const fields: BatchFieldConsent[] = appRequests.map(req => ({
+      fieldKey: `${req.dataSetName}:${req.fieldName}`,
+      dataSetName: req.dataSetName,
+      fieldName: req.fieldName,
+      selected: true,
+      readAccess: req.actions.includes('read'),
+      writeAccess: req.actions.includes('write'),
+    }));
+    
+    setCurrentAppId(appId);
+    setCurrentAppName(appName);
+    setBatchFields(fields);
+    setBatchDialogOpen(true);
+  };
+  
+  // New function to handle batch approval
+  const handleBatchApprove = async (selectedFields: BatchFieldConsent[], reason: string) => {
+    if (!currentAppId || selectedFields.length === 0) return;
+    
+    setIsProcessingBatch(true);
+    try {
+      // Convert the selected fields to the format expected by the API
+      const fieldConsents = selectedFields.map(field => ({
+        dataSetName: field.dataSetName,
+        fieldName: field.fieldName,
+        actions: [
+          ...(field.readAccess ? ['read'] : []),
+          ...(field.writeAccess ? ['write'] : []),
+        ] as ('read' | 'write')[]
+      }));
+      
+      await approveBatchFieldConsent(
+        currentAppId,
+        fieldConsents,
+        reason || 'Batch approved by consent management'
+      );
+      
+      toast({
+        title: 'Consents Approved',
+        description: `${selectedFields.length} field consents have been approved`,
+      });
+      
+      // Reload consent requests
+      await loadConsentRequests();
+      setBatchDialogOpen(false);
+      
+    } catch (error) {
+      console.error('Error approving batch consent:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to approve batch consent',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsProcessingBatch(false);
+    }
+  };
+  
+  // New function to handle batch rejection
+  const handleBatchReject = async (selectedFields: BatchFieldConsent[], reason: string) => {
+    if (!currentAppId || selectedFields.length === 0) return;
+    
+    setIsProcessingBatch(true);
+    try {
+      // Convert the selected fields to the format expected by the API
+      const fieldConsents = selectedFields.map(field => ({
+        dataSetName: field.dataSetName,
+        fieldName: field.fieldName
+      }));
+      
+      await rejectBatchFieldConsent(
+        currentAppId,
+        fieldConsents,
+        reason || 'Batch rejected by consent management'
+      );
+      
+      toast({
+        title: 'Consents Rejected',
+        description: `${selectedFields.length} field consents have been rejected`,
+      });
+      
+      // Reload consent requests
+      await loadConsentRequests();
+      setBatchDialogOpen(false);
+      
+    } catch (error) {
+      console.error('Error rejecting batch consent:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to reject batch consent',
+        variant: 'destructive'
+      });
+    } finally {
+      setIsProcessingBatch(false);
+    }
+  };
 
   const handleViewApp = (appId: string) => {
     navigate(`/applications/${appId}`);
@@ -266,6 +385,25 @@ const ConsentManagement = () => {
         return <Badge className="bg-gray-500">Unknown</Badge>;
     }
   };
+  
+  // Group requests by application for batch processing
+  const groupedRequests = filteredRequests.reduce((acc, request) => {
+    if (!acc[request.appId]) {
+      acc[request.appId] = {
+        appId: request.appId,
+        appName: request.appName,
+        pendingCount: 0,
+        requests: []
+      };
+    }
+    
+    acc[request.appId].requests.push(request);
+    if (request.status === 'requested') {
+      acc[request.appId].pendingCount++;
+    }
+    
+    return acc;
+  }, {} as Record<string, { appId: string; appName: string; pendingCount: number; requests: ConsentRequest[] }>);
 
   return (
     <div className="min-h-screen bg-background">
@@ -312,6 +450,63 @@ const ConsentManagement = () => {
                   </Select>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+          
+          {/* New section for applications with batch actions */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Applications with Pending Requests</CardTitle>
+              <CardDescription>
+                Review and process requests by application
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="text-center py-6">
+                  <p className="text-muted-foreground">Loading applications...</p>
+                </div>
+              ) : Object.values(groupedRequests).filter(g => g.pendingCount > 0).length === 0 ? (
+                <div className="text-center py-6">
+                  <p className="text-muted-foreground">No applications with pending requests</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {Object.values(groupedRequests)
+                    .filter(group => group.pendingCount > 0)
+                    .map((group) => (
+                      <Card key={group.appId} className="border border-muted">
+                        <CardHeader className="pb-2">
+                          <CardTitle className="text-base">{group.appName}</CardTitle>
+                          <CardDescription>
+                            {group.pendingCount} pending request{group.pendingCount !== 1 ? 's' : ''}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="flex justify-between items-center">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleViewApp(group.appId)}
+                              className="flex items-center"
+                            >
+                              <FileText className="h-4 w-4 mr-1" />
+                              View Details
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() => openBatchDialog(group.appId, group.appName)}
+                              className="flex items-center"
+                            >
+                              Batch Process
+                              <ArrowRight className="h-4 w-4 ml-1" />
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -850,6 +1045,18 @@ const ConsentManagement = () => {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+          
+          {/* Batch Consent Dialog */}
+          <BatchConsentDialog
+            open={batchDialogOpen}
+            onOpenChange={setBatchDialogOpen}
+            appId={currentAppId}
+            appName={currentAppName}
+            fields={batchFields}
+            onApprove={handleBatchApprove}
+            onReject={handleBatchReject}
+            isProcessing={isProcessingBatch}
+          />
         </main>
       </div>
     </div>

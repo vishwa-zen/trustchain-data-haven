@@ -1,687 +1,235 @@
-import { Vault, VaultTable, VaultTableCreateRequest, AppRegistration, TokenizeRequest, TokenizeResponse, DetokenizeRequest, DetokenizeResponse, ConsentRequest, FieldLevelConsent, ConsentApproval } from '@/types';
-import { getCurrentUser, generateAccessToken } from './auth';
+import { ConsentApproval, ConsentRequest, FieldLevelConsent } from "@/types";
 
-// Mock vault database
-let vaults: Vault[] = [
-  {
-    id: '2288e11a-658f-421c-9359-79c969316303',
-    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
-    vaultName: 'kyc_vault',
-    vaultDesc: 'Vault to securely store and manage KYC-related data such as identity documents, PAN, Aadhaar, and other sensitive information.',
-    createdAt: new Date().toISOString(),
-    tables: []
-  }
-];
-
-// Mock app registrations
-let appRegistrations: AppRegistration[] = [
-  {
-    id: '550e8400-e29b-41d4-a716-446655440000',
-    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
-    vaultId: '2288e11a-658f-421c-9359-79c969316303',
-    name: 'KYC Analysis Tool',
-    description: 'Tool for analyzing and verifying KYC data',
-    status: 'requested',
-    dataSets: [
-      {
-        name: 'customer_profile',
-        accessToken: '',
-        fields: [
-          { name: 'first_name', actions: ['read'] },
-          { name: 'last_name', actions: ['read'] },
-          { name: 'email', actions: ['read', 'write'] },
-          { name: 'phone_number', actions: ['read'] }
-        ],
-        purpose: ['Verification', 'Analysis'],
-        status: 'requested',
-        expiryDate: '2026-01-15T00:00:00Z'
-      }
-    ]
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440001',
-    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
-    vaultId: '2288e11a-658f-421c-9359-79c969316303',
-    name: 'Financial Data Processor',
-    description: 'Application for processing financial data records',
-    status: 'requested',
-    dataSets: [
-      {
-        name: 'finance_records',
-        accessToken: '',
-        fields: [
-          { name: 'pan_number', actions: ['read'] },
-          { name: 'bank_account', actions: ['read'] },
-          { name: 'credit_score', actions: ['read'] }
-        ],
-        purpose: ['Risk Assessment', 'Credit Evaluation'],
-        status: 'requested',
-        expiryDate: '2025-12-31T00:00:00Z'
-      }
-    ]
-  }
-];
-
-// Mock consent requests - this would be stored in a database in a real system
-let consentRequests: ConsentRequest[] = [
-  // KYC Analysis Tool Requests
-  {
-    appId: '550e8400-e29b-41d4-a716-446655440000',
-    appName: 'KYC Analysis Tool',
-    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
-    vaultId: '2288e11a-658f-421c-9359-79c969316303',
-    dataSetName: 'customer_profile',
-    fieldName: 'first_name',
-    actions: ['read'],
-    purpose: ['Verification', 'Analysis'],
-    status: 'requested',
-    requestedAt: '2025-04-01T10:30:00Z',
-    expiryDate: '2026-01-15T00:00:00Z'
-  },
-  {
-    appId: '550e8400-e29b-41d4-a716-446655440000',
-    appName: 'KYC Analysis Tool',
-    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
-    vaultId: '2288e11a-658f-421c-9359-79c969316303',
-    dataSetName: 'customer_profile',
-    fieldName: 'last_name',
-    actions: ['read'],
-    purpose: ['Verification', 'Analysis'],
-    status: 'requested',
-    requestedAt: '2025-04-01T10:30:00Z',
-    expiryDate: '2026-01-15T00:00:00Z'
-  },
-  {
-    appId: '550e8400-e29b-41d4-a716-446655440000',
-    appName: 'KYC Analysis Tool',
-    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
-    vaultId: '2288e11a-658f-421c-9359-79c969316303',
-    dataSetName: 'customer_profile',
-    fieldName: 'email',
-    actions: ['read', 'write'],
-    purpose: ['Verification', 'Analysis'],
-    status: 'requested',
-    requestedAt: '2025-04-01T10:30:00Z',
-    expiryDate: '2026-01-15T00:00:00Z'
-  },
-  {
-    appId: '550e8400-e29b-41d4-a716-446655440000',
-    appName: 'KYC Analysis Tool',
-    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
-    vaultId: '2288e11a-658f-421c-9359-79c969316303',
-    dataSetName: 'customer_profile',
-    fieldName: 'phone_number',
-    actions: ['read'],
-    purpose: ['Verification', 'Analysis'],
-    status: 'requested',
-    requestedAt: '2025-04-01T10:30:00Z',
-    expiryDate: '2026-01-15T00:00:00Z'
-  },
-  
-  // Financial Data Processor Requests
-  {
-    appId: '550e8400-e29b-41d4-a716-446655440001',
-    appName: 'Financial Data Processor',
-    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
-    vaultId: '2288e11a-658f-421c-9359-79c969316303',
-    dataSetName: 'finance_records',
-    fieldName: 'pan_number',
-    actions: ['read'],
-    purpose: ['Risk Assessment', 'Credit Evaluation'],
-    status: 'requested',
-    requestedAt: '2025-04-05T14:20:00Z',
-    expiryDate: '2025-12-31T00:00:00Z'
-  },
-  {
-    appId: '550e8400-e29b-41d4-a716-446655440001',
-    appName: 'Financial Data Processor',
-    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
-    vaultId: '2288e11a-658f-421c-9359-79c969316303',
-    dataSetName: 'finance_records',
-    fieldName: 'bank_account',
-    actions: ['read'],
-    purpose: ['Risk Assessment', 'Credit Evaluation'],
-    status: 'requested',
-    requestedAt: '2025-04-05T14:20:00Z',
-    expiryDate: '2025-12-31T00:00:00Z'
-  },
-  {
-    appId: '550e8400-e29b-41d4-a716-446655440001',
-    appName: 'Financial Data Processor',
-    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
-    vaultId: '2288e11a-658f-421c-9359-79c969316303',
-    dataSetName: 'finance_records',
-    fieldName: 'credit_score',
-    actions: ['read'],
-    purpose: ['Risk Assessment', 'Credit Evaluation'],
-    status: 'requested',
-    requestedAt: '2025-04-05T14:20:00Z',
-    expiryDate: '2025-12-31T00:00:00Z'
-  },
-  
-  // Some approved and rejected examples
-  {
-    appId: '550e8400-e29b-41d4-a716-446655440002',
-    appName: 'Document Verifier',
-    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
-    vaultId: '2288e11a-658f-421c-9359-79c969316303',
-    dataSetName: 'documents',
-    fieldName: 'passport',
-    actions: ['read'],
-    purpose: ['Verification'],
-    status: 'approved',
-    requestedAt: '2025-03-15T09:40:00Z',
-    expiryDate: '2025-09-15T00:00:00Z'
-  },
-  {
-    appId: '550e8400-e29b-41d4-a716-446655440002',
-    appName: 'Document Verifier',
-    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
-    vaultId: '2288e11a-658f-421c-9359-79c969316303',
-    dataSetName: 'documents',
-    fieldName: 'driver_license',
-    actions: [],
-    purpose: ['Verification'],
-    status: 'rejected',
-    requestedAt: '2025-03-15T09:40:00Z',
-    expiryDate: '2025-09-15T00:00:00Z'
-  }
-];
-
-// Mock field level consents - this would be stored in a database in a real system
-let fieldLevelConsents: FieldLevelConsent[] = [
-  {
-    appId: '550e8400-e29b-41d4-a716-446655440002',
-    dataSetName: 'documents',
-    fieldName: 'passport',
-    actions: ['read'],
-    approved: true
-  },
-  {
-    appId: '550e8400-e29b-41d4-a716-446655440002',
-    dataSetName: 'documents',
-    fieldName: 'driver_license',
-    actions: [],
-    approved: false
-  }
-];
-
-// Mock consent approvals - this would be stored in a database in a real system
-let consentApprovals: ConsentApproval[] = [
-  {
-    appId: '550e8400-e29b-41d4-a716-446655440002',
-    dataSetName: 'documents',
-    fieldName: 'passport',
-    actions: ['read'],
-    approved: true,
-    approvedBy: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
-    approvedAt: '2025-03-20T11:25:00Z',
-    reason: 'Required for identity verification'
-  },
-  {
-    appId: '550e8400-e29b-41d4-a716-446655440002',
-    dataSetName: 'documents',
-    fieldName: 'driver_license',
-    actions: [],
-    approved: false,
-    approvedBy: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
-    approvedAt: '2025-03-20T11:30:00Z',
-    reason: 'Not required for current purpose'
-  }
-];
-
-// Mock token storage - in a real system this would be an encrypted database
-const tokenStorage: Record<string, any> = {};
-const reverseTokenLookup: Record<string, string> = {};
-
-// Create a new vault
-export const createVault = async (vaultName: string, vaultDesc: string): Promise<Vault> => {
+export async function getConsentRequests(): Promise<ConsentRequest[]> {
+  // Mock implementation
   return new Promise((resolve) => {
     setTimeout(() => {
-      const user = getCurrentUser();
-      if (!user) throw new Error('User not authenticated');
-
-      const newVault: Vault = {
-        id: crypto.randomUUID(),
-        userId: user.id,
-        vaultName,
-        vaultDesc,
-        createdAt: new Date().toISOString()
-      };
-
-      vaults = [...vaults, newVault];
-      resolve(newVault);
-    }, 800);
-  });
-};
-
-// Get all vaults
-export const getVaults = async (): Promise<Vault[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const user = getCurrentUser();
-      if (!user) throw new Error('User not authenticated');
-      
-      resolve(vaults.filter(v => v.userId === user.id));
+      resolve([
+        {
+          appId: "abc123",
+          appName: "Analytics Dashboard",
+          userId: "user1",
+          vaultId: "vault1",
+          dataSetName: "customers",
+          fieldName: "email",
+          actions: ["read"],
+          purpose: ["Customer Communication"],
+          status: "requested",
+          requestedAt: "2025-04-10T14:30:00Z",
+          expiryDate: "2026-04-10T14:30:00Z"
+        },
+        {
+          appId: "abc123",
+          appName: "Analytics Dashboard",
+          userId: "user1",
+          vaultId: "vault1",
+          dataSetName: "customers",
+          fieldName: "phone",
+          actions: ["read", "write"],
+          purpose: ["Customer Communication", "Account Verification"],
+          status: "requested",
+          requestedAt: "2025-04-10T14:30:00Z",
+          expiryDate: "2026-04-10T14:30:00Z"
+        },
+        {
+          appId: "abc123",
+          appName: "Analytics Dashboard",
+          userId: "user1",
+          vaultId: "vault1",
+          dataSetName: "customers",
+          fieldName: "address",
+          actions: ["read"],
+          purpose: ["Shipping"],
+          status: "requested",
+          requestedAt: "2025-04-10T14:30:00Z",
+          expiryDate: "2026-04-10T14:30:00Z"
+        },
+        {
+          appId: "def456",
+          appName: "Customer Portal",
+          userId: "user2",
+          vaultId: "vault2",
+          dataSetName: "orders",
+          fieldName: "amount",
+          actions: ["read"],
+          purpose: ["Order Processing"],
+          status: "requested",
+          requestedAt: "2025-04-12T10:15:00Z",
+          expiryDate: "2026-04-12T10:15:00Z"
+        },
+        {
+          appId: "def456",
+          appName: "Customer Portal",
+          userId: "user2",
+          vaultId: "vault2",
+          dataSetName: "orders",
+          fieldName: "payment_method",
+          actions: ["read"],
+          purpose: ["Payment Processing"],
+          status: "requested",
+          requestedAt: "2025-04-12T10:15:00Z",
+          expiryDate: "2026-04-12T10:15:00Z"
+        },
+        {
+          appId: "ghi789",
+          appName: "Support System",
+          userId: "user3",
+          vaultId: "vault3",
+          dataSetName: "tickets",
+          fieldName: "status",
+          actions: ["read", "write"],
+          purpose: ["Customer Support"],
+          status: "approved",
+          requestedAt: "2025-04-08T16:45:00Z",
+          expiryDate: "2026-04-08T16:45:00Z"
+        },
+        {
+          appId: "ghi789",
+          appName: "Support System",
+          userId: "user3",
+          vaultId: "vault3",
+          dataSetName: "tickets",
+          fieldName: "priority",
+          actions: ["read", "write"],
+          purpose: ["Customer Support"],
+          status: "rejected",
+          requestedAt: "2025-04-08T16:45:00Z",
+          expiryDate: "2026-04-08T16:45:00Z"
+        }
+      ]);
     }, 500);
   });
-};
+}
 
-// Get a vault by ID
-export const getVaultById = async (vaultId: string): Promise<Vault | undefined> => {
+export async function getAppFieldConsents(appId: string): Promise<FieldLevelConsent[]> {
+  // Mock implementation
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(vaults.find(v => v.id === vaultId));
+      resolve([
+        {
+          appId,
+          dataSetName: "customers",
+          fieldName: "id",
+          actions: ["read"],
+          approved: true
+        },
+        {
+          appId,
+          dataSetName: "customers",
+          fieldName: "name",
+          actions: ["read"],
+          approved: true
+        },
+        {
+          appId,
+          dataSetName: "transactions",
+          fieldName: "id",
+          actions: ["read"],
+          approved: true
+        },
+        {
+          appId,
+          dataSetName: "transactions",
+          fieldName: "amount",
+          actions: ["read"],
+          approved: false
+        }
+      ]);
     }, 300);
   });
-};
+}
 
-// Create tables for a vault
-export const createVaultTables = async (request: VaultTableCreateRequest): Promise<Vault> => {
+export async function getConsentApprovalHistory(appId: string): Promise<ConsentApproval[]> {
+  // Mock implementation
   return new Promise((resolve) => {
     setTimeout(() => {
-      const vaultIndex = vaults.findIndex(v => v.id === request.vaultId);
-      
-      if (vaultIndex === -1) {
-        throw new Error('Vault not found');
-      }
-      
-      const updatedVault = {
-        ...vaults[vaultIndex],
-        tables: request.tables
-      };
-      
-      vaults = [
-        ...vaults.slice(0, vaultIndex),
-        updatedVault,
-        ...vaults.slice(vaultIndex + 1)
-      ];
-      
-      resolve(updatedVault);
-    }, 800);
-  });
-};
-
-// Register an application to a vault
-export const registerApplication = async (registration: AppRegistration): Promise<AppRegistration> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const newRegistration = {
-        ...registration,
-        id: crypto.randomUUID()
-      };
-      
-      appRegistrations = [...appRegistrations, newRegistration];
-      resolve(newRegistration);
-    }, 800);
-  });
-};
-
-// Get application registrations by user
-export const getApplicationsByUser = async (userId: string): Promise<AppRegistration[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(appRegistrations.filter(app => app.userId === userId));
-    }, 500);
-  });
-};
-
-// Get all consent requests
-export const getConsentRequests = async (): Promise<ConsentRequest[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const user = getCurrentUser();
-      if (!user) throw new Error('User not authenticated');
-      
-      // Filter based on role
-      if (user.role === 'admin' || user.role === 'data-steward') {
-        resolve(consentRequests);
-      } else {
-        // App owners only see their own requests
-        resolve(consentRequests.filter(req => req.userId === user.id));
-      }
-    }, 500);
-  });
-};
-
-// Get consent requests for a specific app
-export const getAppConsentRequests = async (appId: string): Promise<ConsentRequest[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(consentRequests.filter(req => req.appId === appId));
-    }, 500);
-  });
-};
-
-// Create consent requests based on application registration
-export const createConsentRequests = async (appRegistration: AppRegistration): Promise<ConsentRequest[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const newRequests: ConsentRequest[] = [];
-      const now = new Date().toISOString();
-
-      appRegistration.dataSets.forEach(dataSet => {
-        dataSet.fields.forEach(field => {
-          const newRequest: ConsentRequest = {
-            appId: appRegistration.id || '',
-            appName: appRegistration.name,
-            userId: appRegistration.userId,
-            vaultId: appRegistration.vaultId,
-            dataSetName: dataSet.name,
-            fieldName: field.name,
-            actions: field.actions,
-            purpose: dataSet.purpose,
-            status: 'requested',
-            requestedAt: now,
-            expiryDate: dataSet.expiryDate
-          };
-          
-          newRequests.push(newRequest);
-        });
-      });
-      
-      consentRequests = [...consentRequests, ...newRequests];
-      resolve(newRequests);
-    }, 800);
-  });
-};
-
-// Approve a field-level consent
-export const approveFieldConsent = async (
-  appId: string, 
-  dataSetName: string, 
-  fieldName: string, 
-  actions: ('read' | 'write')[],
-  reason?: string
-): Promise<ConsentApproval> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const user = getCurrentUser();
-      if (!user) throw new Error('User not authenticated');
-      
-      if (user.role !== 'admin' && user.role !== 'data-steward') {
-        throw new Error('Unauthorized: Only admins and data stewards can approve consent');
-      }
-      
-      // Update consent requests status
-      consentRequests = consentRequests.map(req => {
-        if (req.appId === appId && req.dataSetName === dataSetName && req.fieldName === fieldName) {
-          return { ...req, status: 'approved' };
+      resolve([
+        {
+          appId,
+          dataSetName: "customers",
+          fieldName: "id",
+          actions: ["read"],
+          approved: true,
+          approvedBy: "Jane Smith",
+          approvedAt: "2025-04-01T10:30:00Z",
+          reason: "Required for user identification"
+        },
+        {
+          appId,
+          dataSetName: "customers",
+          fieldName: "name",
+          actions: ["read"],
+          approved: true,
+          approvedBy: "Jane Smith",
+          approvedAt: "2025-04-01T10:35:00Z",
+          reason: "Required for user interface"
+        },
+        {
+          appId,
+          dataSetName: "transactions",
+          fieldName: "amount",
+          actions: ["read"],
+          approved: false,
+          approvedBy: "John Doe",
+          approvedAt: "2025-04-02T14:20:00Z",
+          reason: "Sensitive financial information"
         }
-        return req;
-      });
-      
-      // Create field level consent
-      const existingIndex = fieldLevelConsents.findIndex(
-        c => c.appId === appId && c.dataSetName === dataSetName && c.fieldName === fieldName
-      );
-      
-      if (existingIndex >= 0) {
-        fieldLevelConsents[existingIndex] = {
-          appId,
-          dataSetName,
-          fieldName,
-          actions,
-          approved: true
-        };
-      } else {
-        fieldLevelConsents.push({
-          appId,
-          dataSetName,
-          fieldName,
-          actions,
-          approved: true
-        });
-      }
-      
-      // Create approval record
-      const approval: ConsentApproval = {
-        appId,
-        dataSetName,
-        fieldName,
-        actions,
-        approved: true,
-        approvedBy: user.id,
-        approvedAt: new Date().toISOString(),
-        reason
-      };
-      
-      consentApprovals.push(approval);
-      
-      // Check if all fields of a dataset are approved
-      // If so, update the dataset status in the app registration
-      updateAppDataSetStatus(appId, dataSetName);
-      
-      resolve(approval);
-    }, 800);
+      ]);
+    }, 300);
   });
-};
+}
 
-// Reject a field-level consent
-export const rejectFieldConsent = async (
-  appId: string, 
-  dataSetName: string, 
+export async function approveFieldConsent(
+  appId: string,
+  dataSetName: string,
+  fieldName: string,
+  actions: ("read" | "write")[],
+  reason?: string
+): Promise<void> {
+  // Mock implementation
+  return new Promise((resolve) => {
+    console.log(`Approving field consent: ${appId} - ${dataSetName}.${fieldName} - ${actions.join(', ')}`);
+    setTimeout(resolve, 500);
+  });
+}
+
+export async function rejectFieldConsent(
+  appId: string,
+  dataSetName: string,
   fieldName: string,
   reason?: string
-): Promise<ConsentApproval> => {
+): Promise<void> {
+  // Mock implementation
   return new Promise((resolve) => {
-    setTimeout(() => {
-      const user = getCurrentUser();
-      if (!user) throw new Error('User not authenticated');
-      
-      if (user.role !== 'admin' && user.role !== 'data-steward') {
-        throw new Error('Unauthorized: Only admins and data stewards can reject consent');
-      }
-      
-      // Update consent requests status
-      consentRequests = consentRequests.map(req => {
-        if (req.appId === appId && req.dataSetName === dataSetName && req.fieldName === fieldName) {
-          return { ...req, status: 'rejected' };
-        }
-        return req;
-      });
-      
-      // Update field level consent
-      const existingIndex = fieldLevelConsents.findIndex(
-        c => c.appId === appId && c.dataSetName === dataSetName && c.fieldName === fieldName
-      );
-      
-      if (existingIndex >= 0) {
-        fieldLevelConsents[existingIndex] = {
-          ...fieldLevelConsents[existingIndex],
-          approved: false
-        };
-      } else {
-        fieldLevelConsents.push({
-          appId,
-          dataSetName,
-          fieldName,
-          actions: [],
-          approved: false
-        });
-      }
-      
-      // Create rejection record
-      const rejection: ConsentApproval = {
-        appId,
-        dataSetName,
-        fieldName,
-        actions: [],
-        approved: false,
-        approvedBy: user.id,
-        approvedAt: new Date().toISOString(),
-        reason
-      };
-      
-      consentApprovals.push(rejection);
-      
-      // Check if any field of a dataset is rejected
-      // If so, update the dataset status in the app registration
-      updateAppDataSetStatus(appId, dataSetName);
-      
-      resolve(rejection);
-    }, 800);
+    console.log(`Rejecting field consent: ${appId} - ${dataSetName}.${fieldName}`);
+    setTimeout(resolve, 500);
   });
-};
+}
 
-// Update dataset status in app registration based on field level consents
-const updateAppDataSetStatus = (appId: string, dataSetName: string) => {
-  const appIndex = appRegistrations.findIndex(app => app.id === appId);
-  if (appIndex === -1) return;
-  
-  const app = appRegistrations[appIndex];
-  const dataSetIndex = app.dataSets.findIndex(ds => ds.name === dataSetName);
-  if (dataSetIndex === -1) return;
-  
-  // Get all field level consents for this dataset
-  const relevantConsents = fieldLevelConsents.filter(
-    c => c.appId === appId && c.dataSetName === dataSetName
-  );
-  
-  // If any field is rejected, the dataset is rejected
-  if (relevantConsents.some(c => !c.approved)) {
-    app.dataSets[dataSetIndex].status = 'rejected';
-  } 
-  // If all fields have been reviewed and approved, the dataset is approved
-  else if (
-    relevantConsents.length > 0 && 
-    app.dataSets[dataSetIndex].fields.length === relevantConsents.length &&
-    relevantConsents.every(c => c.approved)
-  ) {
-    app.dataSets[dataSetIndex].status = 'approved';
-    
-    // Generate an access token for the approved dataset
-    if (!app.dataSets[dataSetIndex].accessToken) {
-      app.dataSets[dataSetIndex].accessToken = 'dsacc_' + crypto.randomUUID().split('-')[0];
-    }
-  }
-  
-  // Update the app status based on dataset statuses
-  if (app.dataSets.every(ds => ds.status === 'approved')) {
-    app.status = 'approved';
-  } else if (app.dataSets.some(ds => ds.status === 'rejected')) {
-    app.status = 'rejected';
-  }
-  
-  // Update the app in the registrations array
-  appRegistrations[appIndex] = app;
-};
-
-// Tokenize data
-export const tokenizeData = async (request: TokenizeRequest): Promise<TokenizeResponse> => {
+// New function for batch approval
+export async function approveBatchFieldConsent(
+  appId: string,
+  fields: { dataSetName: string; fieldName: string; actions: ("read" | "write")[] }[],
+  reason?: string
+): Promise<void> {
+  // Mock implementation
   return new Promise((resolve) => {
-    setTimeout(() => {
-      const accessKey = crypto.randomUUID();
-      const tokens: Record<string, string> = {};
-      
-      // Generate tokens for each data field
-      Object.entries(request.data).forEach(([key, value]) => {
-        const token = crypto.randomUUID();
-        tokens[key] = token;
-        
-        // Store data with access key for later retrieval
-        tokenStorage[`${accessKey}:${token}`] = value;
-        reverseTokenLookup[token] = key;
-      });
-      
-      resolve({
-        tokens,
-        accessKey
-      });
-    }, 1000);
+    console.log(`Batch approving ${fields.length} fields for app ${appId}`);
+    console.log(fields);
+    setTimeout(resolve, 800);
   });
-};
+}
 
-// Detokenize data
-export const detokenizeData = async (request: DetokenizeRequest): Promise<DetokenizeResponse> => {
+// New function for batch rejection
+export async function rejectBatchFieldConsent(
+  appId: string,
+  fields: { dataSetName: string; fieldName: string }[],
+  reason?: string
+): Promise<void> {
+  // Mock implementation
   return new Promise((resolve) => {
-    setTimeout(() => {
-      const data: Record<string, any> = {};
-      
-      // Retrieve original data for each token
-      request.tokens.forEach(token => {
-        const key = reverseTokenLookup[token];
-        const value = tokenStorage[`${request.accessKey}:${token}`];
-        
-        if (key && value !== undefined) {
-          data[key] = value;
-        }
-      });
-      
-      resolve({ data });
-    }, 1000);
+    console.log(`Batch rejecting ${fields.length} fields for app ${appId}`);
+    console.log(fields);
+    setTimeout(resolve, 800);
   });
-};
-
-// Approve an application registration
-export const approveApplication = async (appId: string): Promise<AppRegistration> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const appIndex = appRegistrations.findIndex(app => app.id === appId);
-      
-      if (appIndex === -1) {
-        throw new Error('Application not found');
-      }
-      
-      const updatedApp = {
-        ...appRegistrations[appIndex],
-        status: 'approved' as const
-      };
-      
-      appRegistrations = [
-        ...appRegistrations.slice(0, appIndex),
-        updatedApp,
-        ...appRegistrations.slice(appIndex + 1)
-      ];
-      
-      resolve(updatedApp);
-    }, 800);
-  });
-};
-
-// Reject an application registration
-export const rejectApplication = async (appId: string): Promise<AppRegistration> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const appIndex = appRegistrations.findIndex(app => app.id === appId);
-      
-      if (appIndex === -1) {
-        throw new Error('Application not found');
-      }
-      
-      const updatedApp = {
-        ...appRegistrations[appIndex],
-        status: 'rejected' as const
-      };
-      
-      appRegistrations = [
-        ...appRegistrations.slice(0, appIndex),
-        updatedApp,
-        ...appRegistrations.slice(appIndex + 1)
-      ];
-      
-      resolve(updatedApp);
-    }, 800);
-  });
-};
-
-// Get field level consents for an app
-export const getAppFieldConsents = async (appId: string): Promise<FieldLevelConsent[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(fieldLevelConsents.filter(consent => consent.appId === appId));
-    }, 500);
-  });
-};
-
-// Get consent approval history for an app
-export const getConsentApprovalHistory = async (appId: string): Promise<ConsentApproval[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(consentApprovals.filter(approval => approval.appId === appId));
-    }, 500);
-  });
-};
-
-// Re-export the generateAccessToken function from auth
-export { generateAccessToken };
+}

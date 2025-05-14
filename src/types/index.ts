@@ -1,3 +1,4 @@
+
 // Make sure UserRole is properly exported
 export type UserRole = 'app-owner' | 'data-steward' | 'admin';
 
@@ -118,4 +119,14 @@ export interface FieldLevelConsent {
   fieldName: string; 
   actions: ('read' | 'write')[];
   approved: boolean;
+}
+
+// New interface for batch consent management
+export interface BatchFieldConsent {
+  fieldKey: string; // Format: dataSetName:fieldName
+  dataSetName: string;
+  fieldName: string;
+  selected: boolean;
+  readAccess: boolean;
+  writeAccess: boolean;
 }
