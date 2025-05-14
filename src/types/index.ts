@@ -1,4 +1,3 @@
-
 // Make sure UserRole is properly exported
 export type UserRole = 'app-owner' | 'data-steward' | 'admin';
 
@@ -111,6 +110,8 @@ export interface ConsentRequest {
   status: 'requested' | 'approved' | 'rejected';
   requestedAt: string;
   expiryDate: string;
+  // Add a groupId to identify fields that were requested together
+  groupId?: string;
 }
 
 export interface FieldLevelConsent {
@@ -129,4 +130,20 @@ export interface BatchFieldConsent {
   selected: boolean;
   readAccess: boolean;
   writeAccess: boolean;
+}
+
+// New interface for grouped consent requests
+export interface GroupedConsentRequest {
+  groupId: string;
+  appId: string;
+  appName: string;
+  dataSetName: string;
+  fields: {
+    fieldName: string;
+    actions: ('read' | 'write')[];
+  }[];
+  purpose: string[];
+  status: 'requested' | 'approved' | 'rejected';
+  requestedAt: string;
+  expiryDate: string;
 }

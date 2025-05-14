@@ -1,5 +1,4 @@
-
-import { ConsentApproval, ConsentRequest, FieldLevelConsent, Vault, AppRegistration, VaultTable, VaultField, BatchFieldConsent } from "@/types";
+import { ConsentApproval, ConsentRequest, FieldLevelConsent, Vault, AppRegistration, VaultTable, VaultField, BatchFieldConsent, GroupedConsentRequest } from "@/types";
 
 export async function getConsentRequests(): Promise<ConsentRequest[]> {
   // Mock implementation
@@ -18,7 +17,8 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
           purpose: ["Customer Communication"],
           status: "requested",
           requestedAt: "2025-04-10T14:30:00Z",
-          expiryDate: "2026-04-10T14:30:00Z"
+          expiryDate: "2026-04-10T14:30:00Z",
+          groupId: "req1" // Same groupId for fields requested together
         },
         {
           appId: "abc123",
@@ -31,7 +31,8 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
           purpose: ["Customer Communication", "Account Verification"],
           status: "requested",
           requestedAt: "2025-04-10T14:30:00Z",
-          expiryDate: "2026-04-10T14:30:00Z"
+          expiryDate: "2026-04-10T14:30:00Z",
+          groupId: "req1" // Same groupId for fields requested together
         },
         {
           appId: "abc123",
@@ -44,7 +45,8 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
           purpose: ["Shipping"],
           status: "requested",
           requestedAt: "2025-04-10T14:30:00Z",
-          expiryDate: "2026-04-10T14:30:00Z"
+          expiryDate: "2026-04-10T14:30:00Z",
+          groupId: "req1" // Same groupId for fields requested together
         },
         {
           appId: "abc123",
@@ -57,7 +59,8 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
           purpose: ["Analytics"],
           status: "requested",
           requestedAt: "2025-04-10T14:35:00Z",
-          expiryDate: "2026-04-10T14:35:00Z"
+          expiryDate: "2026-04-10T14:35:00Z",
+          groupId: "req2" // Different groupId for a separate request
         },
         {
           appId: "abc123",
@@ -70,7 +73,8 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
           purpose: ["Analytics"],
           status: "requested",
           requestedAt: "2025-04-10T14:35:00Z",
-          expiryDate: "2026-04-10T14:35:00Z"
+          expiryDate: "2026-04-10T14:35:00Z",
+          groupId: "req2" // Same groupId as orderDate
         },
         // Customer Portal app with multiple fields under different datasets
         {
@@ -84,7 +88,8 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
           purpose: ["Order Processing"],
           status: "requested",
           requestedAt: "2025-04-12T10:15:00Z",
-          expiryDate: "2026-04-12T10:15:00Z"
+          expiryDate: "2026-04-12T10:15:00Z",
+          groupId: "req3"
         },
         {
           appId: "def456",
@@ -97,7 +102,8 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
           purpose: ["Payment Processing"],
           status: "requested",
           requestedAt: "2025-04-12T10:15:00Z",
-          expiryDate: "2026-04-12T10:15:00Z"
+          expiryDate: "2026-04-12T10:15:00Z",
+          groupId: "req3"
         },
         {
           appId: "def456",
@@ -110,7 +116,8 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
           purpose: ["User Interface"],
           status: "requested",
           requestedAt: "2025-04-12T10:20:00Z",
-          expiryDate: "2026-04-12T10:20:00Z"
+          expiryDate: "2026-04-12T10:20:00Z",
+          groupId: "req4"
         },
         {
           appId: "def456",
@@ -123,7 +130,8 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
           purpose: ["Communication"],
           status: "requested",
           requestedAt: "2025-04-12T10:20:00Z",
-          expiryDate: "2026-04-12T10:20:00Z"
+          expiryDate: "2026-04-12T10:20:00Z",
+          groupId: "req4"
         },
         // Support System app
         {
@@ -137,7 +145,8 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
           purpose: ["Customer Support"],
           status: "approved",
           requestedAt: "2025-04-08T16:45:00Z",
-          expiryDate: "2026-04-08T16:45:00Z"
+          expiryDate: "2026-04-08T16:45:00Z",
+          groupId: "req5"
         },
         {
           appId: "ghi789",
@@ -150,11 +159,53 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
           purpose: ["Customer Support"],
           status: "rejected",
           requestedAt: "2025-04-08T16:45:00Z",
-          expiryDate: "2026-04-08T16:45:00Z"
+          expiryDate: "2026-04-08T16:45:00Z",
+          groupId: "req6"
         }
       ]);
     }, 500);
   });
+}
+
+// New function to get grouped consent requests
+export async function getGroupedConsentRequests(): Promise<GroupedConsentRequest[]> {
+  const requests = await getConsentRequests();
+  
+  // Group requests by their groupId
+  const groupedMap = requests.reduce((acc, request) => {
+    const groupId = request.groupId || request.appId + request.dataSetName + request.requestedAt;
+    
+    if (!acc[groupId]) {
+      acc[groupId] = {
+        groupId,
+        appId: request.appId,
+        appName: request.appName,
+        dataSetName: request.dataSetName,
+        fields: [],
+        purpose: [...request.purpose],
+        status: request.status,
+        requestedAt: request.requestedAt,
+        expiryDate: request.expiryDate
+      };
+    }
+    
+    // Add this field to the group
+    acc[groupId].fields.push({
+      fieldName: request.fieldName,
+      actions: request.actions
+    });
+    
+    // Merge purposes if needed
+    request.purpose.forEach(p => {
+      if (!acc[groupId].purpose.includes(p)) {
+        acc[groupId].purpose.push(p);
+      }
+    });
+    
+    return acc;
+  }, {} as Record<string, GroupedConsentRequest>);
+  
+  return Object.values(groupedMap);
 }
 
 export async function getAppFieldConsents(appId: string): Promise<FieldLevelConsent[]> {
