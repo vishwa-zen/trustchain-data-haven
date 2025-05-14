@@ -1,4 +1,4 @@
-import { ConsentApproval, ConsentRequest, FieldLevelConsent, Vault, AppRegistration, VaultTable } from "@/types";
+import { ConsentApproval, ConsentRequest, FieldLevelConsent, Vault, AppRegistration, VaultTable, VaultField } from "@/types";
 
 export async function getConsentRequests(): Promise<ConsentRequest[]> {
   // Mock implementation
@@ -330,13 +330,13 @@ export async function getVaults(): Promise<Vault[]> {
                 { 
                   name: "id", 
                   type: "string", 
-                  sensitivity: "LOW", 
+                  sensitivity: "LOW" as const, 
                   accessControl: ["admin", "user"] 
                 },
                 { 
                   name: "name", 
                   type: "string", 
-                  sensitivity: "MEDIUM", 
+                  sensitivity: "MEDIUM" as const, 
                   accessControl: ["admin", "user"] 
                 }
               ]
@@ -349,13 +349,13 @@ export async function getVaults(): Promise<Vault[]> {
                 { 
                   name: "id", 
                   type: "string", 
-                  sensitivity: "LOW", 
+                  sensitivity: "LOW" as const, 
                   accessControl: ["admin"] 
                 },
                 { 
                   name: "amount", 
                   type: "number", 
-                  sensitivity: "HIGH", 
+                  sensitivity: "HIGH" as const, 
                   accessControl: ["admin"] 
                 }
               ]
@@ -377,13 +377,13 @@ export async function getVaults(): Promise<Vault[]> {
                 { 
                   name: "id", 
                   type: "string", 
-                  sensitivity: "LOW", 
+                  sensitivity: "LOW" as const, 
                   accessControl: ["admin"] 
                 },
                 { 
                   name: "amount", 
                   type: "number", 
-                  sensitivity: "HIGH", 
+                  sensitivity: "HIGH" as const, 
                   accessControl: ["admin"] 
                 }
               ]
@@ -396,13 +396,13 @@ export async function getVaults(): Promise<Vault[]> {
                 { 
                   name: "id", 
                   type: "string", 
-                  sensitivity: "LOW", 
+                  sensitivity: "LOW" as const, 
                   accessControl: ["admin", "finance"] 
                 },
                 { 
                   name: "total", 
                   type: "number", 
-                  sensitivity: "MEDIUM", 
+                  sensitivity: "MEDIUM" as const, 
                   accessControl: ["admin", "finance"] 
                 }
               ]
@@ -424,13 +424,13 @@ export async function getVaults(): Promise<Vault[]> {
                 { 
                   name: "id", 
                   type: "string", 
-                  sensitivity: "LOW", 
+                  sensitivity: "LOW" as const, 
                   accessControl: ["admin", "hr"] 
                 },
                 { 
                   name: "salary", 
                   type: "number", 
-                  sensitivity: "HIGH", 
+                  sensitivity: "HIGH" as const, 
                   accessControl: ["admin", "hr"] 
                 }
               ]
@@ -443,13 +443,13 @@ export async function getVaults(): Promise<Vault[]> {
                 { 
                   name: "id", 
                   type: "string", 
-                  sensitivity: "LOW", 
+                  sensitivity: "LOW" as const, 
                   accessControl: ["admin", "finance"] 
                 },
                 { 
                   name: "amount", 
                   type: "number", 
-                  sensitivity: "HIGH", 
+                  sensitivity: "HIGH" as const, 
                   accessControl: ["admin", "finance"] 
                 }
               ]
@@ -518,13 +518,13 @@ export async function getVaultById(vaultId: string): Promise<Vault> {
                 { 
                   name: "id", 
                   type: "string", 
-                  sensitivity: "LOW", 
+                  sensitivity: "LOW" as const, 
                   accessControl: ["admin", "user"] 
                 },
                 { 
                   name: "name", 
                   type: "string", 
-                  sensitivity: "MEDIUM", 
+                  sensitivity: "MEDIUM" as const, 
                   accessControl: ["admin", "user"] 
                 }
               ]
@@ -537,13 +537,13 @@ export async function getVaultById(vaultId: string): Promise<Vault> {
                 { 
                   name: "id", 
                   type: "string", 
-                  sensitivity: "LOW", 
+                  sensitivity: "LOW" as const, 
                   accessControl: ["admin"] 
                 },
                 { 
                   name: "amount", 
                   type: "number", 
-                  sensitivity: "HIGH", 
+                  sensitivity: "HIGH" as const, 
                   accessControl: ["admin"] 
                 }
               ]
@@ -565,13 +565,13 @@ export async function getVaultById(vaultId: string): Promise<Vault> {
                 { 
                   name: "id", 
                   type: "string", 
-                  sensitivity: "LOW", 
+                  sensitivity: "LOW" as const, 
                   accessControl: ["admin"] 
                 },
                 { 
                   name: "amount", 
                   type: "number", 
-                  sensitivity: "HIGH", 
+                  sensitivity: "HIGH" as const, 
                   accessControl: ["admin"] 
                 }
               ]
@@ -582,7 +582,7 @@ export async function getVaultById(vaultId: string): Promise<Vault> {
       
       const vault = vaults.find(v => v.id === vaultId);
       if (vault) {
-        resolve(vault);
+        resolve(vault as Vault);
       } else {
         reject(new Error(`Vault with ID ${vaultId} not found`));
       }
