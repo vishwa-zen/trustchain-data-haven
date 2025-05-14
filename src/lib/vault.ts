@@ -1,4 +1,4 @@
-import { ConsentApproval, ConsentRequest, FieldLevelConsent, Vault, AppRegistration } from "@/types";
+import { ConsentApproval, ConsentRequest, FieldLevelConsent, Vault, AppRegistration, VaultTable } from "@/types";
 
 export async function getConsentRequests(): Promise<ConsentRequest[]> {
   // Mock implementation
@@ -317,30 +317,144 @@ export async function getVaults(): Promise<Vault[]> {
       resolve([
         {
           id: "vault1",
+          userId: "user1",
           vaultName: "Customer Data Vault",
           vaultDesc: "Stores sensitive customer information",
-          created: "2025-01-15T10:30:00Z",
-          owner: "user1",
-          status: "active",
-          tables: ["customers", "payments"]
+          createdAt: "2025-01-15T10:30:00Z",
+          tables: [
+            {
+              tableName: "customers",
+              description: "Customer personal information",
+              purpose: ["Identity Verification", "Contact Management"],
+              fields: [
+                { 
+                  name: "id", 
+                  type: "string", 
+                  sensitivity: "LOW", 
+                  accessControl: ["admin", "user"] 
+                },
+                { 
+                  name: "name", 
+                  type: "string", 
+                  sensitivity: "MEDIUM", 
+                  accessControl: ["admin", "user"] 
+                }
+              ]
+            },
+            {
+              tableName: "payments",
+              description: "Payment information",
+              purpose: ["Payment Processing", "Financial Records"],
+              fields: [
+                { 
+                  name: "id", 
+                  type: "string", 
+                  sensitivity: "LOW", 
+                  accessControl: ["admin"] 
+                },
+                { 
+                  name: "amount", 
+                  type: "number", 
+                  sensitivity: "HIGH", 
+                  accessControl: ["admin"] 
+                }
+              ]
+            }
+          ]
         },
         {
           id: "vault2",
+          userId: "user2",
           vaultName: "Finance Vault",
           vaultDesc: "Stores financial records and payment information",
-          created: "2025-02-20T14:45:00Z",
-          owner: "user2",
-          status: "active",
-          tables: ["transactions", "invoices"]
+          createdAt: "2025-02-20T14:45:00Z",
+          tables: [
+            {
+              tableName: "transactions",
+              description: "Financial transaction records",
+              purpose: ["Accounting", "Audit"],
+              fields: [
+                { 
+                  name: "id", 
+                  type: "string", 
+                  sensitivity: "LOW", 
+                  accessControl: ["admin"] 
+                },
+                { 
+                  name: "amount", 
+                  type: "number", 
+                  sensitivity: "HIGH", 
+                  accessControl: ["admin"] 
+                }
+              ]
+            },
+            {
+              tableName: "invoices",
+              description: "Billing information",
+              purpose: ["Billing", "Payment Processing"],
+              fields: [
+                { 
+                  name: "id", 
+                  type: "string", 
+                  sensitivity: "LOW", 
+                  accessControl: ["admin", "finance"] 
+                },
+                { 
+                  name: "total", 
+                  type: "number", 
+                  sensitivity: "MEDIUM", 
+                  accessControl: ["admin", "finance"] 
+                }
+              ]
+            }
+          ]
         },
         {
           id: "vault3",
+          userId: "user1",
           vaultName: "Employee Data Vault",
           vaultDesc: "Contains employee personal and payroll information",
-          created: "2025-03-05T09:15:00Z",
-          owner: "user1",
-          status: "inactive",
-          tables: ["employees", "payroll"]
+          createdAt: "2025-03-05T09:15:00Z",
+          tables: [
+            {
+              tableName: "employees",
+              description: "Employee records",
+              purpose: ["HR Management", "Directory"],
+              fields: [
+                { 
+                  name: "id", 
+                  type: "string", 
+                  sensitivity: "LOW", 
+                  accessControl: ["admin", "hr"] 
+                },
+                { 
+                  name: "salary", 
+                  type: "number", 
+                  sensitivity: "HIGH", 
+                  accessControl: ["admin", "hr"] 
+                }
+              ]
+            },
+            {
+              tableName: "payroll",
+              description: "Payroll information",
+              purpose: ["Compensation", "Financial Records"],
+              fields: [
+                { 
+                  name: "id", 
+                  type: "string", 
+                  sensitivity: "LOW", 
+                  accessControl: ["admin", "finance"] 
+                },
+                { 
+                  name: "amount", 
+                  type: "number", 
+                  sensitivity: "HIGH", 
+                  accessControl: ["admin", "finance"] 
+                }
+              ]
+            }
+          ]
         }
       ]);
     }, 600);
@@ -354,30 +468,30 @@ export async function getApplicationsByUser(userId: string): Promise<AppRegistra
       resolve([
         {
           id: "app1",
+          userId: userId,
+          vaultId: "vault1",
           name: "CRM Dashboard",
           description: "Customer relationship management dashboard",
-          owner: userId,
-          apiKey: "api_key_1234",
           status: "approved",
-          createdAt: "2025-03-10T11:20:00Z"
+          dataSets: []
         },
         {
           id: "app2",
+          userId: userId,
+          vaultId: "vault1",
           name: "Analytics Portal",
           description: "Data analysis and visualization tool",
-          owner: userId,
-          apiKey: "api_key_5678",
           status: "pending",
-          createdAt: "2025-03-15T13:40:00Z"
+          dataSets: []
         },
         {
           id: "app3",
+          userId: userId,
+          vaultId: "vault2",
           name: "Internal Admin Tool",
           description: "Administrative tool for internal use",
-          owner: userId,
-          apiKey: "api_key_9012",
           status: "rejected",
-          createdAt: "2025-03-18T09:30:00Z"
+          dataSets: []
         }
       ]);
     }, 600);
@@ -391,21 +505,78 @@ export async function getVaultById(vaultId: string): Promise<Vault> {
       const vaults = [
         {
           id: "vault1",
+          userId: "user1",
           vaultName: "Customer Data Vault",
           vaultDesc: "Stores sensitive customer information",
-          created: "2025-01-15T10:30:00Z",
-          owner: "user1",
-          status: "active",
-          tables: ["customers", "payments"]
+          createdAt: "2025-01-15T10:30:00Z",
+          tables: [
+            {
+              tableName: "customers",
+              description: "Customer personal information",
+              purpose: ["Identity Verification", "Contact Management"],
+              fields: [
+                { 
+                  name: "id", 
+                  type: "string", 
+                  sensitivity: "LOW", 
+                  accessControl: ["admin", "user"] 
+                },
+                { 
+                  name: "name", 
+                  type: "string", 
+                  sensitivity: "MEDIUM", 
+                  accessControl: ["admin", "user"] 
+                }
+              ]
+            },
+            {
+              tableName: "payments",
+              description: "Payment information",
+              purpose: ["Payment Processing", "Financial Records"],
+              fields: [
+                { 
+                  name: "id", 
+                  type: "string", 
+                  sensitivity: "LOW", 
+                  accessControl: ["admin"] 
+                },
+                { 
+                  name: "amount", 
+                  type: "number", 
+                  sensitivity: "HIGH", 
+                  accessControl: ["admin"] 
+                }
+              ]
+            }
+          ]
         },
         {
           id: "vault2",
+          userId: "user2",
           vaultName: "Finance Vault",
           vaultDesc: "Stores financial records and payment information",
-          created: "2025-02-20T14:45:00Z",
-          owner: "user2",
-          status: "active",
-          tables: ["transactions", "invoices"]
+          createdAt: "2025-02-20T14:45:00Z",
+          tables: [
+            {
+              tableName: "transactions",
+              description: "Financial transaction records",
+              purpose: ["Accounting", "Audit"],
+              fields: [
+                { 
+                  name: "id", 
+                  type: "string", 
+                  sensitivity: "LOW", 
+                  accessControl: ["admin"] 
+                },
+                { 
+                  name: "amount", 
+                  type: "number", 
+                  sensitivity: "HIGH", 
+                  accessControl: ["admin"] 
+                }
+              ]
+            }
+          ]
         }
       ];
       
@@ -432,22 +603,20 @@ export async function createVaultTables(
   });
 }
 
-export async function createVault(vaultData: { 
-  vaultName: string; 
-  vaultDesc: string; 
-  owner: string;
-}): Promise<Vault> {
+export async function createVault(
+  vaultName: string, 
+  vaultDesc: string
+): Promise<Vault> {
   // Mock implementation
   return new Promise((resolve) => {
-    console.log('Creating vault:', vaultData);
+    console.log('Creating vault:', { vaultName, vaultDesc });
     setTimeout(() => {
       const newVault: Vault = {
         id: `vault_${Math.random().toString(36).substring(2, 9)}`,
-        vaultName: vaultData.vaultName,
-        vaultDesc: vaultData.vaultDesc,
-        created: new Date().toISOString(),
-        owner: vaultData.owner,
-        status: "active",
+        userId: "user1", // Assuming current user
+        vaultName: vaultName,
+        vaultDesc: vaultDesc,
+        createdAt: new Date().toISOString(),
         tables: []
       };
       
@@ -467,12 +636,12 @@ export async function registerApplication(appData: {
     setTimeout(() => {
       const newApp: AppRegistration = {
         id: `app_${Math.random().toString(36).substring(2, 9)}`,
+        userId: appData.owner,
+        vaultId: "vault1", // Default vault
         name: appData.name,
         description: appData.description,
-        owner: appData.owner,
-        apiKey: "",
         status: "pending",
-        createdAt: new Date().toISOString()
+        dataSets: []
       };
       
       resolve(newApp);

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -71,15 +70,12 @@ const VaultDetails = () => {
     if (!vault || !id) return;
     
     try {
-      const user = getCurrentUser();
-      if (!user) throw new Error("Not authenticated");
-      
-      const updatedVault = await createVaultTables({
-        userId: user.id,
-        vaultId: id,
-        vaultName: vault.vaultName,
+      // Simple mock implementation - in a real app, this would update the database
+      // For now, we'll just update the local state
+      const updatedVault = {
+        ...vault,
         tables: [...(vault.tables || []), table]
-      });
+      };
       
       setVault(updatedVault);
       setShowAddTable(false);

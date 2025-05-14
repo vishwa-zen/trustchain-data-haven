@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -66,6 +65,11 @@ const AppRegistrationPage = () => {
     setSelectedVaultId(vaultId);
     // Reset selected tables when vault changes
     setSelectedTables({});
+  };
+
+  // Generate a dummy access token string (not a Promise)
+  const generateAccessToken = (): string => {
+    return `ak_${Math.random().toString(36).substring(2, 15)}`;
   };
 
   // Toggle table selection
@@ -257,16 +261,11 @@ const AppRegistrationPage = () => {
     setSubmitting(true);
     
     try {
-      const registration: AppRegistration = {
-        userId: user.id,
-        vaultId: selectedVaultId,
+      await registerApplication({
         name: appName,
         description: appDescription,
-        status: 'pending',
-        dataSets: Object.values(selectedTables)
-      };
-      
-      await registerApplication(registration);
+        owner: user.id
+      });
       
       toast({
         title: "Success",
