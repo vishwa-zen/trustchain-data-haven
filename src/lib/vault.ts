@@ -1,10 +1,12 @@
-import { ConsentApproval, ConsentRequest, FieldLevelConsent, Vault, AppRegistration, VaultTable, VaultField } from "@/types";
+
+import { ConsentApproval, ConsentRequest, FieldLevelConsent, Vault, AppRegistration, VaultTable, VaultField, BatchFieldConsent } from "@/types";
 
 export async function getConsentRequests(): Promise<ConsentRequest[]> {
   // Mock implementation
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve([
+        // Analytics Dashboard app with multiple fields under the customers dataset
         {
           appId: "abc123",
           appName: "Analytics Dashboard",
@@ -45,6 +47,33 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
           expiryDate: "2026-04-10T14:30:00Z"
         },
         {
+          appId: "abc123",
+          appName: "Analytics Dashboard",
+          userId: "user1",
+          vaultId: "vault1",
+          dataSetName: "orders",
+          fieldName: "orderDate",
+          actions: ["read"],
+          purpose: ["Analytics"],
+          status: "requested",
+          requestedAt: "2025-04-10T14:35:00Z",
+          expiryDate: "2026-04-10T14:35:00Z"
+        },
+        {
+          appId: "abc123",
+          appName: "Analytics Dashboard",
+          userId: "user1",
+          vaultId: "vault1",
+          dataSetName: "orders",
+          fieldName: "totalAmount",
+          actions: ["read"],
+          purpose: ["Analytics"],
+          status: "requested",
+          requestedAt: "2025-04-10T14:35:00Z",
+          expiryDate: "2026-04-10T14:35:00Z"
+        },
+        // Customer Portal app with multiple fields under different datasets
+        {
           appId: "def456",
           appName: "Customer Portal",
           userId: "user2",
@@ -70,6 +99,33 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
           requestedAt: "2025-04-12T10:15:00Z",
           expiryDate: "2026-04-12T10:15:00Z"
         },
+        {
+          appId: "def456",
+          appName: "Customer Portal",
+          userId: "user2",
+          vaultId: "vault2",
+          dataSetName: "customers",
+          fieldName: "name",
+          actions: ["read"],
+          purpose: ["User Interface"],
+          status: "requested",
+          requestedAt: "2025-04-12T10:20:00Z",
+          expiryDate: "2026-04-12T10:20:00Z"
+        },
+        {
+          appId: "def456",
+          appName: "Customer Portal",
+          userId: "user2",
+          vaultId: "vault2",
+          dataSetName: "customers",
+          fieldName: "email",
+          actions: ["read", "write"],
+          purpose: ["Communication"],
+          status: "requested",
+          requestedAt: "2025-04-12T10:20:00Z",
+          expiryDate: "2026-04-12T10:20:00Z"
+        },
+        // Support System app
         {
           appId: "ghi789",
           appName: "Support System",
