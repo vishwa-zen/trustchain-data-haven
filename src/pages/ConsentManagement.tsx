@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Shield, Search, Check, X, Clock, ArrowUpRight, FileText } from 'lucide-react';
+import { Shield, Search, Check, X, Clock, ArrowUpRight, FileText, ArrowRight as ArrowRightIcon } from 'lucide-react';
 import { getConsentRequests, approveFieldConsent, rejectFieldConsent, approveBatchFieldConsent, rejectBatchFieldConsent } from '@/lib/vault';
 import { isAuthenticated, hasRole, getCurrentUser } from '@/lib/auth';
 import { toast } from '@/hooks/use-toast';
@@ -499,7 +499,7 @@ const ConsentManagement = () => {
                               className="flex items-center"
                             >
                               Batch Process
-                              <ArrowRight className="h-4 w-4 ml-1" />
+                              <ArrowRightIcon className="h-4 w-4 ml-1" />
                             </Button>
                           </div>
                         </CardContent>
