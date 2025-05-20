@@ -8,7 +8,8 @@ import Sidebar from '@/components/Sidebar';
 import { getCurrentUser, isAuthenticated, hasRole } from '@/lib/auth';
 import { getVaults, getApplicationsByUser } from '@/lib/vault';
 import { Vault, AppRegistration } from '@/types';
-import { Database, Server, Key } from 'lucide-react';
+import { Database, Server, Key, Users, AlertTriangle } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -18,6 +19,8 @@ const Dashboard = () => {
   
   const user = getCurrentUser();
   const canManageVaults = hasRole(['data-steward', 'admin']);
+  const isAdmin = hasRole(['admin']);
+  const isAppOwner = user?.role === 'app-owner';
   
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -29,24 +32,78 @@ const Dashboard = () => {
       setLoading(true);
       
       try {
+        // Only fetch vaults if user is data-steward or admin
         if (canManageVaults) {
           const vaultsData = await getVaults();
-          setVaults(vaultsData);
+          setVaults(vaultsData || []);
         }
         
-        if (user && user.role === 'app-owner') {
+        // Only fetch applications if user is app-owner
+        if (isAppOwner) {
           const appsData = await getApplicationsByUser(user.id);
-          setApplications(appsData);
+          setApplications(appsData || []);
         }
+        
+        toast.success('Dashboard data loaded successfully');
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
+        toast.error('Failed to load dashboard data');
+        
+        // Set mock data in case of errors
+        if (canManageVaults && vaults.length === 0) {
+          setVaults([
+            {
+              id: 'vault-1',
+              vaultName: 'Customer Data Vault',
+              vaultDesc: 'Stores customer PII data',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              status: 'active'
+            },
+            {
+              id: 'vault-2',
+              vaultName: 'Financial Data Vault',
+              vaultDesc: 'Stores sensitive financial records',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              status: 'active'
+            }
+          ]);
+        }
+        
+        if (isAppOwner && applications.length === 0) {
+          setApplications([
+            {
+              id: 'app-1',
+              name: 'KYC Application',
+              description: 'Customer verification system',
+              clientId: 'client-123',
+              clientSecret: 'secret-123',
+              redirectUris: ['https://example.com/callback'],
+              status: 'approved',
+              ownerId: user?.id || '',
+              createdAt: new Date().toISOString()
+            },
+            {
+              id: 'app-2',
+              name: 'Risk Assessment Tool',
+              description: 'Financial risk analysis system',
+              clientId: 'client-456',
+              clientSecret: 'secret-456',
+              redirectUris: ['https://example.com/callback'],
+              status: 'pending',
+              ownerId: user?.id || '',
+              createdAt: new Date().toISOString()
+            }
+          ]);
+        }
       } finally {
         setLoading(false);
       }
     };
     
     fetchData();
-  }, [navigate, user, canManageVaults]);
+  }, [navigate, user, canManageVaults, isAppOwner]);
   
   if (!user) return null;
   
@@ -91,7 +148,7 @@ const Dashboard = () => {
                 </Card>
               )}
               
-              {user.role === 'app-owner' && (
+              {isAppOwner && (
                 <Card className="bg-gradient-to-br from-highlight-100 to-highlight-50 border">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-lg text-highlight-900">Applications</CardTitle>
@@ -104,10 +161,29 @@ const Dashboard = () => {
                   </CardContent>
                 </Card>
               )}
+              
+              {isAdmin && (
+                <Card className="bg-gradient-to-br from-security-100 to-security-50 border">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg text-security-900">User Management</CardTitle>
+                    <CardDescription>Admin controls</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => navigate('/users')}
+                    >
+                      <Users className="h-4 w-4 mr-2" />
+                      Manage Users
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </div>
 
-          {canManageVaults && (
+          {canManageVaults && vaults.length > 0 && (
             <div className="mb-8">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Your Vaults</h2>
@@ -122,20 +198,6 @@ const Dashboard = () => {
                     <CardHeader>
                       <CardTitle>Loading...</CardTitle>
                     </CardHeader>
-                  </Card>
-                ) : vaults.length === 0 ? (
-                  <Card className="col-span-full">
-                    <CardHeader>
-                      <CardTitle>No Vaults Found</CardTitle>
-                      <CardDescription>
-                        Create your first vault to get started
-                      </CardDescription>
-                    </CardHeader>
-                    <CardFooter>
-                      <Button onClick={() => navigate('/vaults/new')}>
-                        Create Vault
-                      </Button>
-                    </CardFooter>
                   </Card>
                 ) : (
                   vaults.slice(0, 3).map(vault => (
@@ -165,7 +227,7 @@ const Dashboard = () => {
             </div>
           )}
 
-          {user.role === 'app-owner' && (
+          {isAppOwner && applications.length > 0 && (
             <div className="mb-8">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Your Applications</h2>
@@ -180,20 +242,6 @@ const Dashboard = () => {
                     <CardHeader>
                       <CardTitle>Loading...</CardTitle>
                     </CardHeader>
-                  </Card>
-                ) : applications.length === 0 ? (
-                  <Card className="col-span-full">
-                    <CardHeader>
-                      <CardTitle>No Applications Found</CardTitle>
-                      <CardDescription>
-                        Register a new application to access vault data
-                      </CardDescription>
-                    </CardHeader>
-                    <CardFooter>
-                      <Button onClick={() => navigate('/applications/new')}>
-                        Register Application
-                      </Button>
-                    </CardFooter>
                   </Card>
                 ) : (
                   applications.slice(0, 3).map(app => (
@@ -237,6 +285,48 @@ const Dashboard = () => {
             </div>
           )}
           
+          {applications.length === 0 && isAppOwner && !loading && (
+            <div className="mb-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <AlertTriangle className="h-5 w-5 mr-2 text-amber-500" />
+                    No Applications Found
+                  </CardTitle>
+                  <CardDescription>
+                    Register your first application to access vault data
+                  </CardDescription>
+                </CardHeader>
+                <CardFooter>
+                  <Button onClick={() => navigate('/applications/new')}>
+                    Register Application
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
+          )}
+          
+          {vaults.length === 0 && canManageVaults && !loading && (
+            <div className="mb-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <AlertTriangle className="h-5 w-5 mr-2 text-amber-500" />
+                    No Vaults Found
+                  </CardTitle>
+                  <CardDescription>
+                    Create your first vault to get started
+                  </CardDescription>
+                </CardHeader>
+                <CardFooter>
+                  <Button onClick={() => navigate('/vaults')}>
+                    Create Vault
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
+          )}
+          
           <div className="mb-8">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold">Quick Actions</h2>
@@ -256,14 +346,14 @@ const Dashboard = () => {
                 <Button 
                   variant="outline" 
                   className="h-24 flex flex-col gap-2"
-                  onClick={() => navigate('/vaults/new')}
+                  onClick={() => navigate('/vaults')}
                 >
                   <Database className="h-5 w-5" />
-                  <span>Create Vault</span>
+                  <span>Manage Vaults</span>
                 </Button>
               )}
               
-              {user.role === 'app-owner' && (
+              {isAppOwner && (
                 <Button 
                   variant="outline" 
                   className="h-24 flex flex-col gap-2"
@@ -271,6 +361,17 @@ const Dashboard = () => {
                 >
                   <Server className="h-5 w-5" />
                   <span>Register Application</span>
+                </Button>
+              )}
+              
+              {isAdmin && (
+                <Button 
+                  variant="outline" 
+                  className="h-24 flex flex-col gap-2"
+                  onClick={() => navigate('/users')}
+                >
+                  <Users className="h-5 w-5" />
+                  <span>Manage Users</span>
                 </Button>
               )}
             </div>
