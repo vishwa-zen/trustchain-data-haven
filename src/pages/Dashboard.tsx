@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -54,18 +53,18 @@ const Dashboard = () => {
           setVaults([
             {
               id: 'vault-1',
+              userId: user?.id || 'user-1',
               vaultName: 'Customer Data Vault',
               vaultDesc: 'Stores customer PII data',
               createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
               status: 'active'
             },
             {
               id: 'vault-2',
+              userId: user?.id || 'user-1',
               vaultName: 'Financial Data Vault',
               vaultDesc: 'Stores sensitive financial records',
               createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
               status: 'active'
             }
           ]);
@@ -75,24 +74,22 @@ const Dashboard = () => {
           setApplications([
             {
               id: 'app-1',
+              userId: user?.id || '',
+              vaultId: 'vault-1',
               name: 'KYC Application',
               description: 'Customer verification system',
-              clientId: 'client-123',
-              clientSecret: 'secret-123',
-              redirectUris: ['https://example.com/callback'],
               status: 'approved',
-              ownerId: user?.id || '',
+              dataSets: [],
               createdAt: new Date().toISOString()
             },
             {
               id: 'app-2',
+              userId: user?.id || '',
+              vaultId: 'vault-1',
               name: 'Risk Assessment Tool',
               description: 'Financial risk analysis system',
-              clientId: 'client-456',
-              clientSecret: 'secret-456',
-              redirectUris: ['https://example.com/callback'],
               status: 'pending',
-              ownerId: user?.id || '',
+              dataSets: [],
               createdAt: new Date().toISOString()
             }
           ]);

@@ -1,3 +1,4 @@
+
 // Make sure UserRole is properly exported
 export type UserRole = 'app-owner' | 'data-steward' | 'admin';
 
@@ -29,6 +30,8 @@ export interface Vault {
   vaultName: string;
   vaultDesc: string;
   createdAt: string;
+  updatedAt?: string; // Added as optional
+  status?: string; // Added as optional
   tables?: VaultTable[];
 }
 
@@ -61,6 +64,11 @@ export interface AppRegistration {
   description: string;
   status: 'requested' | 'approved' | 'rejected' | 'pending';
   dataSets: DataSet[];
+  clientId?: string; // Added as optional
+  clientSecret?: string; // Added as optional
+  redirectUris?: string[]; // Added as optional
+  createdAt?: string; // Added as optional
+  ownerId?: string; // Added as optional
 }
 
 export interface TokenizeRequest {
