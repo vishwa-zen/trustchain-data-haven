@@ -42,6 +42,7 @@ const App: React.FC = () => {
           <Route path="/settings" element={<Settings />} />
           <Route path="/vaults" element={<VaultManagement />} />
           <Route path="/vaults/:id" element={<VaultDetails />} />
+          <Route path="/applications/new" element={<AppRegistration />} />
           <Route path="/app-registration" element={<AppRegistration />} />
           <Route path="/applications" element={<Applications />} />
           <Route path="/applications/:id" element={<ApplicationDetail />} />
