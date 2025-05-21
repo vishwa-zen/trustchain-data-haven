@@ -66,7 +66,7 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({ applications = [], 
           </Card>
         ) : (
           displayedApplications.slice(0, 3).map(app => (
-            <Card key={app.id} className="animate-fade-in">
+            <Card key={app.id} className="animate-fade-in flex flex-col h-full">
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
                   <CardTitle>{app.name}</CardTitle>
@@ -76,7 +76,7 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({ applications = [], 
                 </div>
                 <CardDescription>{app.description}</CardDescription>
               </CardHeader>
-              <CardContent className="pb-2">
+              <CardContent className="pb-2 flex-grow">
                 <div className="flex items-center gap-2">
                   <span className="text-sm">Status:</span>
                   <span className={`text-sm font-medium px-2 py-0.5 rounded-full ${
@@ -90,7 +90,7 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({ applications = [], 
                   </span>
                 </div>
               </CardContent>
-              <CardFooter>
+              <CardFooter className="mt-auto">
                 <Button 
                   variant={app.status === 'approved' ? 'default' : 'outline'}
                   className="w-full"

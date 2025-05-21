@@ -39,7 +39,7 @@ const VaultCard: React.FC<VaultCardProps> = ({ vault }) => {
           <span className="font-medium">{tableCount}</span> table{tableCount !== 1 && 's'} defined
         </div>
       </CardContent>
-      <CardFooter className="mt-auto pt-2">
+      <CardFooter className="pt-2 mt-auto">
         <Button 
           variant="outline" 
           className="w-full"
