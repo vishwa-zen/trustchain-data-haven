@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,21 +10,15 @@ import { generateAccessToken } from '@/lib/vault';
 import { toast } from '@/hooks/use-toast';
 import { Copy, RefreshCw } from 'lucide-react';
 import ResourceAuditLogs from '@/components/ResourceAuditLogs';
-import { getApplicationById } from '@/lib/applications';
+import { getApplicationById, Application } from '@/lib/applications';
 
-interface Application {
-  id: string;
-  userId: string;
-  vaultId: string;
-  name: string;
-  description: string;
-  status: string;
-  dataSets: any[];
+interface ExtendedApplication extends Application {
+  // Add any additional properties needed for the component
 }
 
 const ApplicationDetail = () => {
   const { applicationId } = useParams<{ applicationId: string }>();
-  const [application, setApplication] = useState<Application | null>(null);
+  const [application, setApplication] = useState<ExtendedApplication | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
@@ -36,7 +31,7 @@ const ApplicationDetail = () => {
       try {
         setIsLoading(true);
         const app = await getApplicationById(applicationId);
-        setApplication(app);
+        setApplication(app as ExtendedApplication);
       } catch (error) {
         console.error("Failed to load application:", error);
         toast({
@@ -66,14 +61,14 @@ const ApplicationDetail = () => {
       const token = await generateAccessToken(applicationId);
       setAccessToken(token);
       toast({
-        title: "Access Token Generated",
-        description: "A new access token has been generated for this application.",
+        title: "Access Key Generated",
+        description: "A new access key has been generated for this application.",
       });
     } catch (error) {
-      console.error("Failed to generate access token:", error);
+      console.error("Failed to generate access key:", error);
       toast({
         title: "Error",
-        description: "Failed to generate access token.",
+        description: "Failed to generate access key.",
         variant: "destructive",
       });
     }
@@ -83,14 +78,14 @@ const ApplicationDetail = () => {
     if (accessToken) {
       navigator.clipboard.writeText(accessToken);
       toast({
-        title: "Access Token Copied",
-        description: "The access token has been copied to your clipboard.",
+        title: "Access Key Copied",
+        description: "The access key has been copied to your clipboard.",
       });
     } else {
       toast({
-        title: "No Token",
-        description: "No access token available to copy.",
-        variant: "warning",
+        title: "No Key",
+        description: "No access key available to copy.",
+        variant: "destructive", // Changed from "warning" to "destructive"
       });
     }
   };
