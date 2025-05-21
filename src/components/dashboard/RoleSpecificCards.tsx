@@ -226,7 +226,7 @@ const RoleSpecificCards: React.FC<RoleSpecificCardsProps> = ({ user }) => {
           </Card>
         ))}
         
-        {/* Common card for all these roles - Consent Management */}
+        {/* Consent Management Card - shown only to relevant management roles */}
         <Card className="bg-gradient-to-br from-highlight-100 to-highlight-50 border animate-fade-in">
           <CardHeader className="pb-2">
             <div className="flex justify-between items-start">

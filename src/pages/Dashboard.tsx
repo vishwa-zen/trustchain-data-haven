@@ -40,6 +40,9 @@ const Dashboard = () => {
   const isAppOwner = user?.role === 'app-owner';
   const isSpecialRole = ['cto-user', 'dpo-user', 'csio-user'].includes(user?.role || '');
   
+  // Determine if user needs token management access
+  const needsTokenAccess = isAppOwner && !isSpecialRole;
+  
   useEffect(() => {
     if (!isAuthenticated()) {
       navigate('/login');
