@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -169,7 +170,7 @@ const Dashboard = () => {
   
   return (
     <div className="min-h-screen bg-background">
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={true}>
         <div className="flex w-full h-full"> {/* Added w-full to ensure proper layout */}
           <Navbar />
           <AppSidebar />
