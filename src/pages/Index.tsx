@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Shield, Database, Lock, Key } from 'lucide-react';
+import { Shield, Database, Lock, Key, Cloud, FileShield } from 'lucide-react';
 import { isAuthenticated } from '@/lib/auth';
 
 const Index = () => {
@@ -57,6 +57,56 @@ const Index = () => {
                 <Button size="lg" variant="outline" onClick={() => navigate('/login')}>
                   Sign In
                 </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        {/* New section about encryption technology */}
+        <section className="py-16 bg-vault-100">
+          <div className="container">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-3xl font-bold text-center mb-8">
+                Advanced Encryption Technology
+              </h2>
+              <p className="text-lg text-center mb-12 text-vault-900">
+                Trustchain ensures data integrity and confidentiality by securely scrambling, fragmenting, and encrypting files using proprietary algorithms.
+              </p>
+              
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="bg-white p-8 rounded-xl shadow-card border border-vault-200">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="h-12 w-12 rounded-lg bg-gradient-security flex items-center justify-center">
+                      <FileShield className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-medium mb-2">Distributed Storage</h3>
+                      <p className="text-muted-foreground">
+                        Encrypted fragments are distributed across trusted networks, creating a decentralized micro-community for custodianship without granting access to the actual file content.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-white p-8 rounded-xl shadow-card border border-vault-200">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="h-12 w-12 rounded-lg bg-gradient-vault flex items-center justify-center">
+                      <Cloud className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-medium mb-2">Robust Recovery</h3>
+                      <p className="text-muted-foreground">
+                        Trustchain enables robust data recovery through majority custodian approval, mimicking multi-factor authentication to ensure security and resilience.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-12 text-center">
+                <p className="text-lg font-medium text-vault-800">
+                  Reimagining data privacy, empowering both individuals and enterprises to manage sensitive information with unparalleled security.
+                </p>
               </div>
             </div>
           </div>
