@@ -44,12 +44,15 @@ const Dashboard = () => {
         }
         
         // Only fetch applications if user is app-owner
-        if (isAppOwner) {
+        if (isAppOwner && user) {
           const appsData = await getApplicationsByUser(user.id);
           setApplications(appsData || []);
         }
         
-        toast.success('Dashboard data loaded successfully');
+        // Only show success toast for successful data fetching
+        if ((canManageVaults && vaults.length > 0) || (isAppOwner && applications.length > 0)) {
+          toast.success('Dashboard data loaded successfully');
+        }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
         toast.error('Failed to load dashboard data');
@@ -101,12 +104,13 @@ const Dashboard = () => {
           ]);
         }
       } finally {
+        // Always set loading to false, regardless of the result
         setLoading(false);
       }
     };
     
     fetchData();
-  }, [navigate, user, canManageVaults, isAppOwner]);
+  }, [navigate]); // Remove dependencies that might cause re-fetching loops
   
   if (!user) return null;
   
