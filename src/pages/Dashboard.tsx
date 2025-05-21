@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users } from 'lucide-react';
@@ -46,7 +45,7 @@ const Dashboard = () => {
   
   // Determine if user needs token management access
   const needsTokenAccess = isAppOwner && !isSpecialRole;
-  
+
   useEffect(() => {
     if (!isAuthenticated()) {
       navigate('/login');

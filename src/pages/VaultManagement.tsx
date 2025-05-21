@@ -15,6 +15,7 @@ import { getVaults, createVault } from '@/lib/vault';
 import { getCurrentUser, isAuthenticated, hasRole } from '@/lib/auth';
 import { Vault } from '@/types';
 import { toast } from '@/hooks/use-toast';
+import { useSidebar } from '@/components/ui/sidebar';
 
 const VaultManagement = () => {
   const [vaults, setVaults] = useState<Vault[]>([]);
@@ -24,6 +25,7 @@ const VaultManagement = () => {
   const [vaultDesc, setVaultDesc] = useState('');
   const [creating, setCreating] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const { state } = useSidebar();
   
   const navigate = useNavigate();
 
@@ -98,15 +100,18 @@ const VaultManagement = () => {
     vault.vaultDesc.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Calculate content class based on sidebar state
+  const contentClass = `flex-1 p-6 pt-20 overflow-auto ${state === "collapsed" ? "md:ml-12" : ""}`;
+
   return (
     <div className="min-h-screen bg-background">
       <div className="flex w-full h-full">
         <Navbar />
         <AppSidebar />
-        <main className="flex-1 p-6 pt-20 overflow-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">Vault Management</h1>
-            <Button onClick={() => setCreateDialogOpen(true)}>
+        <main className={contentClass}>
+          <div className="flex justify-between items-center mb-6 w-full min-w-0">
+            <h1 className="text-2xl font-bold truncate pr-4">Vault Management</h1>
+            <Button className="shrink-0 whitespace-nowrap ml-auto" onClick={() => setCreateDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-2" /> Create Vault
             </Button>
           </div>
