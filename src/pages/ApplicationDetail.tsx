@@ -23,6 +23,16 @@ interface ExtendedAppRegistration extends AppRegistration {
   tokenExpiryDate?: string;
 }
 
+// Define the AuditLog type for our sample logs
+interface AuditLog {
+  id: string;
+  timestamp: string;
+  action: string;
+  user: string;
+  details: string;
+  success: boolean;
+}
+
 const ApplicationDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -41,6 +51,9 @@ const ApplicationDetail = () => {
   const [isProcessingConsent, setIsProcessingConsent] = useState(false);
   const currentUser = getCurrentUser();
   const canManageConsent = currentUser && (currentUser.role === 'admin' || currentUser.role === 'data-steward');
+
+  // Sample audit logs data - this would typically come from an API
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
 
   // Mock application data that matches the data structure in Applications.tsx but with token properties added
   const mockApplicationsData: ExtendedAppRegistration[] = [
@@ -169,6 +182,7 @@ const ApplicationDetail = () => {
         if (id) {
           loadFieldConsents(id);
           loadConsentHistory(id);
+          loadAuditLogs(id);
         }
       } catch (error) {
         console.error('Error fetching application:', error);
@@ -200,6 +214,66 @@ const ApplicationDetail = () => {
     } catch (error) {
       console.error('Error loading consent history:', error);
     }
+  };
+
+  // Load sample audit logs
+  const loadAuditLogs = async (appId: string) => {
+    // In a real app, this would be an API call
+    const now = new Date();
+    
+    // Generate sample logs based on the app ID
+    const sampleLogs: AuditLog[] = [
+      {
+        id: crypto.randomUUID(),
+        timestamp: new Date(now.getTime() - 1000 * 60 * 5).toISOString(), // 5 minutes ago
+        action: 'ACCESS_TOKEN_GENERATED',
+        user: 'john.doe@example.com',
+        details: 'New access token generated for application',
+        success: true,
+      },
+      {
+        id: crypto.randomUUID(),
+        timestamp: new Date(now.getTime() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
+        action: 'DATA_ACCESS',
+        user: 'api.service',
+        details: 'Accessed customers/name field via API',
+        success: true,
+      },
+      {
+        id: crypto.randomUUID(),
+        timestamp: new Date(now.getTime() - 1000 * 60 * 60 * 5).toISOString(), // 5 hours ago
+        action: 'PERMISSION_UPDATE',
+        user: 'admin@example.com',
+        details: 'Updated permissions for transactions dataset',
+        success: true,
+      },
+      {
+        id: crypto.randomUUID(),
+        timestamp: new Date(now.getTime() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
+        action: 'ACCESS_ATTEMPT',
+        user: 'api.service',
+        details: 'Unauthorized attempt to access transactions/amount field',
+        success: false,
+      },
+      {
+        id: crypto.randomUUID(),
+        timestamp: new Date(now.getTime() - 1000 * 60 * 60 * 36).toISOString(), // 1.5 days ago
+        action: 'CONSENT_APPROVED',
+        user: 'data.steward@example.com',
+        details: 'Approved consent for customers/email field',
+        success: true,
+      },
+      {
+        id: crypto.randomUUID(),
+        timestamp: new Date(now.getTime() - 1000 * 60 * 60 * 72).toISOString(), // 3 days ago
+        action: 'APP_REGISTRATION',
+        user: 'john.doe@example.com',
+        details: 'Application registered in vault system',
+        success: true,
+      },
+    ];
+    
+    setAuditLogs(sampleLogs);
   };
 
   const getStatusBadge = (status: string) => {
@@ -384,6 +458,26 @@ const ApplicationDetail = () => {
       </div>
     );
   }
+
+  // Format timestamp to relative time (e.g., "5 minutes ago")
+  const formatRelativeTime = (timestamp: string) => {
+    const now = new Date();
+    const date = new Date(timestamp);
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) {
+      return 'Just now';
+    } else if (diffInSeconds < 3600) {
+      const minutes = Math.floor(diffInSeconds / 60);
+      return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    } else if (diffInSeconds < 86400) {
+      const hours = Math.floor(diffInSeconds / 3600);
+      return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    } else {
+      const days = Math.floor(diffInSeconds / 86400);
+      return `${days} day${days > 1 ? 's' : ''} ago`;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -755,16 +849,78 @@ const ApplicationDetail = () => {
                     Audit Log
                   </CardTitle>
                   <CardDescription>
-                    History of activities related to this application
+                    Complete history of activities related to this application
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-center py-6">
-                    <p className="text-muted-foreground">
-                      Audit log will be available soon
-                    </p>
-                  </div>
+                  {auditLogs.length > 0 ? (
+                    <>
+                      <div className="rounded-md border mb-4">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Time</TableHead>
+                              <TableHead>Action</TableHead>
+                              <TableHead>User</TableHead>
+                              <TableHead>Details</TableHead>
+                              <TableHead>Status</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {auditLogs.map((log) => (
+                              <TableRow key={log.id}>
+                                <TableCell className="whitespace-nowrap">
+                                  <div className="flex flex-col">
+                                    <span className="font-medium">{formatRelativeTime(log.timestamp)}</span>
+                                    <span className="text-xs text-muted-foreground">
+                                      {new Date(log.timestamp).toLocaleString()}
+                                    </span>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <Badge variant="outline" className="whitespace-nowrap">
+                                    {log.action.replace(/_/g, ' ')}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell>{log.user}</TableCell>
+                                <TableCell>{log.details}</TableCell>
+                                <TableCell>
+                                  {log.success ? (
+                                    <Badge className="bg-green-500">Success</Badge>
+                                  ) : (
+                                    <Badge className="bg-red-500">Failed</Badge>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                      <div className="flex justify-between items-center text-sm">
+                        <p className="text-muted-foreground">
+                          Showing {auditLogs.length} of {auditLogs.length + 42} logs
+                        </p>
+                        <Button variant="outline" size="sm">
+                          View All Logs
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-6">
+                      <p className="text-muted-foreground">
+                        No audit logs available for this application
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
+                <CardFooter className="border-t pt-4 flex justify-between">
+                  <p className="text-xs text-muted-foreground">
+                    Logs are retained for 90 days
+                  </p>
+                  <Button variant="outline" size="sm">
+                    Export Logs
+                  </Button>
+                </CardFooter>
               </Card>
             </TabsContent>
           </Tabs>
