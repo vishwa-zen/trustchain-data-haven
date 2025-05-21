@@ -17,9 +17,9 @@ const Index = () => {
   }, [isLoggedIn, navigate]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-vault-50">
-        <div className="container flex h-14 items-center justify-between">
+    <div className="min-h-screen w-full bg-background flex flex-col">
+      <header className="border-b bg-vault-50 w-full">
+        <div className="container mx-auto flex h-14 items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 font-semibold">
             <img 
               src="https://static.wixstatic.com/media/574264_84849ef802594972ae3eadd463ec8dc0~mv2.png/v1/fill/w_160,h_190,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/zen_ac_color.png" 
@@ -41,8 +41,8 @@ const Index = () => {
         </div>
       </header>
       
-      <main className="w-full">
-        <section className="py-20">
+      <main className="flex-1 w-full">
+        <section className="py-20 w-full">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto text-center space-y-6">
               <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl bg-clip-text text-transparent bg-gradient-to-r from-vault-800 via-vault-600 to-security-700">
