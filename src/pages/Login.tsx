@@ -67,6 +67,20 @@ const Login = () => {
     setShowPassword(!showPassword);
   };
 
+  // Function to get role badge color based on role
+  const getRoleBadgeColor = (role: string) => {
+    switch (role) {
+      case 'admin':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'app-owner':
+        return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'data-steward':
+        return 'bg-green-100 text-green-800 border-green-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-background p-4">
       <div className="flex flex-col items-center gap-2 mb-8 animate-fade-in">
@@ -102,12 +116,21 @@ const Login = () => {
                 className="transition-all"
               />
               {userRole && (
-                <div className="mt-1 flex items-center gap-2">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">Role:</span>
-                  <Badge variant="outline" className="text-xs font-normal">
-                    {userRole}
-                  </Badge>
+                <div className="mt-2 animate-fade-in">
+                  <div className="p-2.5 rounded-md bg-secondary/50 border border-border/50 flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <User className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-medium text-muted-foreground">Account type</span>
+                      <Badge 
+                        variant="outline" 
+                        className={`mt-0.5 text-xs py-0.5 font-medium ${getRoleBadgeColor(userRole)}`}
+                      >
+                        {userRole.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                      </Badge>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
