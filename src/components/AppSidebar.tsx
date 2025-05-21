@@ -41,13 +41,13 @@ const AppSidebar: React.FC = () => {
   const isSpecialRole = ['cto-user', 'dpo-user', 'csio-user'].includes(user.role);
   const canAccessTokens = user.role === 'app-owner' && !isSpecialRole;
 
-  // Custom NavLink wrapper to work with SidebarMenuButton
+  // Custom NavLink wrapper to work with SidebarMenuButton that properly handles collapsed state
   const SidebarNavLink = ({ to, icon: Icon, children }: { to: string; icon: React.ElementType; children: React.ReactNode }) => (
     <NavLink to={to} className={({ isActive }) => (isActive ? 'active' : '')}>
       {({ isActive }) => (
         <SidebarMenuButton isActive={isActive} tooltip={children as string}>
-          <Icon size={18} className="flex-shrink-0 mr-2" />
-          <span>{children}</span>
+          <Icon size={18} className="flex-shrink-0" />
+          <span className="ml-2">{children}</span>
         </SidebarMenuButton>
       )}
     </NavLink>
