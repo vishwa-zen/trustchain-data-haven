@@ -123,7 +123,7 @@ const VaultManagement = () => {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {loading ? (
               [1, 2, 3].map(i => (
-                <Card key={i} className="animate-pulse-slow">
+                <Card key={i} className="animate-pulse-slow w-full shadow-sm">
                   <CardHeader>
                     <CardTitle className="bg-muted h-6 w-2/3 rounded-md" />
                     <CardDescription className="bg-muted h-4 w-full rounded-md mt-2" />
@@ -134,7 +134,7 @@ const VaultManagement = () => {
                 </Card>
               ))
             ) : filteredVaults.length === 0 ? (
-              <Card className="col-span-full">
+              <Card className="col-span-full w-full shadow-sm">
                 <CardHeader>
                   <CardTitle>No Vaults Found</CardTitle>
                   <CardDescription>

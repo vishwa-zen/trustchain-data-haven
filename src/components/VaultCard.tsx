@@ -16,7 +16,7 @@ const VaultCard: React.FC<VaultCardProps> = ({ vault }) => {
   const tableCount = vault.tables?.length || 0;
 
   return (
-    <Card className="vault-card animate-fade-in h-full w-full">
+    <Card className="h-full w-full shadow-sm">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold text-vault-900">

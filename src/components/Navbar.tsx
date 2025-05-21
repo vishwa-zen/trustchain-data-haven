@@ -16,9 +16,9 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 border-b bg-vault-50 shadow-sm"> {/* Fixed z-index to be above sidebar */}
+    <div className="fixed top-0 left-0 right-0 z-50 border-b bg-vault-50 shadow-sm"> 
       <div className="flex h-14 items-center px-4">
-        <SidebarTrigger className="mr-4 md:hidden" /> {/* Only show trigger on mobile, we'll use the rail on desktop */}
+        <SidebarTrigger className="mr-4 md:hidden" />
         <Link to="/" className="flex items-center gap-2 font-semibold">
           <img 
             src="https://static.wixstatic.com/media/574264_84849ef802594972ae3eadd463ec8dc0~mv2.png/v1/fill/w_160,h_190,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/zen_ac_color.png" 

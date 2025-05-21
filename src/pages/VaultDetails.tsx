@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -100,7 +101,7 @@ const VaultDetails = () => {
         <Navbar />
         <div className="flex">
           <Sidebar />
-          <main className="flex-1 p-6">
+          <main className="flex-1 p-6 pt-20">
             <div className="flex justify-center items-center h-full">
               <p>Loading vault details...</p>
             </div>
@@ -120,7 +121,7 @@ const VaultDetails = () => {
       <Navbar />
       <div className="flex">
         <Sidebar />
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 pt-20">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-2xl font-bold flex items-center">
@@ -150,7 +151,7 @@ const VaultDetails = () => {
             </TabsList>
             
             <TabsContent value="overview" className="space-y-4">
-              <Card>
+              <Card className="w-full shadow-sm">
                 <CardHeader>
                   <CardTitle>Vault Information</CardTitle>
                 </CardHeader>
@@ -173,7 +174,7 @@ const VaultDetails = () => {
                 </CardContent>
               </Card>
               
-              <Card>
+              <Card className="w-full shadow-sm">
                 <CardHeader>
                   <CardTitle>Summary</CardTitle>
                   <CardDescription>Key metrics about your vault</CardDescription>
