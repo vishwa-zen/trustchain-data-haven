@@ -482,13 +482,6 @@ const ApplicationDetail = () => {
                         <Clock className="h-4 w-4 text-muted-foreground" />
                         <span>Expires: {formatDate(dataSet.expiryDate)}</span>
                       </div>
-                      
-                      {dataSet.status === 'approved' && dataSet.accessToken && (
-                        <div className="flex items-center">
-                          <Key className="h-4 w-4 mr-1 text-muted-foreground" />
-                          <span className="font-mono">{dataSet.accessToken}</span>
-                        </div>
-                      )}
                     </div>
                   </CardContent>
                 </Card>
