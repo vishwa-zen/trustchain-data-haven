@@ -14,7 +14,6 @@ import VaultsList from '@/components/dashboard/VaultsList';
 import ApplicationsList from '@/components/dashboard/ApplicationsList';
 import EmptyStateCard from '@/components/dashboard/EmptyStateCard';
 import QuickActionsPanel from '@/components/dashboard/QuickActionsPanel';
-import StatisticsChart from '@/components/dashboard/StatisticsChart';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -22,7 +21,7 @@ const Dashboard = () => {
   const [applications, setApplications] = useState<AppRegistration[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // Add state for chart data
+  // We'll keep the state variables but they won't be used in the UI anymore
   const [vaultStats, setVaultStats] = useState([
     { name: 'Active', count: 0 },
     { name: 'Pending', count: 0 },
@@ -180,17 +179,6 @@ const Dashboard = () => {
             isAppOwner={isAppOwner}
           />
           
-          {/* Add the statistics chart component */}
-          {(canManageVaults || isAppOwner) && (vaults.length > 0 || applications.length > 0) && (
-            <StatisticsChart 
-              vaultData={vaultStats}
-              applicationData={appStats}
-              loading={loading}
-              showVaultStats={canManageVaults && vaults.length > 0}
-              showAppStats={isAppOwner && applications.length > 0}
-            />
-          )}
-
           {canManageVaults && vaults.length > 0 && (
             <VaultsList vaults={vaults} loading={loading} />
           )}
