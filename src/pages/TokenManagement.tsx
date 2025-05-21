@@ -16,7 +16,7 @@ const TokenManagement = () => {
   const user = getCurrentUser();
   const [searchTerm, setSearchTerm] = useState('');
   
-  // Mock token data with user-level API tokens and app-specific access keys
+  // Updated token data to show application-level access keys
   const [tokens, setTokens] = useState([
     {
       id: '1',
@@ -31,22 +31,22 @@ const TokenManagement = () => {
     },
     {
       id: '2',
-      name: 'Access Key',
+      name: 'Application Access Key',
       type: 'access_key',
       applicationName: 'Payment Gateway',
       applicationId: 'app-456',
-      token: 'tk_live_' + crypto.randomUUID().split('-')[0],
+      token: 'app_tk_' + crypto.randomUUID().split('-')[0],
       createdAt: '2025-03-22T08:15:00Z',
       expiresAt: '2025-09-22T08:15:00Z',
       lastUsed: '2025-05-11T09:45:12Z',
     },
     {
       id: '3',
-      name: 'Access Key',
+      name: 'Application Access Key',
       type: 'access_key',
       applicationName: 'Customer Portal',
       applicationId: 'app-123',
-      token: 'tk_live_' + crypto.randomUUID().split('-')[0],
+      token: 'app_tk_' + crypto.randomUUID().split('-')[0],
       createdAt: '2025-04-10T11:20:00Z',
       expiresAt: '2025-10-10T11:20:00Z',
       lastUsed: '2025-05-12T16:30:45Z',
@@ -76,7 +76,11 @@ const TokenManagement = () => {
   };
 
   const handleRegenerateToken = (id: string) => {
-    const newToken = 'tk_live_' + crypto.randomUUID().split('-')[0];
+    const newToken = 
+      tokens.find(t => t.id === id)?.type === 'api_token' 
+        ? 'tk_live_' + crypto.randomUUID().split('-')[0] 
+        : 'app_tk_' + crypto.randomUUID().split('-')[0];
+    
     setTokens(tokens.map(token => 
       token.id === id 
         ? {...token, token: newToken, createdAt: new Date().toISOString()} 
@@ -169,7 +173,7 @@ const TokenManagement = () => {
             <CardHeader>
               <CardTitle>Access Tokens</CardTitle>
               <CardDescription>
-                API Access Tokens work across all your applications, while Access Keys are application-specific
+                API Access Tokens work across all your applications, while Application Access Keys are assigned to specific applications
               </CardDescription>
             </CardHeader>
             <CardContent>

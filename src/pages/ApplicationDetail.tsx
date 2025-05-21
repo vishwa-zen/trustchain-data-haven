@@ -56,7 +56,7 @@ const ApplicationDetail = () => {
             { name: 'email', actions: ['read'] },
             { name: 'phone', actions: ['read', 'write'] },
           ],
-          accessToken: 'cst_tk_123456',
+          accessToken: '',
           expiryDate: '2026-04-01T12:30:00Z'
         },
         {
@@ -72,7 +72,9 @@ const ApplicationDetail = () => {
           accessToken: '',
           expiryDate: '2026-04-01T12:30:00Z'
         }
-      ]
+      ],
+      accessToken: 'app_tk_123456',
+      tokenExpiryDate: '2026-04-01T12:30:00Z'
     },
     {
       id: 'app-2',
@@ -95,7 +97,9 @@ const ApplicationDetail = () => {
           accessToken: '',
           expiryDate: '2026-05-01T12:30:00Z'
         }
-      ]
+      ],
+      accessToken: '',
+      tokenExpiryDate: ''
     },
     {
       id: 'app-3',
@@ -118,7 +122,9 @@ const ApplicationDetail = () => {
           accessToken: '',
           expiryDate: '2026-03-01T12:30:00Z'
         }
-      ]
+      ],
+      accessToken: '',
+      tokenExpiryDate: ''
     }
   ];
   
@@ -301,6 +307,33 @@ const ApplicationDetail = () => {
       c.approved
     );
     return consent ? consent.actions : [];
+  };
+
+  const handleRegenerateToken = () => {
+    if (!application) return;
+    
+    const newToken = 'app_tk_' + crypto.randomUUID().split('-')[0];
+    
+    const updatedApp = {
+      ...application,
+      accessToken: newToken,
+      tokenExpiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString() // 1 year from now
+    };
+    
+    setApplication(updatedApp);
+    
+    toast({
+      title: 'Token Regenerated',
+      description: 'A new application access token has been generated',
+    });
+  };
+  
+  const handleCopyToken = (token: string) => {
+    navigator.clipboard.writeText(token);
+    toast({
+      title: 'Token Copied',
+      description: 'The token has been copied to your clipboard',
+    });
   };
 
   if (loading) {
@@ -493,42 +526,52 @@ const ApplicationDetail = () => {
                 <CardHeader>
                   <CardTitle>Access Tokens</CardTitle>
                   <CardDescription>
-                    These tokens allow your application to access approved data sets
+                    Application-level access token for accessing all approved data sets
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {application.dataSets
-                      .filter(ds => ds.status === 'approved' && ds.accessToken)
-                      .map((dataSet, index) => (
-                        <div key={index} className="p-4 border rounded-lg">
-                          <div className="flex justify-between items-center mb-2">
-                            <h4 className="font-medium">{dataSet.name}</h4>
-                            <Badge className="bg-green-500">Active</Badge>
-                          </div>
-                          
-                          <div className="bg-slate-50 p-3 rounded-md font-mono text-sm mb-2">
-                            {dataSet.accessToken}
-                          </div>
-                          
-                          <div className="flex justify-between items-center text-sm text-muted-foreground">
-                            <span>Expires {formatDate(dataSet.expiryDate)}</span>
-                            <Button variant="outline" size="sm">
-                              <Key className="h-3 w-3 mr-2" />
-                              Regenerate
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    
-                    {!application.dataSets.some(ds => ds.status === 'approved' && ds.accessToken) && (
-                      <div className="text-center py-6">
-                        <p className="text-muted-foreground">
-                          No approved data sets available yet
-                        </p>
+                  {application.status === 'approved' && application.accessToken ? (
+                    <div className="p-4 border rounded-lg">
+                      <div className="flex justify-between items-center mb-2">
+                        <h4 className="font-medium">Application Access Token</h4>
+                        <Badge className="bg-green-500">Active</Badge>
                       </div>
-                    )}
-                  </div>
+                      
+                      <div className="bg-slate-50 p-3 rounded-md font-mono text-sm mb-2">
+                        {application.accessToken}
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-sm text-muted-foreground">
+                        <span>Expires {formatDate(application.tokenExpiryDate || '2026-04-01T12:30:00Z')}</span>
+                        <div className="flex space-x-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleCopyToken(application.accessToken)}
+                          >
+                            <Copy className="h-3 w-3 mr-2" />
+                            Copy
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={handleRegenerateToken}
+                          >
+                            <Key className="h-3 w-3 mr-2" />
+                            Regenerate
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-6">
+                      <p className="text-muted-foreground">
+                        {application.status !== 'approved' 
+                          ? "Application must be approved before access token is available"
+                          : "No access token available yet"}
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
