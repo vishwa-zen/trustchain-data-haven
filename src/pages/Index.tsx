@@ -21,7 +21,11 @@ const Index = () => {
       <header className="border-b bg-white">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-2 font-semibold">
-            <Shield className="h-6 w-6 text-vault-700" />
+            <img 
+              src="https://static.wixstatic.com/media/574264_84849ef802594972ae3eadd463ec8dc0~mv2.png/v1/fill/w_160,h_190,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/zen_ac_color.png" 
+              alt="Zentience Logo" 
+              className="h-10 w-auto"
+            />
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-vault-700 to-security-600">
               Trustchain
             </span>
@@ -156,7 +160,11 @@ const Index = () => {
         <div className="container">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-2 font-semibold mb-4 md:mb-0">
-              <Shield className="h-5 w-5 text-white" />
+              <img 
+                src="https://static.wixstatic.com/media/574264_84849ef802594972ae3eadd463ec8dc0~mv2.png/v1/fill/w_160,h_190,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/zen_ac_color.png" 
+                alt="Zentience Logo" 
+                className="h-8 w-auto"
+              />
               <span className="text-lg font-bold text-white">
                 Trustchain
               </span>

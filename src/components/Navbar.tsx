@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Shield, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { logoutUser, getCurrentUser } from '@/lib/auth';
 
 const Navbar: React.FC = () => {
@@ -18,7 +18,11 @@ const Navbar: React.FC = () => {
     <div className="border-b bg-white">
       <div className="flex h-16 items-center px-8">
         <Link to="/" className="flex items-center gap-2 font-semibold">
-          <Shield className="h-6 w-6 text-vault-700" />
+          <img 
+            src="https://static.wixstatic.com/media/574264_84849ef802594972ae3eadd463ec8dc0~mv2.png/v1/fill/w_160,h_190,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/zen_ac_color.png" 
+            alt="Zentience Logo" 
+            className="h-8 w-auto"
+          />
           <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-vault-700 to-security-600">
             Trustchain
           </span>
