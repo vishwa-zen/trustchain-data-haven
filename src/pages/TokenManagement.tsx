@@ -16,11 +16,13 @@ const TokenManagement = () => {
   const user = getCurrentUser();
   const [searchTerm, setSearchTerm] = useState('');
   
-  // Mock token data
+  // Mock token data with application information
   const [tokens, setTokens] = useState([
     {
       id: '1',
       name: 'API Access Token',
+      applicationName: 'Customer Portal',
+      applicationId: 'app-123',
       token: 'tk_live_' + crypto.randomUUID().split('-')[0],
       createdAt: '2025-04-15T10:30:00Z',
       expiresAt: '2026-04-15T10:30:00Z',
@@ -29,6 +31,8 @@ const TokenManagement = () => {
     {
       id: '2',
       name: 'Access Key',
+      applicationName: 'Payment Gateway',
+      applicationId: 'app-456',
       token: 'tk_live_' + crypto.randomUUID().split('-')[0],
       createdAt: '2025-03-22T08:15:00Z',
       expiresAt: '2025-09-22T08:15:00Z',
@@ -71,8 +75,13 @@ const TokenManagement = () => {
     });
   };
 
+  const handleViewApplication = (applicationId: string) => {
+    navigate(`/applications/${applicationId}`);
+  };
+
   const filteredTokens = tokens.filter(token => 
-    token.name.toLowerCase().includes(searchTerm.toLowerCase())
+    token.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    token.applicationName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -96,7 +105,7 @@ const TokenManagement = () => {
 
           <div className="mb-6">
             <Input
-              placeholder="Search tokens..."
+              placeholder="Search tokens or applications..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-sm"
@@ -115,6 +124,7 @@ const TokenManagement = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Name</TableHead>
+                    <TableHead>Application</TableHead>
                     <TableHead>Token</TableHead>
                     <TableHead>Created</TableHead>
                     <TableHead>Expires</TableHead>
@@ -126,6 +136,14 @@ const TokenManagement = () => {
                   {filteredTokens.map((token) => (
                     <TableRow key={token.id}>
                       <TableCell className="font-medium">{token.name}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <span className="text-sm font-medium text-blue-600 cursor-pointer hover:underline" 
+                                onClick={() => handleViewApplication(token.applicationId)}>
+                            {token.applicationName}
+                          </span>
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center space-x-2">
                           <span className="font-mono">{token.token.substring(0, 8)}...</span>
