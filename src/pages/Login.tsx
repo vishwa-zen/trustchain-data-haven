@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Lock } from 'lucide-react';
+import { Lock, Eye, EyeOff } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { loginUser, isAuthenticated } from '@/lib/auth';
 import { toast } from '@/hooks/use-toast';
@@ -13,6 +13,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -46,30 +47,35 @@ const Login = () => {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-vault-50 p-4">
-      <div className="flex flex-col items-center gap-2 mb-8">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-vault-50 to-vault-100 p-4">
+      <div className="flex flex-col items-center gap-2 mb-8 animate-fade-in">
         <img 
           src="https://static.wixstatic.com/media/574264_84849ef802594972ae3eadd463ec8dc0~mv2.png/v1/fill/w_160,h_190,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/zen_ac_color.png" 
           alt="Trustchain Logo" 
-          className="h-12 w-auto" 
+          className="h-14 w-auto hover:scale-105 transition-transform duration-300" 
         />
-        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-vault-700 to-security-600">
+        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-vault-700 to-security-600 drop-shadow-sm mt-2">
           Trustchain
         </h1>
       </div>
       
-      <Card className="w-full max-w-md shadow-card animate-fade-in">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">Login</CardTitle>
-          <CardDescription>
+      <Card className="w-full max-w-md shadow-xl animate-fade-in border-vault-200 overflow-hidden">
+        <div className="h-1 bg-gradient-to-r from-vault-500 to-security-500"></div>
+        <CardHeader className="space-y-1 pb-2">
+          <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
+          <CardDescription className="text-center">
             Enter your credentials to access your account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-sm font-medium">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -77,27 +83,42 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="transition-all border-vault-200 focus:border-vault-400 hover:border-vault-300"
               />
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" className="text-sm font-medium">Password</Label>
                 <Link 
                   to="/forgot-password"
-                  className="text-xs text-vault-700 hover:text-vault-900 underline-offset-4 hover:underline"
+                  className="text-xs text-vault-700 hover:text-vault-900 underline-offset-4 hover:underline transition-colors"
                 >
                   Forgot password?
                 </Link>
               </div>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="pr-10 transition-all border-vault-200 focus:border-vault-400 hover:border-vault-300"
+                />
+                <button 
+                  type="button" 
+                  onClick={togglePasswordVisibility}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button 
+              type="submit" 
+              className="w-full mt-6 bg-gradient-to-r from-vault-600 to-vault-700 hover:from-vault-700 hover:to-vault-800 transition-all duration-300" 
+              disabled={loading}
+            >
               {loading ? (
                 <span className="flex items-center gap-2">
                   <Lock className="h-4 w-4 animate-pulse" /> Logging in...
@@ -113,7 +134,7 @@ const Login = () => {
             Don't have an account?{" "}
             <Link 
               to="/register" 
-              className="text-vault-700 hover:text-vault-900 font-medium hover:underline underline-offset-4"
+              className="text-vault-700 hover:text-vault-900 font-medium hover:underline underline-offset-4 transition-colors"
             >
               Register
             </Link>
@@ -121,7 +142,7 @@ const Login = () => {
         </CardFooter>
       </Card>
       
-      <div className="mt-6 text-sm text-muted-foreground text-center">
+      <div className="mt-6 text-sm text-muted-foreground text-center animate-fade-in opacity-80">
         Copyright © Zentience - All Rights Reserved.
       </div>
     </div>
