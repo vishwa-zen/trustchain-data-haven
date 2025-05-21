@@ -36,6 +36,92 @@ const ApplicationDetail = () => {
   const currentUser = getCurrentUser();
   const canManageConsent = currentUser && (currentUser.role === 'admin' || currentUser.role === 'data-steward');
 
+  // Mock application data that matches the data structure in Applications.tsx
+  const mockApplicationsData: AppRegistration[] = [
+    {
+      id: 'app-1',
+      name: 'KYC Application',
+      description: 'Customer verification system',
+      status: 'approved',
+      userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+      vaultId: '2288e11a-658f-421c-9359-79c969316303',
+      dataSets: [
+        {
+          name: 'customers',
+          status: 'approved',
+          purpose: ['Analytics', 'Customer Service'],
+          fields: [
+            { name: 'id', actions: ['read'] },
+            { name: 'name', actions: ['read'] },
+            { name: 'email', actions: ['read'] },
+            { name: 'phone', actions: ['read', 'write'] },
+          ],
+          accessToken: 'cst_tk_123456',
+          expiryDate: '2026-04-01T12:30:00Z'
+        },
+        {
+          name: 'transactions',
+          status: 'requested',
+          purpose: ['Analytics'],
+          fields: [
+            { name: 'id', actions: ['read'] },
+            { name: 'customer_id', actions: ['read'] },
+            { name: 'amount', actions: ['read'] },
+            { name: 'date', actions: ['read'] },
+          ],
+          accessToken: '',
+          expiryDate: '2026-04-01T12:30:00Z'
+        }
+      ]
+    },
+    {
+      id: 'app-2',
+      name: 'Risk Assessment Tool',
+      description: 'Financial risk analysis system',
+      status: 'requested',
+      userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+      vaultId: '2288e11a-658f-421c-9359-79c969316303',
+      dataSets: [
+        {
+          name: 'risk_profiles',
+          status: 'requested',
+          purpose: ['Risk Analysis'],
+          fields: [
+            { name: 'id', actions: ['read'] },
+            { name: 'customer_id', actions: ['read'] },
+            { name: 'score', actions: ['read'] },
+            { name: 'factors', actions: ['read'] },
+          ],
+          accessToken: '',
+          expiryDate: '2026-05-01T12:30:00Z'
+        }
+      ]
+    },
+    {
+      id: 'app-3',
+      name: 'Compliance Monitor',
+      description: 'Regulatory compliance monitoring',
+      status: 'rejected',
+      userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+      vaultId: '2288e11a-658f-421c-9359-79c969316303',
+      dataSets: [
+        {
+          name: 'regulatory_data',
+          status: 'rejected',
+          purpose: ['Compliance'],
+          fields: [
+            { name: 'id', actions: ['read'] },
+            { name: 'regulation_id', actions: ['read'] },
+            { name: 'status', actions: ['read'] },
+            { name: 'compliance_date', actions: ['read'] },
+          ],
+          accessToken: '',
+          expiryDate: '2026-03-01T12:30:00Z'
+        }
+      ]
+    }
+  ];
+  
   useEffect(() => {
     if (!isAuthenticated()) {
       navigate('/login');
@@ -47,56 +133,29 @@ const ApplicationDetail = () => {
       return;
     }
 
-    // Simulated data fetch for the application
+    // Mock data fetch for the application
     const fetchApplication = async () => {
       setLoading(true);
       try {
-        // Mock data - in a real application this would be fetched from an API
-        setTimeout(() => {
-          setApplication({
-            id: id || crypto.randomUUID(),
-            name: `Demo App ${id}`,
-            description: 'This is a demo application that showcases data access capabilities',
-            status: 'requested', // Changed from 'pending' to 'requested'
-            userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
-            vaultId: '2288e11a-658f-421c-9359-79c969316303',
-            dataSets: [
-              {
-                name: 'customers',
-                status: 'requested', // Changed from 'pending' to 'requested'
-                purpose: ['Analytics', 'Customer Service'],
-                fields: [
-                  { name: 'id', actions: ['read'] },
-                  { name: 'name', actions: ['read'] },
-                  { name: 'email', actions: ['read'] },
-                  { name: 'phone', actions: ['read', 'write'] },
-                ],
-                accessToken: '',
-                expiryDate: '2026-04-01T12:30:00Z'
-              },
-              {
-                name: 'transactions',
-                status: 'requested', // Changed from 'pending' to 'requested'
-                purpose: ['Analytics'],
-                fields: [
-                  { name: 'id', actions: ['read'] },
-                  { name: 'customer_id', actions: ['read'] },
-                  { name: 'amount', actions: ['read'] },
-                  { name: 'date', actions: ['read'] },
-                ],
-                accessToken: '',
-                expiryDate: '2026-04-01T12:30:00Z'
-              }
-            ]
-          });
-          setLoading(false);
-          
-          // Load field consents and history
-          if (id) {
-            loadFieldConsents(id);
-            loadConsentHistory(id);
-          }
-        }, 500);
+        // Use application ID to get the correct application data
+        const appData = mockApplicationsData.find(app => app.id === id) || {
+          id: id || crypto.randomUUID(),
+          name: 'Unknown Application',
+          description: 'Application details not found',
+          status: 'requested',
+          userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+          vaultId: '2288e11a-658f-421c-9359-79c969316303',
+          dataSets: []
+        };
+        
+        setApplication(appData);
+        setLoading(false);
+        
+        // Load field consents and history
+        if (id) {
+          loadFieldConsents(id);
+          loadConsentHistory(id);
+        }
       } catch (error) {
         console.error('Error fetching application:', error);
         toast({

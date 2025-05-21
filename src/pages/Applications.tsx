@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -10,6 +9,37 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Server, Plus, Search } from 'lucide-react';
 import { isAuthenticated, hasRole, getCurrentUser } from '@/lib/auth';
+
+// Mock data for applications - use the same data structure as in ApplicationDetail
+const mockApplications = [
+  {
+    id: 'app-1',
+    name: 'KYC Application',
+    description: 'Customer verification system',
+    status: 'approved',
+    vaultName: 'Customer Data Vault',
+    createdAt: '2025-04-10T08:30:00Z',
+    updatedAt: '2025-04-12T14:45:00Z'
+  },
+  {
+    id: 'app-2',
+    name: 'Risk Assessment Tool',
+    description: 'Financial risk analysis system',
+    status: 'pending',
+    vaultName: 'Financial Data Vault',
+    createdAt: '2025-05-01T10:15:00Z',
+    updatedAt: '2025-05-01T10:15:00Z'
+  },
+  {
+    id: 'app-3',
+    name: 'Compliance Monitor',
+    description: 'Regulatory compliance monitoring',
+    status: 'rejected',
+    vaultName: 'Regulatory Data Vault',
+    createdAt: '2025-03-22T16:40:00Z',
+    updatedAt: '2025-03-25T09:20:00Z'
+  }
+];
 
 const Applications = () => {
   const navigate = useNavigate();
@@ -35,35 +65,7 @@ const Applications = () => {
       try {
         // In a real app, this would be an API call
         setTimeout(() => {
-          setApplications([
-            {
-              id: 'app-1',
-              name: 'KYC Application',
-              description: 'Customer verification system',
-              status: 'approved',
-              vaultName: 'Customer Data Vault',
-              createdAt: '2025-04-10T08:30:00Z',
-              updatedAt: '2025-04-12T14:45:00Z'
-            },
-            {
-              id: 'app-2',
-              name: 'Risk Assessment Tool',
-              description: 'Financial risk analysis system',
-              status: 'pending',
-              vaultName: 'Financial Data Vault',
-              createdAt: '2025-05-01T10:15:00Z',
-              updatedAt: '2025-05-01T10:15:00Z'
-            },
-            {
-              id: 'app-3',
-              name: 'Compliance Monitor',
-              description: 'Regulatory compliance monitoring',
-              status: 'rejected',
-              vaultName: 'Regulatory Data Vault',
-              createdAt: '2025-03-22T16:40:00Z',
-              updatedAt: '2025-03-25T09:20:00Z'
-            }
-          ]);
+          setApplications(mockApplications);
           setLoading(false);
         }, 800);
       } catch (error) {

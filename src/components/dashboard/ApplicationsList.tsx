@@ -6,13 +6,47 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Server } from 'lucide-react';
 import { AppRegistration } from '@/types';
 
+// Mock applications data - consistent with other files
+const mockApplications = [
+  {
+    id: 'app-1',
+    name: 'KYC Application',
+    description: 'Customer verification system',
+    status: 'approved',
+    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+    vaultId: '2288e11a-658f-421c-9359-79c969316303',
+    dataSets: []
+  },
+  {
+    id: 'app-2',
+    name: 'Risk Assessment Tool',
+    description: 'Financial risk analysis system',
+    status: 'requested',
+    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+    vaultId: '2288e11a-658f-421c-9359-79c969316303',
+    dataSets: []
+  },
+  {
+    id: 'app-3',
+    name: 'Compliance Monitor',
+    description: 'Regulatory compliance monitoring',
+    status: 'rejected',
+    userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
+    vaultId: '2288e11a-658f-421c-9359-79c969316303',
+    dataSets: []
+  }
+];
+
 interface ApplicationsListProps {
   applications: AppRegistration[];
   loading: boolean;
 }
 
-const ApplicationsList: React.FC<ApplicationsListProps> = ({ applications, loading }) => {
+const ApplicationsList: React.FC<ApplicationsListProps> = ({ applications = [], loading }) => {
   const navigate = useNavigate();
+  
+  // If no applications are passed, use the mock data
+  const displayedApplications = applications.length > 0 ? applications : mockApplications;
   
   return (
     <div className="mb-8">
@@ -31,7 +65,7 @@ const ApplicationsList: React.FC<ApplicationsListProps> = ({ applications, loadi
             </CardHeader>
           </Card>
         ) : (
-          applications.slice(0, 3).map(app => (
+          displayedApplications.slice(0, 3).map(app => (
             <Card key={app.id} className="animate-fade-in">
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
