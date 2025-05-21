@@ -88,14 +88,14 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-background p-4">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-background p-4 md:p-6">
       <div className="flex flex-col items-center gap-2 mb-8 animate-fade-in">
         <img 
           src="https://static.wixstatic.com/media/574264_84849ef802594972ae3eadd463ec8dc0~mv2.png/v1/fill/w_160,h_190,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/zen_ac_color.png" 
           alt="Trustchain Logo" 
           className="h-14 w-auto hover:scale-105 transition-transform duration-300 drop-shadow-lg" 
         />
-        <h1 className="text-3xl font-bold text-foreground drop-shadow-sm mt-2">
+        <h1 className="text-3xl font-bold text-foreground drop-shadow-sm mt-2 text-center">
           Trustchain
         </h1>
       </div>
@@ -183,7 +183,7 @@ const Login = () => {
             </Button>
           </form>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex justify-center">
           <div className="text-sm text-center w-full">
             Don't have an account?{" "}
             <Link 
