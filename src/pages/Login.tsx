@@ -117,15 +117,15 @@ const Login = () => {
               />
               {userRole && (
                 <div className="mt-2 animate-fade-in">
-                  <div className="p-2.5 rounded-md bg-secondary/50 border border-border/50 flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                      <User className="h-4 w-4 text-primary" />
+                  <div className="p-3 rounded-md bg-secondary/50 border border-border/50 flex items-center gap-3 shadow-sm">
+                    <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <User className="h-5 w-5 text-primary" />
                     </div>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col space-y-0.5">
                       <span className="text-xs font-medium text-muted-foreground">Account type</span>
                       <Badge 
                         variant="outline" 
-                        className={`mt-0.5 text-xs py-0.5 font-medium ${getRoleBadgeColor(userRole)}`}
+                        className={`mt-0.5 text-xs py-1 px-2 font-medium ${getRoleBadgeColor(userRole)}`}
                       >
                         {userRole.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                       </Badge>
