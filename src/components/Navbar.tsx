@@ -16,7 +16,7 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 border-b bg-vault-50"> {/* Increased z-index to 50 */}
+    <div className="fixed top-0 left-0 right-0 z-50 border-b bg-vault-50 shadow-sm"> {/* Added shadow for better separation */}
       <div className="flex h-14 items-center px-4">
         <SidebarTrigger className="mr-4" />
         <Link to="/" className="flex items-center gap-2 font-semibold">

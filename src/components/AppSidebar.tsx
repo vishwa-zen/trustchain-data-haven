@@ -49,7 +49,8 @@ const AppSidebar: React.FC = () => {
   );
   
   return (
-    <Sidebar className="pt-14"> {/* Add padding-top to push content below navbar */}
+    <Sidebar className="pt-16"> {/* Increased padding-top to ensure content is below navbar */}
+      <SidebarHeader className="invisible h-0 p-0" /> {/* Empty header to maintain spacing */}
       <SidebarContent>
         <SidebarMenu>
           <SidebarMenuItem>
