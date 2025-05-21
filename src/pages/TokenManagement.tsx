@@ -28,7 +28,7 @@ const TokenManagement = () => {
     },
     {
       id: '2',
-      name: 'User Data Access',
+      name: 'Access Key',
       token: 'tk_live_' + crypto.randomUUID().split('-')[0],
       createdAt: '2025-03-22T08:15:00Z',
       expiresAt: '2025-09-22T08:15:00Z',
