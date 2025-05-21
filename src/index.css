@@ -98,7 +98,31 @@
 
 @layer components {
   .vault-card {
-    @apply bg-white rounded-xl shadow-card border border-border p-6 hover:shadow-glow transition-shadow duration-300;
+    @apply bg-white rounded-xl shadow-card border border-border p-6 hover:shadow-glow transition-shadow duration-300 flex flex-col;
+  }
+  
+  /* Card grid layout system */
+  .card-grid {
+    @apply grid gap-6;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+  
+  .card-grid-compact {
+    @apply grid gap-4;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+  
+  .card-grid-wide {
+    @apply grid gap-6;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  }
+  
+  .page-container {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6;
+  }
+  
+  .content-section {
+    @apply mb-8;
   }
   
   .security-badge {

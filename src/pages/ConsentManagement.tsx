@@ -109,258 +109,272 @@ const ConsentManagement = () => {
         <Navbar />
         <AppSidebar />
         <main className="flex-1 p-6 pt-20 overflow-auto">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold flex items-center">
-              <Shield className="h-6 w-6 mr-2 text-highlight-700" />
-              Consent Management
-            </h1>
-            <p className="text-muted-foreground">
-              Approve or reject grouped access requests for multiple fields
-            </p>
+          <div className="page-container">
+            <div className="content-section">
+              <h1 className="text-2xl font-bold flex items-center">
+                <Shield className="h-6 w-6 mr-2 text-highlight-700" />
+                Consent Management
+              </h1>
+              <p className="text-muted-foreground">
+                Approve or reject grouped access requests for multiple fields
+              </p>
+            </div>
+
+            <div className="content-section">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle>Filter Requests</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search by app, dataset or field"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-8"
+                      />
+                    </div>
+                    <div className="w-full sm:w-48">
+                      <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <SelectTrigger id="status">
+                          <SelectValue placeholder="Filter by status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Statuses</SelectItem>
+                          <SelectItem value="requested">Pending</SelectItem>
+                          <SelectItem value="approved">Approved</SelectItem>
+                          <SelectItem value="rejected">Rejected</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="content-section">
+              <Tabs defaultValue="all">
+                <TabsList>
+                  <TabsTrigger value="all">All Requests</TabsTrigger>
+                  <TabsTrigger value="pending">Pending</TabsTrigger>
+                  <TabsTrigger value="approved">Approved</TabsTrigger>
+                  <TabsTrigger value="rejected">Rejected</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="all" className="mt-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Grouped Consent Requests</CardTitle>
+                      <CardDescription>
+                        All grouped requests for data access
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {loading ? (
+                        <div className="text-center py-6">
+                          <p className="text-muted-foreground">Loading requests...</p>
+                        </div>
+                      ) : filteredRequests.length === 0 ? (
+                        <div className="text-center py-6">
+                          <p className="text-muted-foreground">No consent requests found</p>
+                        </div>
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Application</TableHead>
+                                <TableHead>Dataset / Fields</TableHead>
+                                <TableHead>Access Type</TableHead>
+                                <TableHead>Purpose</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Expiry</TableHead>
+                                <TableHead>Actions</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {filteredRequests.map((group) => (
+                                <GroupedConsentRow
+                                  key={group.groupId}
+                                  group={group}
+                                  onReload={loadGroupedConsentRequests}
+                                  onViewApp={handleViewApp}
+                                  onOpenDetail={openDetailDialog}
+                                />
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                
+                <TabsContent value="pending" className="mt-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Pending Grouped Consent Requests</CardTitle>
+                      <CardDescription>
+                        Grouped requests awaiting approval or rejection
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {loading ? (
+                        <div className="text-center py-6">
+                          <p className="text-muted-foreground">Loading requests...</p>
+                        </div>
+                      ) : filteredRequests.filter(r => r.status === 'requested').length === 0 ? (
+                        <div className="text-center py-6">
+                          <p className="text-muted-foreground">No pending grouped requests found</p>
+                        </div>
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Application</TableHead>
+                                <TableHead>Dataset / Fields</TableHead>
+                                <TableHead>Access Type</TableHead>
+                                <TableHead>Purpose</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Expiry</TableHead>
+                                <TableHead>Actions</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {filteredRequests
+                                .filter(r => r.status === 'requested')
+                                .map((group) => (
+                                  <GroupedConsentRow
+                                    key={group.groupId}
+                                    group={group}
+                                    onReload={loadGroupedConsentRequests}
+                                    onViewApp={handleViewApp}
+                                    onOpenDetail={openDetailDialog}
+                                  />
+                                ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                
+                <TabsContent value="approved" className="mt-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Approved Grouped Consent Requests</CardTitle>
+                      <CardDescription>
+                        Grouped requests that have been approved
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {loading ? (
+                        <div className="text-center py-6">
+                          <p className="text-muted-foreground">Loading requests...</p>
+                        </div>
+                      ) : filteredRequests.filter(r => r.status === 'approved').length === 0 ? (
+                        <div className="text-center py-6">
+                          <p className="text-muted-foreground">No approved grouped requests found</p>
+                        </div>
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Application</TableHead>
+                                <TableHead>Dataset / Fields</TableHead>
+                                <TableHead>Access Type</TableHead>
+                                <TableHead>Purpose</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Expiry</TableHead>
+                                <TableHead>Actions</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {filteredRequests
+                                .filter(r => r.status === 'approved')
+                                .map((group) => (
+                                  <GroupedConsentRow
+                                    key={group.groupId}
+                                    group={group}
+                                    onReload={loadGroupedConsentRequests}
+                                    onViewApp={handleViewApp}
+                                    onOpenDetail={openDetailDialog}
+                                  />
+                                ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                
+                <TabsContent value="rejected" className="mt-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Rejected Grouped Consent Requests</CardTitle>
+                      <CardDescription>
+                        Grouped requests that have been rejected
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {loading ? (
+                        <div className="text-center py-6">
+                          <p className="text-muted-foreground">Loading requests...</p>
+                        </div>
+                      ) : filteredRequests.filter(r => r.status === 'rejected').length === 0 ? (
+                        <div className="text-center py-6">
+                          <p className="text-muted-foreground">No rejected grouped requests found</p>
+                        </div>
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Application</TableHead>
+                                <TableHead>Dataset / Fields</TableHead>
+                                <TableHead>Access Type</TableHead>
+                                <TableHead>Purpose</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Expiry</TableHead>
+                                <TableHead>Actions</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {filteredRequests
+                                .filter(r => r.status === 'rejected')
+                                .map((group) => (
+                                  <GroupedConsentRow
+                                    key={group.groupId}
+                                    group={group}
+                                    onReload={loadGroupedConsentRequests}
+                                    onViewApp={handleViewApp}
+                                    onOpenDetail={openDetailDialog}
+                                  />
+                                ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            </div>
+            
+            {/* Dialog for managing consent details */}
+            <GroupedConsentDialog
+              open={detailDialogOpen}
+              onOpenChange={setDetailDialogOpen}
+              groupedRequest={selectedGroupedRequest}
+              onReload={loadGroupedConsentRequests}
+            />
           </div>
-
-          <Card className="mb-6">
-            <CardHeader className="pb-2">
-              <CardTitle>Filter Requests</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search by app, dataset or field"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-8"
-                  />
-                </div>
-                <div className="w-full sm:w-48">
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger id="status">
-                      <SelectValue placeholder="Filter by status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Statuses</SelectItem>
-                      <SelectItem value="requested">Pending</SelectItem>
-                      <SelectItem value="approved">Approved</SelectItem>
-                      <SelectItem value="rejected">Rejected</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Tabs defaultValue="all">
-            <TabsList>
-              <TabsTrigger value="all">All Requests</TabsTrigger>
-              <TabsTrigger value="pending">Pending</TabsTrigger>
-              <TabsTrigger value="approved">Approved</TabsTrigger>
-              <TabsTrigger value="rejected">Rejected</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="all" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Grouped Consent Requests</CardTitle>
-                  <CardDescription>
-                    All grouped requests for data access
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {loading ? (
-                    <div className="text-center py-6">
-                      <p className="text-muted-foreground">Loading requests...</p>
-                    </div>
-                  ) : filteredRequests.length === 0 ? (
-                    <div className="text-center py-6">
-                      <p className="text-muted-foreground">No consent requests found</p>
-                    </div>
-                  ) : (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Application</TableHead>
-                          <TableHead>Dataset / Fields</TableHead>
-                          <TableHead>Access Type</TableHead>
-                          <TableHead>Purpose</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead>Expiry</TableHead>
-                          <TableHead>Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredRequests.map((group) => (
-                          <GroupedConsentRow
-                            key={group.groupId}
-                            group={group}
-                            onReload={loadGroupedConsentRequests}
-                            onViewApp={handleViewApp}
-                            onOpenDetail={openDetailDialog}
-                          />
-                        ))}
-                      </TableBody>
-                    </Table>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="pending" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Pending Grouped Consent Requests</CardTitle>
-                  <CardDescription>
-                    Grouped requests awaiting approval or rejection
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {loading ? (
-                    <div className="text-center py-6">
-                      <p className="text-muted-foreground">Loading requests...</p>
-                    </div>
-                  ) : filteredRequests.filter(r => r.status === 'requested').length === 0 ? (
-                    <div className="text-center py-6">
-                      <p className="text-muted-foreground">No pending grouped requests found</p>
-                    </div>
-                  ) : (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Application</TableHead>
-                          <TableHead>Dataset / Fields</TableHead>
-                          <TableHead>Access Type</TableHead>
-                          <TableHead>Purpose</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead>Expiry</TableHead>
-                          <TableHead>Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredRequests
-                          .filter(r => r.status === 'requested')
-                          .map((group) => (
-                            <GroupedConsentRow
-                              key={group.groupId}
-                              group={group}
-                              onReload={loadGroupedConsentRequests}
-                              onViewApp={handleViewApp}
-                              onOpenDetail={openDetailDialog}
-                            />
-                          ))}
-                      </TableBody>
-                    </Table>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="approved" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Approved Grouped Consent Requests</CardTitle>
-                  <CardDescription>
-                    Grouped requests that have been approved
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {loading ? (
-                    <div className="text-center py-6">
-                      <p className="text-muted-foreground">Loading requests...</p>
-                    </div>
-                  ) : filteredRequests.filter(r => r.status === 'approved').length === 0 ? (
-                    <div className="text-center py-6">
-                      <p className="text-muted-foreground">No approved grouped requests found</p>
-                    </div>
-                  ) : (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Application</TableHead>
-                          <TableHead>Dataset / Fields</TableHead>
-                          <TableHead>Access Type</TableHead>
-                          <TableHead>Purpose</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead>Expiry</TableHead>
-                          <TableHead>Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredRequests
-                          .filter(r => r.status === 'approved')
-                          .map((group) => (
-                            <GroupedConsentRow
-                              key={group.groupId}
-                              group={group}
-                              onReload={loadGroupedConsentRequests}
-                              onViewApp={handleViewApp}
-                              onOpenDetail={openDetailDialog}
-                            />
-                          ))}
-                      </TableBody>
-                    </Table>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="rejected" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Rejected Grouped Consent Requests</CardTitle>
-                  <CardDescription>
-                    Grouped requests that have been rejected
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {loading ? (
-                    <div className="text-center py-6">
-                      <p className="text-muted-foreground">Loading requests...</p>
-                    </div>
-                  ) : filteredRequests.filter(r => r.status === 'rejected').length === 0 ? (
-                    <div className="text-center py-6">
-                      <p className="text-muted-foreground">No rejected grouped requests found</p>
-                    </div>
-                  ) : (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Application</TableHead>
-                          <TableHead>Dataset / Fields</TableHead>
-                          <TableHead>Access Type</TableHead>
-                          <TableHead>Purpose</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead>Expiry</TableHead>
-                          <TableHead>Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredRequests
-                          .filter(r => r.status === 'rejected')
-                          .map((group) => (
-                            <GroupedConsentRow
-                              key={group.groupId}
-                              group={group}
-                              onReload={loadGroupedConsentRequests}
-                              onViewApp={handleViewApp}
-                              onOpenDetail={openDetailDialog}
-                            />
-                          ))}
-                      </TableBody>
-                    </Table>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-          
-          {/* Dialog for managing consent details */}
-          <GroupedConsentDialog
-            open={detailDialogOpen}
-            onOpenChange={setDetailDialogOpen}
-            groupedRequest={selectedGroupedRequest}
-            onReload={loadGroupedConsentRequests}
-          />
         </main>
       </div>
     </div>
