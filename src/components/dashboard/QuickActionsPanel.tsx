@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Database, Key, Server, Users } from 'lucide-react';
+import { Database, Server, Users } from 'lucide-react';
 
 interface QuickActionsPanelProps {
   isAdmin: boolean;
@@ -24,15 +24,6 @@ const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
       </div>
       
       <div className="grid gap-6 md:grid-cols-3">
-        <Button 
-          variant="outline" 
-          className="h-24 flex flex-col gap-2"
-          onClick={() => navigate('/tokens')}
-        >
-          <Key className="h-5 w-5" />
-          <span>Tokenize Data</span>
-        </Button>
-        
         {canManageVaults && (
           <Button 
             variant="outline" 
