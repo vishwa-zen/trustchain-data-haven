@@ -120,6 +120,10 @@ const Login = () => {
           </div>
         </CardFooter>
       </Card>
+      
+      <div className="mt-6 text-sm text-muted-foreground text-center">
+        Copyright © Zentience - All Rights Reserved.
+      </div>
     </div>
   );
 };
