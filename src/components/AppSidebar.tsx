@@ -46,7 +46,7 @@ const AppSidebar: React.FC = () => {
     <NavLink to={to} className={({ isActive }) => (isActive ? 'active' : '')}>
       {({ isActive }) => (
         <SidebarMenuButton isActive={isActive} tooltip={children as string}>
-          <Icon size={18} className="flex-shrink-0" />
+          <Icon size={18} className="flex-shrink-0 mr-2" />
           <span>{children}</span>
         </SidebarMenuButton>
       )}
@@ -55,11 +55,11 @@ const AppSidebar: React.FC = () => {
   
   return (
     <Sidebar className="pt-16"> {/* Increased padding-top to ensure content is below navbar */}
-      <SidebarRail className="flex items-center justify-center">
+      <SidebarRail className="flex items-center justify-center hover:bg-vault-50 cursor-pointer">
         {state === "expanded" ? (
-          <ChevronLeft size={16} className="opacity-60" />
+          <ChevronLeft size={18} className="text-vault-700" />
         ) : (
-          <ChevronRight size={16} className="opacity-60" />
+          <ChevronRight size={18} className="text-vault-700" />
         )}
       </SidebarRail>
       <SidebarHeader className="invisible h-0 p-0" /> {/* Empty header to maintain spacing */}
