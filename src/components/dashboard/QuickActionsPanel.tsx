@@ -2,7 +2,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Database, Server, Users } from 'lucide-react';
+import { Database, Server, Users, Lock, FileCheck, Shield } from 'lucide-react';
+import { getCurrentUser } from '@/lib/auth';
 
 interface QuickActionsPanelProps {
   isAdmin: boolean;
@@ -16,6 +17,11 @@ const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
   isAppOwner 
 }) => {
   const navigate = useNavigate();
+  const user = getCurrentUser();
+  const isCtoUser = user?.role === 'cto-user';
+  const isDpoUser = user?.role === 'dpo-user';
+  const isCsioUser = user?.role === 'csio-user';
+  const isSpecialRole = isCtoUser || isDpoUser || isCsioUser;
   
   return (
     <div className="mb-8">
@@ -54,6 +60,39 @@ const QuickActionsPanel: React.FC<QuickActionsPanelProps> = ({
           >
             <Users className="h-5 w-5" />
             <span>Manage Users</span>
+          </Button>
+        )}
+
+        {isSpecialRole && (
+          <Button 
+            variant="outline" 
+            className="h-24 flex flex-col gap-2"
+            onClick={() => navigate('/consent')}
+          >
+            <Lock className="h-5 w-5" />
+            <span>Consent Management</span>
+          </Button>
+        )}
+
+        {isDpoUser && (
+          <Button 
+            variant="outline" 
+            className="h-24 flex flex-col gap-2"
+            onClick={() => navigate('/consent')}
+          >
+            <FileCheck className="h-5 w-5" />
+            <span>Compliance Review</span>
+          </Button>
+        )}
+
+        {isCsioUser && (
+          <Button 
+            variant="outline" 
+            className="h-24 flex flex-col gap-2"
+            onClick={() => navigate('/consent')}
+          >
+            <Shield className="h-5 w-5" />
+            <span>Security Overview</span>
           </Button>
         )}
       </div>

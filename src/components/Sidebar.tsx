@@ -8,7 +8,10 @@ import {
   Settings, 
   Lock,
   Users,
-  Server
+  Server,
+  FileCheck,
+  BarChart4,
+  AlertCircle
 } from 'lucide-react';
 import { getCurrentUser, hasRole } from '@/lib/auth';
 
@@ -19,6 +22,11 @@ const Sidebar: React.FC = () => {
   
   const canManageVaults = hasRole(['data-steward', 'admin']);
   const canManageConsent = hasRole(['admin', 'cto-user', 'dpo-user', 'csio-user']);
+  
+  // Check for specific roles
+  const isCtoUser = user.role === 'cto-user';
+  const isDpoUser = user.role === 'dpo-user';
+  const isCsioUser = user.role === 'csio-user';
   
   return (
     <div className="w-64 min-h-screen border-r bg-background px-3 py-6 flex flex-col">
@@ -62,10 +70,45 @@ const Sidebar: React.FC = () => {
         {canManageConsent && (
           <NavLink 
             to="/consent" 
-            className={({ isActive }) => isActive ? 'nav-link-active' : 'nav-link-inactive'}
+            className={({ isActive }) => 
+              isActive 
+                ? 'nav-link-active' 
+                : `nav-link-inactive ${isCtoUser || isDpoUser || isCsioUser ? 'bg-highlight-50 text-foreground' : ''}`
+            }
           >
             <Lock size={18} />
             <span>Consent Management</span>
+          </NavLink>
+        )}
+        
+        {/* Role-specific navigation items */}
+        {isCtoUser && (
+          <NavLink 
+            to="/architecture" 
+            className={({ isActive }) => isActive ? 'nav-link-active' : 'nav-link-inactive'}
+          >
+            <BarChart4 size={18} />
+            <span>Data Architecture</span>
+          </NavLink>
+        )}
+        
+        {isDpoUser && (
+          <NavLink 
+            to="/compliance" 
+            className={({ isActive }) => isActive ? 'nav-link-active' : 'nav-link-inactive'}
+          >
+            <FileCheck size={18} />
+            <span>Compliance</span>
+          </NavLink>
+        )}
+        
+        {isCsioUser && (
+          <NavLink 
+            to="/security" 
+            className={({ isActive }) => isActive ? 'nav-link-active' : 'nav-link-inactive'}
+          >
+            <AlertCircle size={18} />
+            <span>Security Alerts</span>
           </NavLink>
         )}
         

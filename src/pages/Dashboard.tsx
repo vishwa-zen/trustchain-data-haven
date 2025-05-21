@@ -14,6 +14,7 @@ import VaultsList from '@/components/dashboard/VaultsList';
 import ApplicationsList from '@/components/dashboard/ApplicationsList';
 import EmptyStateCard from '@/components/dashboard/EmptyStateCard';
 import QuickActionsPanel from '@/components/dashboard/QuickActionsPanel';
+import RoleSpecificCards from '@/components/dashboard/RoleSpecificCards';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ const Dashboard = () => {
   const canManageVaults = hasRole(['data-steward', 'admin']);
   const isAdmin = hasRole(['admin']);
   const isAppOwner = user?.role === 'app-owner';
+  const isSpecialRole = ['cto-user', 'dpo-user', 'csio-user'].includes(user?.role || '');
   
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -178,6 +180,11 @@ const Dashboard = () => {
             isAdmin={isAdmin}
             isAppOwner={isAppOwner}
           />
+          
+          {/* Show role-specific cards for CTO, DPO, and CSIO users */}
+          {isSpecialRole && (
+            <RoleSpecificCards user={user} />
+          )}
           
           {canManageVaults && vaults.length > 0 && (
             <VaultsList vaults={vaults} loading={loading} />
