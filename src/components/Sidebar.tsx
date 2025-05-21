@@ -24,9 +24,8 @@ const Sidebar: React.FC = () => {
   const canManageConsent = hasRole(['admin', 'cto-user', 'dpo-user', 'csio-user']);
   
   // Check for specific roles
-  const isCtoUser = user.role === 'cto-user';
-  const isDpoUser = user.role === 'dpo-user';
-  const isCsioUser = user.role === 'csio-user';
+  const isSpecialRole = ['cto-user', 'dpo-user', 'csio-user'].includes(user.role);
+  const canAccessTokens = user.role === 'app-owner' && !isSpecialRole;
   
   return (
     <div className="w-64 min-h-screen border-r bg-background px-3 py-6 flex flex-col">
@@ -49,7 +48,7 @@ const Sidebar: React.FC = () => {
           </NavLink>
         )}
         
-        {user.role === 'app-owner' && (
+        {(user.role === 'app-owner' || isSpecialRole) && (
           <NavLink 
             to="/applications" 
             className={({ isActive }) => isActive ? 'nav-link-active' : 'nav-link-inactive'}
@@ -59,13 +58,15 @@ const Sidebar: React.FC = () => {
           </NavLink>
         )}
         
-        <NavLink 
-          to="/tokens" 
-          className={({ isActive }) => isActive ? 'nav-link-active' : 'nav-link-inactive'}
-        >
-          <Key size={18} />
-          <span>Tokens</span>
-        </NavLink>
+        {canAccessTokens && (
+          <NavLink 
+            to="/tokens" 
+            className={({ isActive }) => isActive ? 'nav-link-active' : 'nav-link-inactive'}
+          >
+            <Key size={18} />
+            <span>Tokens</span>
+          </NavLink>
+        )}
         
         {canManageConsent && (
           <NavLink 
@@ -73,42 +74,11 @@ const Sidebar: React.FC = () => {
             className={({ isActive }) => 
               isActive 
                 ? 'nav-link-active' 
-                : `nav-link-inactive ${isCtoUser || isDpoUser || isCsioUser ? 'bg-highlight-50 text-foreground' : ''}`
+                : `nav-link-inactive ${isSpecialRole ? 'bg-highlight-50 text-foreground' : ''}`
             }
           >
             <Lock size={18} />
             <span>Consent Management</span>
-          </NavLink>
-        )}
-        
-        {/* Role-specific navigation items */}
-        {isCtoUser && (
-          <NavLink 
-            to="/architecture" 
-            className={({ isActive }) => isActive ? 'nav-link-active' : 'nav-link-inactive'}
-          >
-            <BarChart4 size={18} />
-            <span>Data Architecture</span>
-          </NavLink>
-        )}
-        
-        {isDpoUser && (
-          <NavLink 
-            to="/compliance" 
-            className={({ isActive }) => isActive ? 'nav-link-active' : 'nav-link-inactive'}
-          >
-            <FileCheck size={18} />
-            <span>Compliance</span>
-          </NavLink>
-        )}
-        
-        {isCsioUser && (
-          <NavLink 
-            to="/security" 
-            className={({ isActive }) => isActive ? 'nav-link-active' : 'nav-link-inactive'}
-          >
-            <AlertCircle size={18} />
-            <span>Security Alerts</span>
           </NavLink>
         )}
         

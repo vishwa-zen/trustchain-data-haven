@@ -24,10 +24,10 @@ const RoleSpecificCards: React.FC<RoleSpecificCardsProps> = ({ user }) => {
   const [applications, setApplications] = useState<AppRegistration[]>([]);
   const [loading, setLoading] = useState(false);
   
-  // Load applications for CTO user
+  // Load applications for all special roles (CTO, DPO, CSIO)
   useEffect(() => {
     const fetchApps = async () => {
-      if (user.role === 'cto-user') {
+      if (['cto-user', 'dpo-user', 'csio-user'].includes(user.role)) {
         setLoading(true);
         try {
           const appsData = await getApplicationsByUser(user.id);
@@ -76,59 +76,7 @@ const RoleSpecificCards: React.FC<RoleSpecificCardsProps> = ({ user }) => {
     fetchApps();
   }, [user.id, user.role]);
   
-  // Define role-specific content
-  const roleContent = {
-    'cto-user': {
-      title: 'CTO Dashboard',
-      cards: [
-        // We'll add application cards dynamically below
-      ]
-    },
-    'dpo-user': {
-      title: 'DPO Dashboard',
-      cards: [
-        {
-          title: 'Compliance Status',
-          description: 'GDPR, CCPA and other regulatory compliance',
-          icon: <FileCheck className="h-6 w-6 text-vault-700" />,
-          color: 'bg-gradient-to-br from-green-100 to-green-50',
-          action: 'Review Compliance',
-          onClick: () => navigate('/consent')
-        },
-        {
-          title: 'Privacy Policies',
-          description: 'Update and manage privacy documentation',
-          icon: <FileText className="h-6 w-6 text-vault-700" />,
-          color: 'bg-gradient-to-br from-green-100 to-green-50',
-          action: 'Manage Policies',
-          onClick: () => navigate('/consent')
-        }
-      ]
-    },
-    'csio-user': {
-      title: 'CSIO Dashboard',
-      cards: [
-        {
-          title: 'Security Overview',
-          description: 'System security status and threat detection',
-          icon: <Shield className="h-6 w-6 text-vault-700" />,
-          color: 'bg-gradient-to-br from-security-100 to-security-50',
-          action: 'View Security',
-          onClick: () => navigate('/consent')
-        },
-        {
-          title: 'Data Access Alerts',
-          description: 'Review recent critical data access events',
-          icon: <AlertCircle className="h-6 w-6 text-vault-700" />,
-          color: 'bg-gradient-to-br from-security-100 to-security-50',
-          action: 'View Alerts',
-          onClick: () => navigate('/consent')
-        }
-      ]
-    }
-  };
-  
-  // Generate application status cards for CTO users
+  // Generate application status cards for all special roles
   const getApplicationStatusCards = () => {
     if (loading) {
       return [{
@@ -180,19 +128,32 @@ const RoleSpecificCards: React.FC<RoleSpecificCardsProps> = ({ user }) => {
     ];
   };
   
-  // Check if we have specific content for this role
-  const content = roleContent[user.role as keyof typeof roleContent];
-  if (!user.role || !content) return null;
+  // Define role-specific title
+  const getRoleTitle = () => {
+    switch (user.role) {
+      case 'cto-user':
+        return 'CTO Dashboard';
+      case 'dpo-user':
+        return 'DPO Dashboard';
+      case 'csio-user':
+        return 'CSIO Dashboard';
+      default:
+        return 'Dashboard';
+    }
+  };
   
-  // For CTO user, use application cards
-  const displayedCards = user.role === 'cto-user' 
-    ? getApplicationStatusCards() 
-    : content.cards;
+  // Check if we have a special role that needs to show the cards
+  if (!['cto-user', 'dpo-user', 'csio-user'].includes(user.role)) {
+    return null;
+  }
+  
+  // Get application cards for all special roles
+  const displayedCards = getApplicationStatusCards();
   
   return (
     <div className="mb-8">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">{content.title}</h2>
+        <h2 className="text-xl font-semibold">{getRoleTitle()}</h2>
       </div>
       
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
