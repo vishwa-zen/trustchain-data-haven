@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
-import Sidebar from '@/components/Sidebar';
+import AppSidebar from '@/components/AppSidebar';
 import VaultCard from '@/components/VaultCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -99,10 +100,10 @@ const VaultManagement = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
-      <div className="flex">
-        <Sidebar />
-        <main className="flex-1 p-6">
+      <div className="flex w-full h-full">
+        <Navbar />
+        <AppSidebar />
+        <main className="flex-1 p-6 pt-20 overflow-auto">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold">Vault Management</h1>
             <Button onClick={() => setCreateDialogOpen(true)}>

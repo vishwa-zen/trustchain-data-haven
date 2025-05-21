@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
-import Sidebar from '@/components/Sidebar';
+import AppSidebar from '@/components/AppSidebar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -106,10 +105,10 @@ const ConsentManagement = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
-      <div className="flex">
-        <Sidebar />
-        <main className="flex-1 p-6">
+      <div className="flex w-full h-full">
+        <Navbar />
+        <AppSidebar />
+        <main className="flex-1 p-6 pt-20 overflow-auto">
           <div className="mb-6">
             <h1 className="text-2xl font-bold flex items-center">
               <Shield className="h-6 w-6 mr-2 text-highlight-700" />
@@ -207,7 +206,6 @@ const ConsentManagement = () => {
               </Card>
             </TabsContent>
             
-            {/* Similar TabsContent components for pending, approved, and rejected tabs */}
             <TabsContent value="pending" className="mt-6">
               <Card>
                 <CardHeader>
