@@ -149,9 +149,9 @@ const GroupedConsentRow: React.FC<GroupedConsentRowProps> = ({
         </div>
       </TableCell>
       <TableCell>
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-col gap-1">
           {group.purpose.map((p, i) => (
-            <Badge key={i} variant="secondary" className="text-xs">
+            <Badge key={i} variant="secondary" className="text-xs mb-1">
               {p}
             </Badge>
           ))}
