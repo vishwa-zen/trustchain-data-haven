@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -49,6 +50,18 @@ const Dashboard = () => {
     if (!isAuthenticated()) {
       navigate('/login');
       return;
+    }
+    
+    // If the user is an admin, suggest going to the user management page
+    if (isAdmin && !localStorage.getItem('admin_dashboard_seen')) {
+      toast.info('As an admin, you can manage users in the User Management section', {
+        duration: 5000,
+        action: {
+          label: 'Go to Users',
+          onClick: () => navigate('/users')
+        }
+      });
+      localStorage.setItem('admin_dashboard_seen', 'true');
     }
     
     const fetchData = async () => {
@@ -178,6 +191,26 @@ const Dashboard = () => {
         <AppSidebar />
         <main className={contentClass}>
           <DashboardHeader user={user} />
+          
+          {isAdmin && (
+            <div className="mb-8">
+              <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
+                <h2 className="text-lg font-semibold text-primary flex items-center">
+                  <Users className="mr-2 h-5 w-5" />
+                  Admin User Management
+                </h2>
+                <p className="text-sm mt-1 mb-4">
+                  As an administrator, you have access to manage all users in the system.
+                </p>
+                <button 
+                  onClick={() => navigate('/users')}
+                  className="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors"
+                >
+                  Manage Users
+                </button>
+              </div>
+            </div>
+          )}
           
           <UserSummaryCards 
             user={user}

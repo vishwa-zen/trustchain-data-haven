@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface StatisticCardProps {
   title: string;
@@ -10,42 +10,47 @@ interface StatisticCardProps {
   value: string | number;
   isLoading: boolean;
   colorClass?: string;
-  buttonText?: string;
   icon?: React.ReactNode;
+  buttonText?: string;
   onClick?: () => void;
+  priority?: boolean;
 }
 
-const StatisticCard: React.FC<StatisticCardProps> = ({ 
-  title, 
-  description, 
-  value, 
-  isLoading, 
-  colorClass = "bg-gradient-to-br from-security-100 to-security-50",
-  buttonText,
+const StatisticCard: React.FC<StatisticCardProps> = ({
+  title,
+  description,
+  value,
+  isLoading,
+  colorClass = "bg-gray-100",
   icon,
-  onClick 
+  buttonText,
+  onClick,
+  priority = false
 }) => {
   return (
-    <Card className={`${colorClass} border`}>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg text-security-900">{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {buttonText && onClick ? (
-          <Button 
-            variant="outline" 
-            className="w-full"
-            onClick={onClick}
-          >
-            {icon && icon}
-            {buttonText}
-          </Button>
-        ) : (
-          <div className="text-2xl font-bold text-security-900">
-            {isLoading ? '...' : value}
-          </div>
-        )}
+    <Card className={`${colorClass} border ${priority ? 'shadow-md ring-2 ring-primary/30' : 'shadow-sm'} animate-fade-in`}>
+      <CardContent className="p-6">
+        <div className="space-y-2">
+          <h3 className={`text-base font-semibold ${priority ? 'text-primary' : ''}`}>{title}</h3>
+          <p className="text-sm text-muted-foreground">{description}</p>
+          
+          {isLoading ? (
+            <Skeleton className="h-8 w-16 rounded-md" />
+          ) : (
+            value && <p className="text-2xl font-bold">{value}</p>
+          )}
+          
+          {buttonText && onClick && (
+            <Button 
+              onClick={onClick} 
+              variant={priority ? "default" : "outline"} 
+              className={`mt-2 w-full ${priority ? 'bg-primary hover:bg-primary/90' : ''}`}
+            >
+              {icon && icon}
+              {buttonText}
+            </Button>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

@@ -32,6 +32,20 @@ const UserSummaryCards: React.FC<UserSummaryCardsProps> = ({
       <div className="grid gap-4 md:grid-cols-3">
         <RoleSummaryCard user={user} />
         
+        {isAdmin && (
+          <StatisticCard
+            title="User Management"
+            description="Admin controls"
+            value=""
+            isLoading={false}
+            colorClass="bg-gradient-to-br from-primary-100 to-primary-50 border-2 border-primary/20"
+            buttonText="Manage Users"
+            icon={<Users className="h-4 w-4 mr-2" />}
+            onClick={() => navigate('/users')}
+            priority={true}
+          />
+        )}
+        
         {canManageVaults && (
           <StatisticCard
             title="Vaults"
@@ -49,19 +63,6 @@ const UserSummaryCards: React.FC<UserSummaryCardsProps> = ({
             value={applicationsCount}
             isLoading={loading}
             colorClass="bg-gradient-to-br from-highlight-100 to-highlight-50"
-          />
-        )}
-        
-        {isAdmin && (
-          <StatisticCard
-            title="User Management"
-            description="Admin controls"
-            value=""
-            isLoading={false}
-            colorClass="bg-gradient-to-br from-security-100 to-security-50"
-            buttonText="Manage Users"
-            icon={<Users className="h-4 w-4 mr-2" />}
-            onClick={() => navigate('/users')}
           />
         )}
       </div>

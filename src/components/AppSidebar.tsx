@@ -40,21 +40,26 @@ const AppSidebar: React.FC = () => {
   // Check for specific roles
   const isSpecialRole = ['cto-user', 'dpo-user', 'csio-user'].includes(user.role);
   const canAccessTokens = user.role === 'app-owner' && !isSpecialRole;
+  const isAdmin = user.role === 'admin';
 
   // Custom NavLink wrapper to work with SidebarMenuButton that properly handles collapsed state
-  const SidebarNavLink = ({ to, icon: Icon, children }: { to: string; icon: React.ElementType; children: React.ReactNode }) => (
+  const SidebarNavLink = ({ to, icon: Icon, children, highlight = false }: { to: string; icon: React.ElementType; children: React.ReactNode; highlight?: boolean }) => (
     <NavLink to={to} className={({ isActive }) => (isActive ? 'active' : '')}>
       {({ isActive }) => (
-        <SidebarMenuButton isActive={isActive} tooltip={children as string}>
-          <Icon size={20} className="flex-shrink-0" />
-          <span className="ml-2">{children}</span>
+        <SidebarMenuButton 
+          isActive={isActive} 
+          tooltip={children as string}
+          className={highlight ? "bg-primary/10 hover:bg-primary/20" : ""}
+        >
+          <Icon size={20} className={`flex-shrink-0 ${highlight ? "text-primary" : ""}`} />
+          <span className={`ml-2 ${highlight ? "font-semibold text-primary" : ""}`}>{children}</span>
         </SidebarMenuButton>
       )}
     </NavLink>
   );
   
   return (
-    <Sidebar className="pt-16" collapsible="icon"> {/* Changed to icon collapsible mode */}
+    <Sidebar className="pt-16" collapsible="icon">
       <SidebarRail 
         onClick={toggleSidebar}
         className="flex items-center justify-center cursor-pointer transition-colors duration-200 hover:bg-primary/5"
@@ -67,7 +72,7 @@ const AppSidebar: React.FC = () => {
           )}
         </div>
       </SidebarRail>
-      <SidebarHeader className="invisible h-0 p-0" /> {/* Empty header to maintain spacing */}
+      <SidebarHeader className="invisible h-0 p-0" />
       <SidebarContent>
         <SidebarMenu className="mt-4">
           <SidebarMenuItem>
@@ -75,6 +80,14 @@ const AppSidebar: React.FC = () => {
               Dashboard
             </SidebarNavLink>
           </SidebarMenuItem>
+          
+          {isAdmin && (
+            <SidebarMenuItem>
+              <SidebarNavLink to="/users" icon={Users} highlight={true}>
+                Users
+              </SidebarNavLink>
+            </SidebarMenuItem>
+          )}
           
           {canManageVaults && (
             <SidebarMenuItem>
@@ -104,14 +117,6 @@ const AppSidebar: React.FC = () => {
             <SidebarMenuItem>
               <SidebarNavLink to="/consent" icon={Lock}>
                 Consent Management
-              </SidebarNavLink>
-            </SidebarMenuItem>
-          )}
-          
-          {user.role === 'admin' && (
-            <SidebarMenuItem>
-              <SidebarNavLink to="/users" icon={Users}>
-                Users
               </SidebarNavLink>
             </SidebarMenuItem>
           )}
