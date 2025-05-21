@@ -1,94 +1,57 @@
 
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 import { 
-  Shield, 
-  Database, 
-  Key, 
+  LayoutDashboard, 
   Settings, 
-  Lock,
-  Users,
-  Server
+  Users, 
+  Database, 
+  FileText, 
+  Key, 
+  CheckSquare,
+  BarChart
 } from 'lucide-react';
-import { getCurrentUser, hasRole } from '@/lib/auth';
 
-const Sidebar: React.FC = () => {
-  const user = getCurrentUser();
+const Sidebar = () => {
+  const location = useLocation();
   
-  if (!user) return null;
-  
-  const canManageVaults = hasRole(['data-steward', 'admin']);
-  
+  const isActive = (path: string) => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(path);
+  };
+
+  const navItems = [
+    { icon: LayoutDashboard, label: 'Dashboard', href: '/' },
+    { icon: Database, label: 'Vaults', href: '/vaults' },
+    { icon: FileText, label: 'Applications', href: '/applications' },
+    { icon: Key, label: 'Access Keys', href: '/tokens' },
+    { icon: CheckSquare, label: 'Consent', href: '/consent' },
+    { icon: BarChart, label: 'Audit Logs', href: '/audit-logs' },
+    { icon: Users, label: 'Users', href: '/users' },
+    { icon: Settings, label: 'Settings', href: '/settings' },
+  ];
+
   return (
-    <div className="w-64 min-h-screen border-r bg-background px-3 py-6 flex flex-col">
-      <div className="space-y-1">
-        <NavLink 
-          to="/dashboard" 
-          className={({ isActive }) => isActive ? 'nav-link-active' : 'nav-link-inactive'}
-        >
-          <Shield size={18} />
-          <span>Dashboard</span>
-        </NavLink>
-        
-        {canManageVaults && (
-          <NavLink 
-            to="/vaults" 
-            className={({ isActive }) => isActive ? 'nav-link-active' : 'nav-link-inactive'}
+    <aside className="hidden md:block w-64 border-r border-gray-200 p-4 bg-white">
+      <nav className="space-y-1">
+        {navItems.map((item) => (
+          <Link
+            key={item.href}
+            to={item.href}
+            className={cn(
+              'flex items-center px-3 py-2 rounded-md text-sm font-medium',
+              isActive(item.href)
+                ? 'bg-gray-100 text-gray-900'
+                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+            )}
           >
-            <Database size={18} />
-            <span>Vaults</span>
-          </NavLink>
-        )}
-        
-        {user.role === 'app-owner' && (
-          <NavLink 
-            to="/applications" 
-            className={({ isActive }) => isActive ? 'nav-link-active' : 'nav-link-inactive'}
-          >
-            <Server size={18} />
-            <span>Applications</span>
-          </NavLink>
-        )}
-        
-        <NavLink 
-          to="/tokens" 
-          className={({ isActive }) => isActive ? 'nav-link-active' : 'nav-link-inactive'}
-        >
-          <Key size={18} />
-          <span>Tokens</span>
-        </NavLink>
-        
-        {user.role === 'admin' && (
-          <NavLink 
-            to="/users" 
-            className={({ isActive }) => isActive ? 'nav-link-active' : 'nav-link-inactive'}
-          >
-            <Users size={18} />
-            <span>Users</span>
-          </NavLink>
-        )}
-        
-        <NavLink 
-          to="/settings" 
-          className={({ isActive }) => isActive ? 'nav-link-active' : 'nav-link-inactive'}
-        >
-          <Settings size={18} />
-          <span>Settings</span>
-        </NavLink>
-      </div>
-      
-      <div className="mt-auto pt-4 border-t">
-        <div className="rounded-md bg-vault-50 p-3">
-          <h3 className="flex items-center text-xs font-medium text-vault-800">
-            <Lock size={14} className="mr-1" />
-            Security Status
-          </h3>
-          <p className="text-xs text-vault-600 mt-1">
-            All data is encrypted and secure
-          </p>
-        </div>
-      </div>
-    </div>
+            <item.icon className="h-4 w-4 mr-3" />
+            {item.label}
+          </Link>
+        ))}
+      </nav>
+    </aside>
   );
 };
 
