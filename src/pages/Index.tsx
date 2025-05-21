@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Shield, Database, Lock, Key, Cloud, FileShield } from 'lucide-react';
+import { Shield, Database, Lock, Key, Cloud, FileLock } from 'lucide-react';
 import { isAuthenticated } from '@/lib/auth';
 
 const Index = () => {
@@ -77,7 +77,7 @@ const Index = () => {
                 <div className="bg-white p-8 rounded-xl shadow-card border border-vault-200">
                   <div className="flex items-start gap-4 mb-4">
                     <div className="h-12 w-12 rounded-lg bg-gradient-security flex items-center justify-center">
-                      <FileShield className="h-6 w-6 text-white" />
+                      <FileLock className="h-6 w-6 text-white" />
                     </div>
                     <div>
                       <h3 className="text-xl font-medium mb-2">Distributed Storage</h3>
