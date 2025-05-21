@@ -97,6 +97,11 @@
 }
 
 @layer components {
+  /* Fix for content hiding under fixed navbar */
+  .pt-navbar {
+    padding-top: 3.5rem; /* 56px, matches the navbar height */
+  }
+
   .vault-card {
     @apply bg-white rounded-xl shadow-card border border-border p-6 hover:shadow-glow transition-shadow duration-300 flex flex-col;
   }
