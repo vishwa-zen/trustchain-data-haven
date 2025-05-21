@@ -18,7 +18,7 @@ const Sidebar: React.FC = () => {
   if (!user) return null;
   
   const canManageVaults = hasRole(['data-steward', 'admin']);
-  const canManageConsent = hasRole(['data-steward', 'admin', 'cto-user', 'dpo-user', 'csio-user']);
+  const canManageConsent = hasRole(['admin', 'cto-user', 'dpo-user', 'csio-user']);
   
   return (
     <div className="w-64 min-h-screen border-r bg-background px-3 py-6 flex flex-col">

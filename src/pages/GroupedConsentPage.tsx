@@ -35,7 +35,7 @@ const GroupedConsentPage = () => {
       return;
     }
 
-    if (!hasRole(['admin', 'data-steward', 'cto-user', 'dpo-user', 'csio-user'])) {
+    if (!hasRole(['admin', 'cto-user', 'dpo-user', 'csio-user'])) {
       toast({
         title: 'Access Restricted',
         description: 'You do not have permission to access this page',
