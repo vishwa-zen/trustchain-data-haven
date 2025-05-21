@@ -85,7 +85,7 @@ const ApplicationDetail = () => {
       toast({
         title: "No Token",
         description: "No access token available to copy.",
-        variant: "warning",
+        variant: "default", // Changed from "warning" to "default" to match allowed types
       });
     }
   };
