@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -108,7 +109,7 @@ const ConsentManagement = () => {
       <div className="flex w-full h-full">
         <Navbar />
         <AppSidebar />
-        <main className="flex-1 p-6 pt-20 overflow-auto">
+        <main className="main-content">
           <div className="page-container">
             <div className="content-section">
               <h1 className="text-2xl font-bold flex items-center">
@@ -181,31 +182,33 @@ const ConsentManagement = () => {
                           <p className="text-muted-foreground">No consent requests found</p>
                         </div>
                       ) : (
-                        <div className="overflow-x-auto">
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>Application</TableHead>
-                                <TableHead>Dataset / Fields</TableHead>
-                                <TableHead>Access Type</TableHead>
-                                <TableHead>Purpose</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Expiry</TableHead>
-                                <TableHead>Actions</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {filteredRequests.map((group) => (
-                                <GroupedConsentRow
-                                  key={group.groupId}
-                                  group={group}
-                                  onReload={loadGroupedConsentRequests}
-                                  onViewApp={handleViewApp}
-                                  onOpenDetail={openDetailDialog}
-                                />
-                              ))}
-                            </TableBody>
-                          </Table>
+                        <div className="overflow-x-auto w-full">
+                          <div className="min-w-max">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Application</TableHead>
+                                  <TableHead>Dataset / Fields</TableHead>
+                                  <TableHead>Access Type</TableHead>
+                                  <TableHead>Purpose</TableHead>
+                                  <TableHead>Status</TableHead>
+                                  <TableHead>Expiry</TableHead>
+                                  <TableHead>Actions</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {filteredRequests.map((group) => (
+                                  <GroupedConsentRow
+                                    key={group.groupId}
+                                    group={group}
+                                    onReload={loadGroupedConsentRequests}
+                                    onViewApp={handleViewApp}
+                                    onOpenDetail={openDetailDialog}
+                                  />
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
                         </div>
                       )}
                     </CardContent>
@@ -230,33 +233,35 @@ const ConsentManagement = () => {
                           <p className="text-muted-foreground">No pending grouped requests found</p>
                         </div>
                       ) : (
-                        <div className="overflow-x-auto">
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>Application</TableHead>
-                                <TableHead>Dataset / Fields</TableHead>
-                                <TableHead>Access Type</TableHead>
-                                <TableHead>Purpose</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Expiry</TableHead>
-                                <TableHead>Actions</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {filteredRequests
-                                .filter(r => r.status === 'requested')
-                                .map((group) => (
-                                  <GroupedConsentRow
-                                    key={group.groupId}
-                                    group={group}
-                                    onReload={loadGroupedConsentRequests}
-                                    onViewApp={handleViewApp}
-                                    onOpenDetail={openDetailDialog}
-                                  />
-                                ))}
-                            </TableBody>
-                          </Table>
+                        <div className="overflow-x-auto w-full">
+                          <div className="min-w-max">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Application</TableHead>
+                                  <TableHead>Dataset / Fields</TableHead>
+                                  <TableHead>Access Type</TableHead>
+                                  <TableHead>Purpose</TableHead>
+                                  <TableHead>Status</TableHead>
+                                  <TableHead>Expiry</TableHead>
+                                  <TableHead>Actions</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {filteredRequests
+                                  .filter(r => r.status === 'requested')
+                                  .map((group) => (
+                                    <GroupedConsentRow
+                                      key={group.groupId}
+                                      group={group}
+                                      onReload={loadGroupedConsentRequests}
+                                      onViewApp={handleViewApp}
+                                      onOpenDetail={openDetailDialog}
+                                    />
+                                  ))}
+                              </TableBody>
+                            </Table>
+                          </div>
                         </div>
                       )}
                     </CardContent>
@@ -281,33 +286,35 @@ const ConsentManagement = () => {
                           <p className="text-muted-foreground">No approved grouped requests found</p>
                         </div>
                       ) : (
-                        <div className="overflow-x-auto">
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>Application</TableHead>
-                                <TableHead>Dataset / Fields</TableHead>
-                                <TableHead>Access Type</TableHead>
-                                <TableHead>Purpose</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Expiry</TableHead>
-                                <TableHead>Actions</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {filteredRequests
-                                .filter(r => r.status === 'approved')
-                                .map((group) => (
-                                  <GroupedConsentRow
-                                    key={group.groupId}
-                                    group={group}
-                                    onReload={loadGroupedConsentRequests}
-                                    onViewApp={handleViewApp}
-                                    onOpenDetail={openDetailDialog}
-                                  />
-                                ))}
-                            </TableBody>
-                          </Table>
+                        <div className="overflow-x-auto w-full">
+                          <div className="min-w-max">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Application</TableHead>
+                                  <TableHead>Dataset / Fields</TableHead>
+                                  <TableHead>Access Type</TableHead>
+                                  <TableHead>Purpose</TableHead>
+                                  <TableHead>Status</TableHead>
+                                  <TableHead>Expiry</TableHead>
+                                  <TableHead>Actions</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {filteredRequests
+                                  .filter(r => r.status === 'approved')
+                                  .map((group) => (
+                                    <GroupedConsentRow
+                                      key={group.groupId}
+                                      group={group}
+                                      onReload={loadGroupedConsentRequests}
+                                      onViewApp={handleViewApp}
+                                      onOpenDetail={openDetailDialog}
+                                    />
+                                  ))}
+                              </TableBody>
+                            </Table>
+                          </div>
                         </div>
                       )}
                     </CardContent>
@@ -332,33 +339,35 @@ const ConsentManagement = () => {
                           <p className="text-muted-foreground">No rejected grouped requests found</p>
                         </div>
                       ) : (
-                        <div className="overflow-x-auto">
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>Application</TableHead>
-                                <TableHead>Dataset / Fields</TableHead>
-                                <TableHead>Access Type</TableHead>
-                                <TableHead>Purpose</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Expiry</TableHead>
-                                <TableHead>Actions</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {filteredRequests
-                                .filter(r => r.status === 'rejected')
-                                .map((group) => (
-                                  <GroupedConsentRow
-                                    key={group.groupId}
-                                    group={group}
-                                    onReload={loadGroupedConsentRequests}
-                                    onViewApp={handleViewApp}
-                                    onOpenDetail={openDetailDialog}
-                                  />
-                                ))}
-                            </TableBody>
-                          </Table>
+                        <div className="overflow-x-auto w-full">
+                          <div className="min-w-max">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Application</TableHead>
+                                  <TableHead>Dataset / Fields</TableHead>
+                                  <TableHead>Access Type</TableHead>
+                                  <TableHead>Purpose</TableHead>
+                                  <TableHead>Status</TableHead>
+                                  <TableHead>Expiry</TableHead>
+                                  <TableHead>Actions</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {filteredRequests
+                                  .filter(r => r.status === 'rejected')
+                                  .map((group) => (
+                                    <GroupedConsentRow
+                                      key={group.groupId}
+                                      group={group}
+                                      onReload={loadGroupedConsentRequests}
+                                      onViewApp={handleViewApp}
+                                      onOpenDetail={openDetailDialog}
+                                    />
+                                  ))}
+                              </TableBody>
+                            </Table>
+                          </div>
                         </div>
                       )}
                     </CardContent>
