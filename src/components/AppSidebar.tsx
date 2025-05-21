@@ -11,7 +11,9 @@ import {
   Server,
   FileCheck,
   BarChart4,
-  AlertCircle
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { getCurrentUser, hasRole } from '@/lib/auth';
 import {
@@ -22,10 +24,13 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarRail,
+  useSidebar
 } from "@/components/ui/sidebar";
 
 const AppSidebar: React.FC = () => {
   const user = getCurrentUser();
+  const { state, toggleSidebar } = useSidebar();
   
   if (!user) return null;
   
@@ -50,6 +55,13 @@ const AppSidebar: React.FC = () => {
   
   return (
     <Sidebar className="pt-16"> {/* Increased padding-top to ensure content is below navbar */}
+      <SidebarRail className="flex items-center justify-center">
+        {state === "expanded" ? (
+          <ChevronLeft size={16} className="opacity-60" />
+        ) : (
+          <ChevronRight size={16} className="opacity-60" />
+        )}
+      </SidebarRail>
       <SidebarHeader className="invisible h-0 p-0" /> {/* Empty header to maintain spacing */}
       <SidebarContent>
         <SidebarMenu>
