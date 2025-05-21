@@ -172,9 +172,9 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background">
       <SidebarProvider>
         <Navbar />
-        <div className="flex w-full pt-14"> {/* Add padding top to prevent overlap with navbar */}
+        <div className="flex w-full"> 
           <AppSidebar />
-          <main className="flex-1 p-6">
+          <main className="flex-1 p-6 pt-20"> {/* Increased top padding to account for navbar */}
             <div className="flex items-center mb-6">
               <DashboardHeader user={user} />
             </div>
