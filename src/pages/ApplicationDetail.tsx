@@ -484,7 +484,7 @@ const ApplicationDetail = () => {
       <Navbar />
       <div className="flex">
         <Sidebar />
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 pt-20 overflow-auto">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center">
               <Button variant="outline" size="sm" onClick={handleBack} className="mr-4">
@@ -502,50 +502,6 @@ const ApplicationDetail = () => {
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Vault</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">Financial Data Vault</p>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Status</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center">
-                  <ShieldCheck className="h-5 w-5 mr-2 text-green-500" />
-                  <p className="text-2xl font-bold capitalize">{application.status}</p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Created On</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center">
-                  <Clock className="h-5 w-5 mr-2 text-muted-foreground" />
-                  <p className="text-2xl font-bold">{formatDate('2025-04-01T12:30:00Z')}</p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Data Sets</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">{application.dataSets.length}</p>
-              </CardContent>
-            </Card>
           </div>
 
           <Tabs defaultValue="datasets">
