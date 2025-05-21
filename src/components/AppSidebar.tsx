@@ -41,7 +41,7 @@ const AppSidebar: React.FC = () => {
     <NavLink to={to} className={({ isActive }) => (isActive ? 'active' : '')}>
       {({ isActive }) => (
         <SidebarMenuButton isActive={isActive} tooltip={children as string}>
-          <Icon size={18} />
+          <Icon size={18} className="flex-shrink-0" />
           <span>{children}</span>
         </SidebarMenuButton>
       )}
@@ -110,7 +110,7 @@ const AppSidebar: React.FC = () => {
       <SidebarFooter>
         <div className="rounded-md bg-vault-50 p-3 mx-3 mb-3">
           <h3 className="flex items-center text-xs font-medium text-vault-800">
-            <Lock size={14} className="mr-1" />
+            <Lock size={14} className="mr-1 flex-shrink-0" />
             Security Status
           </h3>
           <p className="text-xs text-vault-600 mt-1">

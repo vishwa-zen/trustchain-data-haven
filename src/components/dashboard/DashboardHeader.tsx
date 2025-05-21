@@ -12,7 +12,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ user }) => {
   return (
     <div className="flex justify-between items-center w-full mb-6">
       <h1 className="text-2xl font-bold">Dashboard</h1>
-      <div className="ml-auto">
+      <div className="ml-auto text-right">
         <span className="text-sm text-muted-foreground">Welcome, {user.firstName}</span>
       </div>
     </div>

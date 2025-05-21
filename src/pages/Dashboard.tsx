@@ -170,13 +170,11 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <SidebarProvider>
-        <Navbar />
-        <div className="flex w-full h-full"> {/* Added h-full for better layout */}
+        <div className="flex w-full h-full"> {/* Added w-full to ensure proper layout */}
+          <Navbar />
           <AppSidebar />
           <main className="flex-1 p-6 pt-20 overflow-auto"> {/* Added overflow-auto to handle content overflow */}
-            <div className="flex items-center mb-6">
-              <DashboardHeader user={user} />
-            </div>
+            <DashboardHeader user={user} />
             
             <UserSummaryCards 
               user={user}
