@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Navbar from '@/components/Navbar';
-import Sidebar from '@/components/Sidebar';
+import AppSidebar from '@/components/AppSidebar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -49,11 +49,11 @@ const Settings = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Navbar />
-      <div className="flex flex-1">
-        <Sidebar />
-        <main className="flex-1 p-6">
+    <div className="min-h-screen bg-background">
+      <div className="flex w-full h-full">
+        <Navbar />
+        <AppSidebar />
+        <main className="flex-1 p-6 pt-20 overflow-auto">
           <div className="mb-6">
             <h1 className="text-2xl font-bold tracking-tight">Account Settings</h1>
             <p className="text-muted-foreground">
