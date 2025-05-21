@@ -46,7 +46,7 @@ const AppSidebar: React.FC = () => {
     <NavLink to={to} className={({ isActive }) => (isActive ? 'active' : '')}>
       {({ isActive }) => (
         <SidebarMenuButton isActive={isActive} tooltip={children as string}>
-          <Icon size={18} className="flex-shrink-0" />
+          <Icon size={20} className="flex-shrink-0" />
           <span className="ml-2">{children}</span>
         </SidebarMenuButton>
       )}
@@ -54,7 +54,7 @@ const AppSidebar: React.FC = () => {
   );
   
   return (
-    <Sidebar className="pt-16"> {/* Increased padding-top to ensure content is below navbar */}
+    <Sidebar className="pt-16" collapsible="icon"> {/* Changed to icon collapsible mode */}
       <SidebarRail 
         onClick={toggleSidebar}
         className="flex items-center justify-center cursor-pointer transition-colors duration-200 hover:bg-primary/5"
