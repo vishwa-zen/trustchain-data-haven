@@ -16,13 +16,14 @@ const TokenManagement = () => {
   const user = getCurrentUser();
   const [searchTerm, setSearchTerm] = useState('');
   
-  // Mock token data with application information
+  // Mock token data with user-level API tokens and app-specific access keys
   const [tokens, setTokens] = useState([
     {
       id: '1',
       name: 'API Access Token',
-      applicationName: 'Customer Portal',
-      applicationId: 'app-123',
+      type: 'api_token',
+      applicationName: 'All Applications',
+      applicationId: null,
       token: 'tk_live_' + crypto.randomUUID().split('-')[0],
       createdAt: '2025-04-15T10:30:00Z',
       expiresAt: '2026-04-15T10:30:00Z',
@@ -31,12 +32,24 @@ const TokenManagement = () => {
     {
       id: '2',
       name: 'Access Key',
+      type: 'access_key',
       applicationName: 'Payment Gateway',
       applicationId: 'app-456',
       token: 'tk_live_' + crypto.randomUUID().split('-')[0],
       createdAt: '2025-03-22T08:15:00Z',
       expiresAt: '2025-09-22T08:15:00Z',
       lastUsed: '2025-05-11T09:45:12Z',
+    },
+    {
+      id: '3',
+      name: 'Access Key',
+      type: 'access_key',
+      applicationName: 'Customer Portal',
+      applicationId: 'app-123',
+      token: 'tk_live_' + crypto.randomUUID().split('-')[0],
+      createdAt: '2025-04-10T11:20:00Z',
+      expiresAt: '2025-10-10T11:20:00Z',
+      lastUsed: '2025-05-12T16:30:45Z',
     },
   ]);
 
@@ -75,8 +88,48 @@ const TokenManagement = () => {
     });
   };
 
-  const handleViewApplication = (applicationId: string) => {
-    navigate(`/applications/${applicationId}`);
+  const handleViewApplication = (applicationId: string | null) => {
+    if (applicationId) {
+      navigate(`/applications/${applicationId}`);
+    }
+  };
+
+  const getApplicationCell = (token: any) => {
+    if (token.type === 'api_token') {
+      return (
+        <span className="text-sm text-gray-600">
+          {token.applicationName}
+        </span>
+      );
+    } else {
+      return (
+        <span className="text-sm font-medium text-blue-600 cursor-pointer hover:underline" 
+              onClick={() => handleViewApplication(token.applicationId)}>
+          {token.applicationName}
+        </span>
+      );
+    }
+  };
+
+  const handleCreateNewToken = () => {
+    const newToken = {
+      id: crypto.randomUUID(),
+      name: 'API Access Token',
+      type: 'api_token',
+      applicationName: 'All Applications',
+      applicationId: null,
+      token: 'tk_live_' + crypto.randomUUID().split('-')[0],
+      createdAt: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // 1 year from now
+      lastUsed: new Date().toISOString(),
+    };
+    
+    setTokens([...tokens, newToken]);
+    
+    toast({
+      title: 'New Token Created',
+      description: 'A new API access token has been created',
+    });
   };
 
   const filteredTokens = tokens.filter(token => 
@@ -97,7 +150,7 @@ const TokenManagement = () => {
                 Manage access tokens for your applications
               </p>
             </div>
-            <Button>
+            <Button onClick={handleCreateNewToken}>
               <Key className="mr-2 h-4 w-4" />
               Create New Token
             </Button>
@@ -116,7 +169,7 @@ const TokenManagement = () => {
             <CardHeader>
               <CardTitle>Access Tokens</CardTitle>
               <CardDescription>
-                View and manage all your access tokens
+                API Access Tokens work across all your applications, while Access Keys are application-specific
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -138,10 +191,7 @@ const TokenManagement = () => {
                       <TableCell className="font-medium">{token.name}</TableCell>
                       <TableCell>
                         <div className="flex items-center">
-                          <span className="text-sm font-medium text-blue-600 cursor-pointer hover:underline" 
-                                onClick={() => handleViewApplication(token.applicationId)}>
-                            {token.applicationName}
-                          </span>
+                          {getApplicationCell(token)}
                         </div>
                       </TableCell>
                       <TableCell>
