@@ -35,10 +35,10 @@ const GroupedConsentPage = () => {
       return;
     }
 
-    if (!hasRole(['admin', 'data-steward'])) {
+    if (!hasRole(['admin', 'data-steward', 'cto-user', 'dpo-user', 'csio-user'])) {
       toast({
         title: 'Access Restricted',
-        description: 'Only administrators and data stewards can access this page',
+        description: 'You do not have permission to access this page',
         variant: 'destructive'
       });
       navigate('/dashboard');

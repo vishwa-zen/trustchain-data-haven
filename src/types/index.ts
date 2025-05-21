@@ -1,6 +1,5 @@
-
 // Make sure UserRole is properly exported
-export type UserRole = 'app-owner' | 'data-steward' | 'admin';
+export type UserRole = 'app-owner' | 'data-steward' | 'admin' | 'cto-user' | 'dpo-user' | 'csio-user';
 
 export interface User {
   id: string;

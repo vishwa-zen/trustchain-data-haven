@@ -18,6 +18,7 @@ const Sidebar: React.FC = () => {
   if (!user) return null;
   
   const canManageVaults = hasRole(['data-steward', 'admin']);
+  const canManageConsent = hasRole(['data-steward', 'admin', 'cto-user', 'dpo-user', 'csio-user']);
   
   return (
     <div className="w-64 min-h-screen border-r bg-background px-3 py-6 flex flex-col">
@@ -57,6 +58,16 @@ const Sidebar: React.FC = () => {
           <Key size={18} />
           <span>Tokens</span>
         </NavLink>
+        
+        {canManageConsent && (
+          <NavLink 
+            to="/consent" 
+            className={({ isActive }) => isActive ? 'nav-link-active' : 'nav-link-inactive'}
+          >
+            <Lock size={18} />
+            <span>Consent Management</span>
+          </NavLink>
+        )}
         
         {user.role === 'admin' && (
           <NavLink 

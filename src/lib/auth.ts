@@ -23,6 +23,27 @@ const fallbackUsers: User[] = [
     lastName: 'Steward',
     email: 'steward@trustchain.com',
     role: 'data-steward'
+  },
+  {
+    id: '3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f',
+    firstName: 'CTO',
+    lastName: 'User',
+    email: 'cto@trustchain.com',
+    role: 'cto-user'
+  },
+  {
+    id: '4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a',
+    firstName: 'DPO',
+    lastName: 'User',
+    email: 'dpo@trustchain.com',
+    role: 'dpo-user'
+  },
+  {
+    id: '5e6f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b',
+    firstName: 'CSIO',
+    lastName: 'User',
+    email: 'csio@trustchain.com',
+    role: 'csio-user'
   }
 ];
 
