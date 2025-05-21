@@ -56,20 +56,20 @@ const AppSidebar: React.FC = () => {
   return (
     <Sidebar className="pt-16"> {/* Increased padding-top to ensure content is below navbar */}
       <SidebarRail 
-        className="flex items-center justify-center hover:bg-vault-100 cursor-pointer py-2 transition-colors"
         onClick={toggleSidebar}
+        className="flex items-center justify-center cursor-pointer transition-colors duration-200 hover:bg-primary/5"
       >
-        <div className="flex items-center justify-center bg-vault-100 hover:bg-vault-200 text-vault-800 w-6 h-6 rounded-full transition-colors shadow-sm">
+        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors shadow-sm">
           {state === "expanded" ? (
-            <ChevronLeft size={16} />
+            <ChevronLeft size={14} className="text-primary" />
           ) : (
-            <ChevronRight size={16} />
+            <ChevronRight size={14} className="text-primary" />
           )}
         </div>
       </SidebarRail>
       <SidebarHeader className="invisible h-0 p-0" /> {/* Empty header to maintain spacing */}
       <SidebarContent>
-        <SidebarMenu>
+        <SidebarMenu className="mt-4">
           <SidebarMenuItem>
             <SidebarNavLink to="/dashboard" icon={Shield}>
               Dashboard
@@ -125,7 +125,7 @@ const AppSidebar: React.FC = () => {
       </SidebarContent>
       
       <SidebarFooter>
-        <div className="rounded-md bg-vault-50 p-3 mx-3 mb-3">
+        <div className="rounded-md bg-vault-50 p-3 mx-3 mb-3 shadow-sm">
           <h3 className="flex items-center text-xs font-medium text-vault-800">
             <Lock size={14} className="mr-1 flex-shrink-0" />
             Security Status

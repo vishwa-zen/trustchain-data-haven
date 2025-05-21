@@ -129,12 +129,26 @@
     @apply nav-link hover:bg-secondary text-muted-foreground hover:text-foreground;
   }
   
-  /* Sidebar specific styling */
+  /* Enhanced sidebar styling */
   .sidebar-section {
     @apply mt-6 first:mt-0;
   }
   
   .sidebar-menu-item {
     @apply flex items-center p-2 text-gray-700 rounded-lg hover:bg-gray-100 gap-3;
+  }
+  
+  /* Sidebar toggle button styling */
+  [data-sidebar="rail"] {
+    @apply hover:bg-primary/5 after:bg-primary/10 transition-all duration-200 ease-in-out;
+  }
+  
+  /* Sidebar menu button styling */
+  [data-sidebar="menu-button"] {
+    @apply transition-all duration-200 ease-in-out;
+  }
+  
+  [data-sidebar="menu-button"][data-active="true"] {
+    @apply bg-primary/10 text-primary font-medium;
   }
 }
