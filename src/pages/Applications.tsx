@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -200,9 +201,9 @@ const Applications = () => {
                           <Button 
                             variant="outline" 
                             size="sm"
-                            asChild
+                            onClick={() => navigate(`/applications/${app.id}`)}
                           >
-                            <Link to={`/applications/${app.id}`}>View</Link>
+                            View
                           </Button>
                         </TableCell>
                       </TableRow>
