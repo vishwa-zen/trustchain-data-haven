@@ -18,8 +18,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-white">
-        <div className="container flex h-16 items-center justify-between">
+      <header className="border-b bg-vault-50">
+        <div className="container flex h-14 items-center justify-between">
           <div className="flex items-center gap-2 font-semibold">
             <img 
               src="https://static.wixstatic.com/media/574264_84849ef802594972ae3eadd463ec8dc0~mv2.png/v1/fill/w_160,h_190,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/zen_ac_color.png" 
@@ -153,7 +153,7 @@ const Index = () => {
         </section>
       </main>
       
-      <footer className="bg-vault-900 text-white py-10">
+      <footer className="bg-vault-900 text-white py-6">
         <div className="container">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-2 font-semibold mb-4 md:mb-0">

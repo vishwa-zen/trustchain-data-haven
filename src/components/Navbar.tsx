@@ -15,8 +15,8 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <div className="border-b bg-white">
-      <div className="flex h-16 items-center px-8">
+    <div className="border-b bg-vault-50">
+      <div className="flex h-14 items-center px-8">
         <Link to="/" className="flex items-center gap-2 font-semibold">
           <img 
             src="https://static.wixstatic.com/media/574264_84849ef802594972ae3eadd463ec8dc0~mv2.png/v1/fill/w_160,h_190,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/zen_ac_color.png" 
