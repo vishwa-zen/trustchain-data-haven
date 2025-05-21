@@ -40,53 +40,61 @@ export const clearCurrentUser = (): void => {
   localStorage.removeItem('trustchain_user');
 };
 
-// Login function using the provided API
+// Login function that uses mock data instead of API call
 export const loginUser = async (email: string, password: string): Promise<User> => {
   try {
-    const response = await fetch('http://127.0.0.1:3055/api/trustchain/v1/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    // For demo purposes, check if we're in a deployed environment or localhost
+    const isDeployed = !window.location.hostname.includes('localhost') && 
+                       !window.location.hostname.includes('127.0.0.1');
+    
+    // Only try the API call if we're in development on localhost
+    if (!isDeployed) {
+      try {
+        const response = await fetch('http://127.0.0.1:3055/api/trustchain/v1/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Login failed');
-    }
-
-    const userData = await response.json();
-    
-    // Transform API response to match our User type
-    const user: User = {
-      id: userData.id || crypto.randomUUID(),
-      firstName: userData.firstName || userData.first_name || '',
-      lastName: userData.lastName || userData.last_name || '',
-      email: userData.email,
-      role: (userData.role as UserRole) || 'app-owner'
-    };
-    
-    setCurrentUser(user);
-    return user;
-  } catch (error) {
-    console.error('Login error:', error);
-    
-    // Fallback to mock login for development (can be removed in production)
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Falling back to mock login in development mode');
-      const mockUser = fallbackUsers.find(u => u.email === email);
-      if (mockUser) {
-        setCurrentUser(mockUser);
-        return mockUser;
+        if (response.ok) {
+          const userData = await response.json();
+          
+          // Transform API response to match our User type
+          const user: User = {
+            id: userData.id || crypto.randomUUID(),
+            firstName: userData.firstName || userData.first_name || '',
+            lastName: userData.lastName || userData.last_name || '',
+            email: userData.email,
+            role: (userData.role as UserRole) || 'app-owner'
+          };
+          
+          setCurrentUser(user);
+          return user;
+        }
+      } catch (error) {
+        console.error('API login error:', error);
+        // Fall through to mock login if API fails
       }
     }
     
+    // Mock login for both development and production
+    console.log('Using mock login for authentication');
+    const mockUser = fallbackUsers.find(u => u.email === email);
+    if (mockUser) {
+      setCurrentUser(mockUser);
+      return mockUser;
+    }
+    
+    throw new Error('Invalid email or password');
+  } catch (error) {
+    console.error('Login error:', error);
     throw error;
   }
 };
 
-// Register function using the provided API
+// Register function using mock data instead of API
 export const registerUser = async (
   firstName: string,
   lastName: string,
@@ -95,61 +103,67 @@ export const registerUser = async (
   role: UserRole
 ): Promise<User> => {
   try {
-    const response = await fetch('http://127.0.0.1:4079/trustchain/v1/user/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        firstName,
-        lastName,
-        email,
-        password,
-        role
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Registration failed');
-    }
-
-    const userData = await response.json();
+    // For demo purposes, check if we're in a deployed environment
+    const isDeployed = !window.location.hostname.includes('localhost') && 
+                       !window.location.hostname.includes('127.0.0.1');
     
-    // Transform API response to match our User type
-    const user: User = {
-      id: userData.id || crypto.randomUUID(),
-      firstName: userData.firstName || userData.first_name || '',
-      lastName: userData.lastName || userData.last_name || '',
-      email: userData.email,
-      role: (userData.role as UserRole) || role
+    // Only try the API call if we're in development on localhost
+    if (!isDeployed) {
+      try {
+        const response = await fetch('http://127.0.0.1:4079/trustchain/v1/user/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            firstName,
+            lastName,
+            email,
+            password,
+            role
+          }),
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          
+          // Transform API response to match our User type
+          const user: User = {
+            id: userData.id || crypto.randomUUID(),
+            firstName: userData.firstName || userData.first_name || '',
+            lastName: userData.lastName || userData.last_name || '',
+            email: userData.email,
+            role: (userData.role as UserRole) || role
+          };
+          
+          setCurrentUser(user);
+          return user;
+        }
+      } catch (error) {
+        console.error('API registration error:', error);
+        // Fall through to mock registration if API fails
+      }
+    }
+    
+    // Mock registration for both development and production
+    console.log('Using mock registration');
+    // Check if user already exists in mock data
+    if (fallbackUsers.some(u => u.email === email)) {
+      throw new Error('User with this email already exists');
+    }
+    
+    const newUser: User = {
+      id: crypto.randomUUID(),
+      firstName,
+      lastName,
+      email,
+      role
     };
     
-    setCurrentUser(user);
-    return user;
+    setCurrentUser(newUser);
+    return newUser;
   } catch (error) {
     console.error('Registration error:', error);
-    
-    // Fallback to mock registration for development (can be removed in production)
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Falling back to mock registration in development mode');
-      // Check if user already exists in mock data
-      if (fallbackUsers.some(u => u.email === email)) {
-        throw new Error('User with this email already exists');
-      }
-      
-      const newUser: User = {
-        id: crypto.randomUUID(),
-        firstName,
-        lastName,
-        email,
-        role
-      };
-      
-      setCurrentUser(newUser);
-      return newUser;
-    }
-    
     throw error;
   }
 };
