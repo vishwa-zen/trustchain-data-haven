@@ -1,8 +1,6 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
-import { SidebarProvider } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/AppSidebar';
 import { getCurrentUser, isAuthenticated, hasRole } from '@/lib/auth';
 import { getVaults, getApplicationsByUser } from '@/lib/vault';
@@ -170,62 +168,59 @@ const Dashboard = () => {
   
   return (
     <div className="min-h-screen bg-background">
-      <SidebarProvider defaultOpen={true}>
-        <div className="flex w-full h-full"> {/* Added w-full to ensure proper layout */}
-          <Navbar />
-          <AppSidebar />
-          <main className="flex-1 p-6 pt-20 overflow-auto"> {/* Added overflow-auto to handle content overflow */}
-            <DashboardHeader user={user} />
-            
-            <UserSummaryCards 
-              user={user}
-              vaultsCount={vaults.length}
-              applicationsCount={applications.length}
-              loading={loading}
-              canManageVaults={canManageVaults}
-              isAdmin={isAdmin}
-              isAppOwner={isAppOwner}
-            />
-            
-            {/* Show role-specific cards for CTO, DPO, and CSIO users */}
-            {isSpecialRole && (
-              <RoleSpecificCards user={user} />
-            )}
-            
-            {canManageVaults && vaults.length > 0 && (
-              <VaultsList vaults={vaults} loading={loading} />
-            )}
+      <div className="flex w-full h-full">
+        <Navbar />
+        <AppSidebar />
+        <main className="flex-1 p-6 pt-20 overflow-auto">
+          <DashboardHeader user={user} />
+          
+          <UserSummaryCards 
+            user={user}
+            vaultsCount={vaults.length}
+            applicationsCount={applications.length}
+            loading={loading}
+            canManageVaults={canManageVaults}
+            isAdmin={isAdmin}
+            isAppOwner={isAppOwner}
+          />
+          
+          {isSpecialRole && (
+            <RoleSpecificCards user={user} />
+          )}
+          
+          {canManageVaults && vaults.length > 0 && (
+            <VaultsList vaults={vaults} loading={loading} />
+          )}
 
-            {isAppOwner && applications.length > 0 && (
-              <ApplicationsList applications={applications} loading={loading} />
-            )}
-            
-            {applications.length === 0 && isAppOwner && !loading && (
-              <EmptyStateCard
-                title="No Applications Found"
-                description="Register your first application to access vault data"
-                buttonText="Register Application"
-                onClick={() => navigate('/applications/new')}
-              />
-            )}
-            
-            {vaults.length === 0 && canManageVaults && !loading && (
-              <EmptyStateCard
-                title="No Vaults Found"
-                description="Create your first vault to get started"
-                buttonText="Create Vault"
-                onClick={() => navigate('/vaults')}
-              />
-            )}
-            
-            <QuickActionsPanel 
-              isAdmin={isAdmin} 
-              canManageVaults={canManageVaults} 
-              isAppOwner={isAppOwner} 
+          {isAppOwner && applications.length > 0 && (
+            <ApplicationsList applications={applications} loading={loading} />
+          )}
+          
+          {applications.length === 0 && isAppOwner && !loading && (
+            <EmptyStateCard
+              title="No Applications Found"
+              description="Register your first application to access vault data"
+              buttonText="Register Application"
+              onClick={() => navigate('/applications/new')}
             />
-          </main>
-        </div>
-      </SidebarProvider>
+          )}
+          
+          {vaults.length === 0 && canManageVaults && !loading && (
+            <EmptyStateCard
+              title="No Vaults Found"
+              description="Create your first vault to get started"
+              buttonText="Create Vault"
+              onClick={() => navigate('/vaults')}
+            />
+          )}
+          
+          <QuickActionsPanel 
+            isAdmin={isAdmin} 
+            canManageVaults={canManageVaults} 
+            isAppOwner={isAppOwner} 
+          />
+        </main>
+      </div>
     </div>
   );
 };

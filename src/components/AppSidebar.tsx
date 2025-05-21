@@ -55,7 +55,10 @@ const AppSidebar: React.FC = () => {
   
   return (
     <Sidebar className="pt-16"> {/* Increased padding-top to ensure content is below navbar */}
-      <SidebarRail className="flex items-center justify-center hover:bg-vault-50 cursor-pointer">
+      <SidebarRail 
+        className="flex items-center justify-center hover:bg-vault-50 cursor-pointer"
+        onClick={toggleSidebar}
+      >
         {state === "expanded" ? (
           <ChevronLeft size={18} className="text-vault-700" />
         ) : (
