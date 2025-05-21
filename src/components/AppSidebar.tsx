@@ -125,14 +125,23 @@ const AppSidebar: React.FC = () => {
       </SidebarContent>
       
       <SidebarFooter>
-        <div className="rounded-md bg-vault-50 p-3 mx-3 mb-3 shadow-sm">
-          <h3 className="flex items-center text-xs font-medium text-vault-800">
-            <Lock size={14} className="mr-1 flex-shrink-0" />
-            Security Status
-          </h3>
-          <p className="text-xs text-vault-600 mt-1">
-            All data is encrypted and secure
-          </p>
+        <div className={`rounded-md bg-vault-50 shadow-sm mx-3 mb-3 ${state === "collapsed" ? "p-2 text-center" : "p-3"}`}>
+          {state === "collapsed" ? (
+            <div className="flex flex-col items-center">
+              <Lock size={16} className="text-vault-800" />
+              <span className="text-[10px] mt-1 text-vault-800 font-medium">Secure</span>
+            </div>
+          ) : (
+            <>
+              <h3 className="flex items-center text-xs font-medium text-vault-800">
+                <Lock size={14} className="mr-1 flex-shrink-0" />
+                Security Status
+              </h3>
+              <p className="text-xs text-vault-600 mt-1">
+                All data is encrypted and secure
+              </p>
+            </>
+          )}
         </div>
       </SidebarFooter>
     </Sidebar>

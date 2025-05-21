@@ -6,6 +6,7 @@ import { getCurrentUser, isAuthenticated, hasRole } from '@/lib/auth';
 import { getVaults, getApplicationsByUser } from '@/lib/vault';
 import { Vault, AppRegistration } from '@/types';
 import { toast } from 'sonner';
+import { useSidebar } from '@/components/ui/sidebar';
 
 // Import dashboard components
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
@@ -21,6 +22,7 @@ const Dashboard = () => {
   const [vaults, setVaults] = useState<Vault[]>([]);
   const [applications, setApplications] = useState<AppRegistration[]>([]);
   const [loading, setLoading] = useState(true);
+  const { state } = useSidebar();
   
   // We'll keep the state variables but they won't be used in the UI anymore
   const [vaultStats, setVaultStats] = useState([
@@ -166,12 +168,15 @@ const Dashboard = () => {
   
   if (!user) return null;
   
+  // Calculate content class based on sidebar state
+  const contentClass = `flex-1 p-6 pt-20 overflow-auto ${state === "collapsed" ? "md:ml-12" : ""}`;
+  
   return (
     <div className="min-h-screen bg-background">
       <div className="flex w-full h-full">
         <Navbar />
         <AppSidebar />
-        <main className="flex-1 p-6 pt-20 overflow-auto">
+        <main className={contentClass}>
           <DashboardHeader user={user} />
           
           <UserSummaryCards 
