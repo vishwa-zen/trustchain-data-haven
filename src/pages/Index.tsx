@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Shield, Database, Lock, Key, Cloud, FileLock } from 'lucide-react';
+import { Database, Lock, Key, Cloud, FileLock } from 'lucide-react';
 import { isAuthenticated } from '@/lib/auth';
 
 const Index = () => {
@@ -28,9 +28,6 @@ const Index = () => {
             />
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-vault-700 to-security-600">
               Trustchain
-            </span>
-            <span className="text-xs text-muted-foreground ml-1 hidden sm:inline-block">
-              by Zentience
             </span>
           </div>
           <div className="flex items-center gap-4">

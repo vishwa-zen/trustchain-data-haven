@@ -26,9 +26,6 @@ const Navbar: React.FC = () => {
           <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-vault-700 to-security-600">
             Trustchain
           </span>
-          <span className="text-xs text-muted-foreground ml-1 hidden sm:inline-block">
-            by Zentience
-          </span>
         </Link>
         
         <div className="ml-auto flex items-center gap-4">
