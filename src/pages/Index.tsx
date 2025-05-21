@@ -41,9 +41,9 @@ const Index = () => {
         </div>
       </header>
       
-      <main>
+      <main className="w-full">
         <section className="py-20">
-          <div className="container">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto text-center space-y-6">
               <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl bg-clip-text text-transparent bg-gradient-to-r from-vault-800 via-vault-600 to-security-700">
                 Secure Data Vaults for the Modern Enterprise
@@ -63,9 +63,9 @@ const Index = () => {
           </div>
         </section>
         
-        {/* New section about encryption technology */}
-        <section className="py-16 bg-vault-100">
-          <div className="container">
+        {/* Section about encryption technology */}
+        <section className="py-16 bg-vault-100 w-full">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-3xl font-bold text-center mb-8">
                 Advanced Encryption Technology
@@ -113,8 +113,8 @@ const Index = () => {
           </div>
         </section>
         
-        <section className="py-16 bg-vault-50">
-          <div className="container">
+        <section className="py-16 bg-vault-50 w-full">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-2xl font-bold text-center mb-12">
               Enterprise-grade Security Features
             </h2>
@@ -153,8 +153,8 @@ const Index = () => {
         </section>
       </main>
       
-      <footer className="bg-vault-900 text-white py-6">
-        <div className="container">
+      <footer className="bg-vault-900 text-white py-6 w-full">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-2 font-semibold mb-4 md:mb-0">
               <img 
