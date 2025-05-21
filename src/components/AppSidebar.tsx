@@ -56,14 +56,16 @@ const AppSidebar: React.FC = () => {
   return (
     <Sidebar className="pt-16"> {/* Increased padding-top to ensure content is below navbar */}
       <SidebarRail 
-        className="flex items-center justify-center hover:bg-vault-50 cursor-pointer"
+        className="flex items-center justify-center hover:bg-vault-100 cursor-pointer py-2 transition-colors"
         onClick={toggleSidebar}
       >
-        {state === "expanded" ? (
-          <ChevronLeft size={18} className="text-vault-700" />
-        ) : (
-          <ChevronRight size={18} className="text-vault-700" />
-        )}
+        <div className="flex items-center justify-center bg-vault-100 hover:bg-vault-200 text-vault-800 w-6 h-6 rounded-full transition-colors shadow-sm">
+          {state === "expanded" ? (
+            <ChevronLeft size={16} />
+          ) : (
+            <ChevronRight size={16} />
+          )}
+        </div>
       </SidebarRail>
       <SidebarHeader className="invisible h-0 p-0" /> {/* Empty header to maintain spacing */}
       <SidebarContent>
