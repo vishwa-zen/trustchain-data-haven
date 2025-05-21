@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -70,27 +71,20 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden bg-gradient-to-br from-vault-800 via-vault-700 to-security-800 p-4">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-vault-500 rounded-full opacity-20 blur-3xl animate-pulse-slow"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-security-500 rounded-full opacity-20 blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/4 left-1/4 w-60 h-60 bg-highlight-400 rounded-full opacity-10 blur-3xl animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
-      </div>
-      
-      <div className="flex flex-col items-center gap-2 mb-8 animate-fade-in z-10">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-background p-4">
+      <div className="flex flex-col items-center gap-2 mb-8 animate-fade-in">
         <img 
           src="https://static.wixstatic.com/media/574264_84849ef802594972ae3eadd463ec8dc0~mv2.png/v1/fill/w_160,h_190,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/zen_ac_color.png" 
           alt="Trustchain Logo" 
-          className="h-14 w-auto hover:scale-105 transition-transform duration-300 drop-shadow-xl" 
+          className="h-14 w-auto hover:scale-105 transition-transform duration-300 drop-shadow-lg" 
         />
-        <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-vault-100 drop-shadow-lg mt-2">
+        <h1 className="text-3xl font-bold text-foreground drop-shadow-sm mt-2">
           Trustchain
         </h1>
       </div>
       
-      <Card className="w-full max-w-md shadow-2xl animate-fade-in border-vault-200 overflow-hidden backdrop-blur-sm bg-white/90 z-10">
-        <div className="h-1 bg-gradient-to-r from-vault-500 to-security-500"></div>
+      <Card className="w-full max-w-md shadow-lg animate-fade-in border-input">
+        <div className="h-1 bg-primary"></div>
         <CardHeader className="space-y-1 pb-2">
           <CardTitle className="text-2xl font-bold text-center">Register</CardTitle>
           <CardDescription className="text-center">
@@ -108,7 +102,7 @@ const Register = () => {
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   required
-                  className="transition-all border-vault-200 focus:border-vault-400 hover:border-vault-300"
+                  className="transition-all"
                 />
               </div>
               <div className="space-y-2">
@@ -119,7 +113,7 @@ const Register = () => {
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   required
-                  className="transition-all border-vault-200 focus:border-vault-400 hover:border-vault-300"
+                  className="transition-all"
                 />
               </div>
             </div>
@@ -132,7 +126,7 @@ const Register = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="transition-all border-vault-200 focus:border-vault-400 hover:border-vault-300"
+                className="transition-all"
               />
             </div>
             <div className="space-y-2">
@@ -144,7 +138,7 @@ const Register = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="pr-10 transition-all border-vault-200 focus:border-vault-400 hover:border-vault-300"
+                  className="pr-10 transition-all"
                 />
                 <button 
                   type="button" 
@@ -164,7 +158,7 @@ const Register = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  className="pr-10 transition-all border-vault-200 focus:border-vault-400 hover:border-vault-300"
+                  className="pr-10 transition-all"
                 />
                 <button 
                   type="button" 
@@ -178,7 +172,7 @@ const Register = () => {
             <div className="space-y-2">
               <Label htmlFor="role" className="text-sm font-medium">Role</Label>
               <Select value={role} onValueChange={(value: UserRole) => setRole(value)}>
-                <SelectTrigger id="role" className="transition-all border-vault-200 focus:border-vault-400 hover:border-vault-300">
+                <SelectTrigger id="role" className="transition-all">
                   <SelectValue placeholder="Select role" />
                 </SelectTrigger>
                 <SelectContent>
@@ -190,7 +184,7 @@ const Register = () => {
             </div>
             <Button 
               type="submit" 
-              className="w-full mt-6 bg-gradient-to-r from-vault-600 to-vault-700 hover:from-vault-700 hover:to-vault-800 transition-all duration-300 shadow-lg" 
+              className="w-full mt-6" 
               disabled={loading}
             >
               {loading ? (
@@ -208,7 +202,7 @@ const Register = () => {
             Already have an account?{" "}
             <Link 
               to="/login" 
-              className="text-vault-700 hover:text-vault-900 font-medium hover:underline underline-offset-4 transition-colors"
+              className="text-primary hover:text-primary/80 font-medium hover:underline underline-offset-4 transition-colors"
             >
               Login
             </Link>
@@ -216,7 +210,7 @@ const Register = () => {
         </CardFooter>
       </Card>
       
-      <div className="mt-6 text-sm text-white text-center animate-fade-in opacity-80 z-10">
+      <div className="mt-6 text-sm text-muted-foreground text-center animate-fade-in">
         Copyright © Zentience - All Rights Reserved.
       </div>
     </div>
