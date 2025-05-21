@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -15,12 +14,25 @@ import VaultsList from '@/components/dashboard/VaultsList';
 import ApplicationsList from '@/components/dashboard/ApplicationsList';
 import EmptyStateCard from '@/components/dashboard/EmptyStateCard';
 import QuickActionsPanel from '@/components/dashboard/QuickActionsPanel';
+import StatisticsChart from '@/components/dashboard/StatisticsChart';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [vaults, setVaults] = useState<Vault[]>([]);
   const [applications, setApplications] = useState<AppRegistration[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Add state for chart data
+  const [vaultStats, setVaultStats] = useState([
+    { name: 'Active', count: 0 },
+    { name: 'Pending', count: 0 },
+    { name: 'Archived', count: 0 },
+  ]);
+  const [appStats, setAppStats] = useState([
+    { name: 'Approved', count: 0 },
+    { name: 'Pending', count: 0 },
+    { name: 'Rejected', count: 0 },
+  ]);
   
   const user = getCurrentUser();
   const canManageVaults = hasRole(['data-steward', 'admin']);
@@ -41,12 +53,34 @@ const Dashboard = () => {
         if (canManageVaults) {
           const vaultsData = await getVaults();
           setVaults(vaultsData || []);
+          
+          // Calculate vault statistics
+          const activeCount = vaultsData?.filter(v => v.status === 'active').length || 0;
+          const pendingCount = vaultsData?.filter(v => v.status === 'pending').length || 0;
+          const archivedCount = vaultsData?.filter(v => v.status === 'archived').length || 0;
+          
+          setVaultStats([
+            { name: 'Active', count: activeCount },
+            { name: 'Pending', count: pendingCount },
+            { name: 'Archived', count: archivedCount },
+          ]);
         }
         
         // Only fetch applications if user is app-owner
         if (isAppOwner && user) {
           const appsData = await getApplicationsByUser(user.id);
           setApplications(appsData || []);
+          
+          // Calculate application statistics
+          const approvedCount = appsData?.filter(a => a.status === 'approved').length || 0;
+          const pendingCount = appsData?.filter(a => a.status === 'pending').length || 0;
+          const rejectedCount = appsData?.filter(a => a.status === 'rejected').length || 0;
+          
+          setAppStats([
+            { name: 'Approved', count: approvedCount },
+            { name: 'Pending', count: pendingCount },
+            { name: 'Rejected', count: rejectedCount },
+          ]);
         }
         
         // Only show success toast for successful data fetching
@@ -77,6 +111,13 @@ const Dashboard = () => {
               status: 'active'
             }
           ]);
+          
+          // Also set mock vault stats
+          setVaultStats([
+            { name: 'Active', count: 2 },
+            { name: 'Pending', count: 0 },
+            { name: 'Archived', count: 0 },
+          ]);
         }
         
         if (isAppOwner && applications.length === 0) {
@@ -101,6 +142,13 @@ const Dashboard = () => {
               dataSets: [],
               createdAt: new Date().toISOString()
             }
+          ]);
+          
+          // Also set mock application stats
+          setAppStats([
+            { name: 'Approved', count: 1 },
+            { name: 'Pending', count: 1 },
+            { name: 'Rejected', count: 0 },
           ]);
         }
       } finally {
@@ -131,6 +179,17 @@ const Dashboard = () => {
             isAdmin={isAdmin}
             isAppOwner={isAppOwner}
           />
+          
+          {/* Add the statistics chart component */}
+          {(canManageVaults || isAppOwner) && (vaults.length > 0 || applications.length > 0) && (
+            <StatisticsChart 
+              vaultData={vaultStats}
+              applicationData={appStats}
+              loading={loading}
+              showVaultStats={canManageVaults && vaults.length > 0}
+              showAppStats={isAppOwner && applications.length > 0}
+            />
+          )}
 
           {canManageVaults && vaults.length > 0 && (
             <VaultsList vaults={vaults} loading={loading} />
