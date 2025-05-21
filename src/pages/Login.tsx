@@ -88,9 +88,9 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-background">
-      <div className="flex flex-col items-center w-full max-w-md px-4">
-        <div className="flex flex-col items-center gap-2 mb-8 animate-fade-in">
+    <div className="flex h-screen w-full items-center justify-center bg-background">
+      <div className="w-full max-w-md mx-auto px-4">
+        <div className="flex flex-col items-center justify-center gap-2 mb-8">
           <img 
             src="https://static.wixstatic.com/media/574264_84849ef802594972ae3eadd463ec8dc0~mv2.png/v1/fill/w_160,h_190,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/zen_ac_color.png" 
             alt="Trustchain Logo" 
@@ -101,7 +101,7 @@ const Login = () => {
           </h1>
         </div>
         
-        <Card className="w-full shadow-lg animate-fade-in border border-gray-200">
+        <Card className="w-full shadow-lg border border-gray-200 mx-auto">
           <div className="h-1 bg-primary"></div>
           <CardHeader className="space-y-1 pb-2">
             <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
@@ -197,7 +197,7 @@ const Login = () => {
           </CardFooter>
         </Card>
         
-        <div className="mt-6 text-sm text-muted-foreground text-center animate-fade-in">
+        <div className="mt-6 text-sm text-muted-foreground text-center">
           Copyright © Zentience - All Rights Reserved.
         </div>
       </div>
