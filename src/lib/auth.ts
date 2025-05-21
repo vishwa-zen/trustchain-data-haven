@@ -40,6 +40,12 @@ export const clearCurrentUser = (): void => {
   localStorage.removeItem('trustchain_user');
 };
 
+// Get user role by email
+export const getUserRoleByEmail = (email: string): string | null => {
+  const user = fallbackUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+  return user ? user.role : null;
+};
+
 // Login function that uses mock data instead of API call
 export const loginUser = async (email: string, password: string): Promise<User> => {
   try {
