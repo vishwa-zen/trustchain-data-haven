@@ -1,9 +1,10 @@
+
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Shield, Lock } from 'lucide-react';
+import { Lock } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { loginUser, isAuthenticated } from '@/lib/auth';
 import { toast } from '@/hooks/use-toast';
@@ -48,13 +49,14 @@ const Login = () => {
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-vault-50 p-4">
       <div className="flex flex-col items-center gap-2 mb-8">
-        <Shield className="h-12 w-12 text-vault-700" />
+        <img 
+          src="https://static.wixstatic.com/media/574264_84849ef802594972ae3eadd463ec8dc0~mv2.png/v1/fill/w_160,h_190,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/zen_ac_color.png" 
+          alt="Trustchain Logo" 
+          className="h-12 w-auto" 
+        />
         <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-vault-700 to-security-600">
           Trustchain
         </h1>
-        <span className="text-sm text-muted-foreground">
-          by Zentience
-        </span>
       </div>
       
       <Card className="w-full max-w-md shadow-card animate-fade-in">
