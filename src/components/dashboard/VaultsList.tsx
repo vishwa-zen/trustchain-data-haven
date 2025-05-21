@@ -32,7 +32,7 @@ const VaultsList: React.FC<VaultsListProps> = ({ vaults, loading }) => {
           </Card>
         ) : (
           vaults.slice(0, 3).map(vault => (
-            <Card key={vault.id} className="animate-fade-in">
+            <Card key={vault.id} className="animate-fade-in flex flex-col h-full">
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
                   <CardTitle>{vault.vaultName}</CardTitle>
@@ -42,7 +42,7 @@ const VaultsList: React.FC<VaultsListProps> = ({ vaults, loading }) => {
                 </div>
                 <CardDescription>{vault.vaultDesc}</CardDescription>
               </CardHeader>
-              <CardFooter>
+              <CardFooter className="mt-auto pt-2">
                 <Button 
                   variant="outline" 
                   className="w-full"

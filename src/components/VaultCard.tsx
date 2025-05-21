@@ -16,7 +16,7 @@ const VaultCard: React.FC<VaultCardProps> = ({ vault }) => {
   const tableCount = vault.tables?.length || 0;
 
   return (
-    <Card className="vault-card animate-fade-in">
+    <Card className="vault-card animate-fade-in flex flex-col h-full">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold text-vault-900">
@@ -30,7 +30,7 @@ const VaultCard: React.FC<VaultCardProps> = ({ vault }) => {
           {vault.vaultDesc}
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-grow">
         <div className="flex items-center text-sm text-muted-foreground">
           <Calendar className="mr-1 h-4 w-4" />
           <span>Created on {createdDate}</span>
@@ -39,7 +39,7 @@ const VaultCard: React.FC<VaultCardProps> = ({ vault }) => {
           <span className="font-medium">{tableCount}</span> table{tableCount !== 1 && 's'} defined
         </div>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="mt-auto pt-2">
         <Button 
           variant="outline" 
           className="w-full"
