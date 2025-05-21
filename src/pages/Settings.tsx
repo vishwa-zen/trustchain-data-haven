@@ -61,7 +61,7 @@ const Settings = () => {
             </p>
           </div>
 
-          <div className="space-y-8">
+          <div className="space-y-8 max-w-4xl mx-auto">
             <Card>
               <CardHeader>
                 <CardTitle>Profile Information</CardTitle>

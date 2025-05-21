@@ -198,43 +198,45 @@ const UserManagement = () => {
             </div>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>User Directory</CardTitle>
-              <CardDescription>
-                Manage and view all users in the system
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredUsers.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell className="font-medium">{user.firstName} {user.lastName}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>{getRoleBadge(user.role)}</TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                        >
-                          Edit
-                        </Button>
-                      </TableCell>
+          <div className="max-w-5xl mx-auto">
+            <Card>
+              <CardHeader>
+                <CardTitle>User Directory</CardTitle>
+                <CardDescription>
+                  Manage and view all users in the system
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredUsers.map((user) => (
+                      <TableRow key={user.id}>
+                        <TableCell className="font-medium">{user.firstName} {user.lastName}</TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>{getRoleBadge(user.role)}</TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                          >
+                            Edit
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </div>
         </main>
       </div>
     </div>
