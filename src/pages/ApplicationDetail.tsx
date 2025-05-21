@@ -61,14 +61,14 @@ const ApplicationDetail = () => {
       const token = await generateAccessToken(applicationId);
       setAccessToken(token);
       toast({
-        title: "Access Key Generated",
-        description: "A new access key has been generated for this application.",
+        title: "Access Token Generated",
+        description: "A new access token has been generated for this application.",
       });
     } catch (error) {
-      console.error("Failed to generate access key:", error);
+      console.error("Failed to generate access token:", error);
       toast({
         title: "Error",
-        description: "Failed to generate access key.",
+        description: "Failed to generate access token.",
         variant: "destructive",
       });
     }
@@ -78,14 +78,14 @@ const ApplicationDetail = () => {
     if (accessToken) {
       navigator.clipboard.writeText(accessToken);
       toast({
-        title: "Access Key Copied",
-        description: "The access key has been copied to your clipboard.",
+        title: "Access Token Copied",
+        description: "The access token has been copied to your clipboard.",
       });
     } else {
       toast({
-        title: "No Key",
-        description: "No access key available to copy.",
-        variant: "destructive", // Changed from "warning" to "destructive"
+        title: "No Token",
+        description: "No access token available to copy.",
+        variant: "warning",
       });
     }
   };
