@@ -61,8 +61,8 @@ const Settings = () => {
             </p>
           </div>
 
-          <div className="space-y-8 max-w-4xl mx-auto">
-            <Card>
+          <div className="space-y-8 max-w-3xl mx-auto">
+            <Card className="w-full shadow-sm">
               <CardHeader>
                 <CardTitle>Profile Information</CardTitle>
                 <CardDescription>
@@ -103,7 +103,7 @@ const Settings = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="w-full shadow-sm">
               <CardHeader>
                 <CardTitle>Password</CardTitle>
                 <CardDescription>
@@ -129,7 +129,7 @@ const Settings = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="w-full shadow-sm">
               <CardHeader>
                 <CardTitle>Notification Settings</CardTitle>
                 <CardDescription>
