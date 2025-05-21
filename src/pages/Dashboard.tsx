@@ -1,7 +1,8 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarProvider } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/AppSidebar';
 import { getCurrentUser, isAuthenticated, hasRole } from '@/lib/auth';
 import { getVaults, getApplicationsByUser } from '@/lib/vault';
@@ -169,13 +170,12 @@ const Dashboard = () => {
   
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
       <SidebarProvider>
-        <div className="flex w-full">
+        <Navbar />
+        <div className="flex w-full pt-14"> {/* Add padding top to prevent overlap with navbar */}
           <AppSidebar />
           <main className="flex-1 p-6">
             <div className="flex items-center mb-6">
-              <SidebarTrigger className="mr-4" />
               <DashboardHeader user={user} />
             </div>
             

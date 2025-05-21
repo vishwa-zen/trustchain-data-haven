@@ -11,8 +11,7 @@ import {
   Server,
   FileCheck,
   BarChart4,
-  AlertCircle,
-  ChevronRight
+  AlertCircle
 } from 'lucide-react';
 import { getCurrentUser, hasRole } from '@/lib/auth';
 import {
