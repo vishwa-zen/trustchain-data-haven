@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -11,17 +12,24 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Server, ShieldCheck, Clock, Key, ArrowLeft, Check, X, FileText, Shield } from 'lucide-react';
+// Import the Copy icon from lucide-react
+import { Server, ShieldCheck, Clock, Key, ArrowLeft, Check, X, FileText, Shield, Copy } from 'lucide-react';
 import { isAuthenticated, hasRole, getCurrentUser } from '@/lib/auth';
 import { approveFieldConsent, rejectFieldConsent, getAppFieldConsents, getConsentApprovalHistory } from '@/lib/vault';
 import { toast } from '@/hooks/use-toast';
 import { AppRegistration, ConsentApproval, FieldLevelConsent } from '@/types';
 
+// Extend the AppRegistration type temporarily for our local use to include token properties
+interface ExtendedAppRegistration extends AppRegistration {
+  accessToken?: string;
+  tokenExpiryDate?: string;
+}
+
 const ApplicationDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [application, setApplication] = useState<AppRegistration | null>(null);
+  const [application, setApplication] = useState<ExtendedAppRegistration | null>(null);
   const [fieldConsents, setFieldConsents] = useState<FieldLevelConsent[]>([]);
   const [consentHistory, setConsentHistory] = useState<ConsentApproval[]>([]);
   const [consentDialogOpen, setConsentDialogOpen] = useState(false);
@@ -36,8 +44,8 @@ const ApplicationDetail = () => {
   const currentUser = getCurrentUser();
   const canManageConsent = currentUser && (currentUser.role === 'admin' || currentUser.role === 'data-steward');
 
-  // Mock application data that matches the data structure in Applications.tsx
-  const mockApplicationsData: AppRegistration[] = [
+  // Mock application data that matches the data structure in Applications.tsx but with token properties added
+  const mockApplicationsData: ExtendedAppRegistration[] = [
     {
       id: 'app-1',
       name: 'KYC Application',
@@ -151,7 +159,9 @@ const ApplicationDetail = () => {
           status: 'requested',
           userId: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
           vaultId: '2288e11a-658f-421c-9359-79c969316303',
-          dataSets: []
+          dataSets: [],
+          accessToken: '',
+          tokenExpiryDate: ''
         };
         
         setApplication(appData);
