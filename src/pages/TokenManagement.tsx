@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
@@ -7,13 +8,15 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Key, RefreshCw, Copy } from 'lucide-react';
 import { getCurrentUser } from '@/lib/auth';
-import { toast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const TokenManagement = () => {
   const navigate = useNavigate();
+  const { id: appId } = useParams();
   const user = getCurrentUser();
   const [searchTerm, setSearchTerm] = useState('');
+  const [applicationName, setApplicationName] = useState('');
   
   // Updated token data to show application-level access keys
   const [tokens, setTokens] = useState([
@@ -33,7 +36,7 @@ const TokenManagement = () => {
       name: 'Application Access Key',
       type: 'access_key',
       applicationName: 'Payment Gateway',
-      applicationId: 'app-456',
+      applicationId: 'app-2',
       token: 'app_tk_' + crypto.randomUUID().split('-')[0],
       createdAt: '2025-03-22T08:15:00Z',
       expiresAt: '2025-09-22T08:15:00Z',
@@ -43,8 +46,8 @@ const TokenManagement = () => {
       id: '3',
       name: 'Application Access Key',
       type: 'access_key',
-      applicationName: 'Customer Portal',
-      applicationId: 'app-123',
+      applicationName: 'KYC Application',
+      applicationId: 'app-1',
       token: 'app_tk_' + crypto.randomUUID().split('-')[0],
       createdAt: '2025-04-10T11:20:00Z',
       expiresAt: '2025-10-10T11:20:00Z',
@@ -52,11 +55,24 @@ const TokenManagement = () => {
     },
   ]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!user) {
       navigate('/login');
+      return;
     }
-  }, [user, navigate]);
+
+    // If we have an appId, filter tokens by that application
+    if (appId) {
+      // Find application name for the header
+      const appToken = tokens.find(t => t.applicationId === appId);
+      if (appToken) {
+        setApplicationName(appToken.applicationName);
+      } else {
+        // If no matching application found, show all tokens
+        setApplicationName('Unknown Application');
+      }
+    }
+  }, [user, navigate, appId, tokens]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -68,8 +84,7 @@ const TokenManagement = () => {
 
   const handleCopyToken = (token: string) => {
     navigator.clipboard.writeText(token);
-    toast({
-      title: 'Access Key Copied',
+    toast('Access Key Copied', {
       description: 'The access key has been copied to your clipboard',
     });
   };
@@ -85,8 +100,7 @@ const TokenManagement = () => {
         ? {...token, token: newToken, createdAt: new Date().toISOString()} 
         : token
     ));
-    toast({
-      title: 'Access Key Regenerated',
+    toast('Access Key Regenerated', {
       description: 'A new access key has been generated',
     });
   };
@@ -117,11 +131,11 @@ const TokenManagement = () => {
   const handleCreateNewToken = () => {
     const newToken = {
       id: crypto.randomUUID(),
-      name: 'API Access Key',
-      type: 'api_token',
-      applicationName: 'All Applications',
-      applicationId: null,
-      token: 'tk_live_' + crypto.randomUUID().split('-')[0],
+      name: appId ? 'Application Access Key' : 'API Access Key',
+      type: appId ? 'access_key' : 'api_token',
+      applicationName: applicationName || 'All Applications',
+      applicationId: appId || null,
+      token: appId ? 'app_tk_' + crypto.randomUUID().split('-')[0] : 'tk_live_' + crypto.randomUUID().split('-')[0],
       createdAt: new Date().toISOString(),
       expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // 1 year from now
       lastUsed: new Date().toISOString(),
@@ -129,16 +143,18 @@ const TokenManagement = () => {
     
     setTokens([...tokens, newToken]);
     
-    toast({
-      title: 'New Access Key Created',
+    toast('New Access Key Created', {
       description: 'A new API access key has been created',
     });
   };
 
-  const filteredTokens = tokens.filter(token => 
-    token.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    token.applicationName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter tokens by application if appId is provided, otherwise show all
+  const filteredTokens = tokens
+    .filter(token => appId ? token.applicationId === appId || token.type === 'api_token' : true)
+    .filter(token => 
+      token.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      token.applicationName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -148,7 +164,9 @@ const TokenManagement = () => {
         <main className="flex-1 p-6">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Access Key Management</h1>
+              <h1 className="text-2xl font-bold tracking-tight">
+                {appId ? `${applicationName} - Access Keys` : 'Access Key Management'}
+              </h1>
               <p className="text-muted-foreground">
                 Manage access keys for your applications
               </p>
