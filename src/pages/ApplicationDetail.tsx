@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -12,7 +11,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-// Import the Copy icon from lucide-react
 import { Server, ShieldCheck, Clock, Key, ArrowLeft, Check, X, FileText, Shield, Copy } from 'lucide-react';
 import { isAuthenticated, hasRole, getCurrentUser } from '@/lib/auth';
 import { approveFieldConsent, rejectFieldConsent, getAppFieldConsents, getConsentApprovalHistory } from '@/lib/vault';
@@ -333,16 +331,16 @@ const ApplicationDetail = () => {
     setApplication(updatedApp);
     
     toast({
-      title: 'Token Regenerated',
-      description: 'A new application access token has been generated',
+      title: 'Access Key Regenerated',
+      description: 'A new application access key has been generated',
     });
   };
   
   const handleCopyToken = (token: string) => {
     navigator.clipboard.writeText(token);
     toast({
-      title: 'Token Copied',
-      description: 'The token has been copied to your clipboard',
+      title: 'Access Key Copied',
+      description: 'The access key has been copied to your clipboard',
     });
   };
 
@@ -459,7 +457,7 @@ const ApplicationDetail = () => {
           <Tabs defaultValue="datasets">
             <TabsList>
               <TabsTrigger value="datasets">Data Sets</TabsTrigger>
-              <TabsTrigger value="tokens">Access Tokens</TabsTrigger>
+              <TabsTrigger value="tokens">Access Keys</TabsTrigger>
               <TabsTrigger value="consent">Consent Management</TabsTrigger>
               <TabsTrigger value="audit">Audit Log</TabsTrigger>
             </TabsList>
@@ -534,16 +532,16 @@ const ApplicationDetail = () => {
             <TabsContent value="tokens" className="mt-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Access Tokens</CardTitle>
+                  <CardTitle>Access Keys</CardTitle>
                   <CardDescription>
-                    Application-level access token for accessing all approved data sets
+                    Application-level access key for accessing all approved data sets
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   {application.status === 'approved' && application.accessToken ? (
                     <div className="p-4 border rounded-lg">
                       <div className="flex justify-between items-center mb-2">
-                        <h4 className="font-medium">Application Access Token</h4>
+                        <h4 className="font-medium">Application Access Key</h4>
                         <Badge className="bg-green-500">Active</Badge>
                       </div>
                       
@@ -577,8 +575,8 @@ const ApplicationDetail = () => {
                     <div className="text-center py-6">
                       <p className="text-muted-foreground">
                         {application.status !== 'approved' 
-                          ? "Application must be approved before access token is available"
-                          : "No access token available yet"}
+                          ? "Application must be approved before access key is available"
+                          : "No access key available yet"}
                       </p>
                     </div>
                   )}

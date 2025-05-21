@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Navbar from '@/components/Navbar';
@@ -20,7 +19,7 @@ const TokenManagement = () => {
   const [tokens, setTokens] = useState([
     {
       id: '1',
-      name: 'API Access Token',
+      name: 'API Access Key',
       type: 'api_token',
       applicationName: 'All Applications',
       applicationId: null,
@@ -70,8 +69,8 @@ const TokenManagement = () => {
   const handleCopyToken = (token: string) => {
     navigator.clipboard.writeText(token);
     toast({
-      title: 'Token Copied',
-      description: 'The token has been copied to your clipboard',
+      title: 'Access Key Copied',
+      description: 'The access key has been copied to your clipboard',
     });
   };
 
@@ -87,8 +86,8 @@ const TokenManagement = () => {
         : token
     ));
     toast({
-      title: 'Token Regenerated',
-      description: 'A new token has been generated',
+      title: 'Access Key Regenerated',
+      description: 'A new access key has been generated',
     });
   };
 
@@ -118,7 +117,7 @@ const TokenManagement = () => {
   const handleCreateNewToken = () => {
     const newToken = {
       id: crypto.randomUUID(),
-      name: 'API Access Token',
+      name: 'API Access Key',
       type: 'api_token',
       applicationName: 'All Applications',
       applicationId: null,
@@ -131,8 +130,8 @@ const TokenManagement = () => {
     setTokens([...tokens, newToken]);
     
     toast({
-      title: 'New Token Created',
-      description: 'A new API access token has been created',
+      title: 'New Access Key Created',
+      description: 'A new API access key has been created',
     });
   };
 
@@ -149,20 +148,20 @@ const TokenManagement = () => {
         <main className="flex-1 p-6">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Token Management</h1>
+              <h1 className="text-2xl font-bold tracking-tight">Access Key Management</h1>
               <p className="text-muted-foreground">
-                Manage access tokens for your applications
+                Manage access keys for your applications
               </p>
             </div>
             <Button onClick={handleCreateNewToken}>
               <Key className="mr-2 h-4 w-4" />
-              Create New Token
+              Create New Key
             </Button>
           </div>
 
           <div className="mb-6">
             <Input
-              placeholder="Search tokens or applications..."
+              placeholder="Search keys or applications..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-sm"
@@ -171,9 +170,9 @@ const TokenManagement = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Access Tokens</CardTitle>
+              <CardTitle>Access Keys</CardTitle>
               <CardDescription>
-                API Access Tokens work across all your applications, while Application Access Keys are assigned to specific applications
+                API Access Keys work across all your applications, while Application Access Keys are assigned to specific applications
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -182,7 +181,7 @@ const TokenManagement = () => {
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Application</TableHead>
-                    <TableHead>Token</TableHead>
+                    <TableHead>Key</TableHead>
                     <TableHead>Created</TableHead>
                     <TableHead>Expires</TableHead>
                     <TableHead>Last Used</TableHead>
