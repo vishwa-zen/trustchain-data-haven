@@ -167,7 +167,7 @@ const Index = () => {
               </span>
             </div>
             <div className="text-sm text-vault-100">
-              © 2025 Trustchain. All rights reserved.
+              Copyright © Zentience - All Rights Reserved.
             </div>
           </div>
         </div>
