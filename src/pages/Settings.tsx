@@ -54,7 +54,7 @@ const Settings = () => {
         <Navbar />
         <AppSidebar />
         <main className="flex-1 p-6 pt-20 overflow-auto">
-          <div className="mb-6">
+          <div className="mb-6 text-center">
             <h1 className="text-2xl font-bold tracking-tight">Account Settings</h1>
             <p className="text-muted-foreground">
               Manage your account preferences and security settings
@@ -63,7 +63,7 @@ const Settings = () => {
 
           <div className="space-y-8 max-w-3xl mx-auto">
             <Card className="w-full shadow-sm">
-              <CardHeader>
+              <CardHeader className="text-center">
                 <CardTitle>Profile Information</CardTitle>
                 <CardDescription>
                   Update your personal information
@@ -73,38 +73,43 @@ const Settings = () => {
                 <form onSubmit={handleSaveProfile} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName">First Name</Label>
+                      <Label htmlFor="firstName" className="text-center block">First Name</Label>
                       <Input
                         id="firstName"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
+                        className="text-center"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="lastName">Last Name</Label>
+                      <Label htmlFor="lastName" className="text-center block">Last Name</Label>
                       <Input
                         id="lastName"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
+                        className="text-center"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email Address</Label>
+                    <Label htmlFor="email" className="text-center block">Email Address</Label>
                     <Input
                       id="email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
+                      className="text-center"
                     />
                   </div>
-                  <Button type="submit">Save Changes</Button>
+                  <div className="flex justify-center">
+                    <Button type="submit">Save Changes</Button>
+                  </div>
                 </form>
               </CardContent>
             </Card>
 
             <Card className="w-full shadow-sm">
-              <CardHeader>
+              <CardHeader className="text-center">
                 <CardTitle>Password</CardTitle>
                 <CardDescription>
                   Update your password
@@ -113,31 +118,33 @@ const Settings = () => {
               <CardContent>
                 <form className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="currentPassword">Current Password</Label>
-                    <Input id="currentPassword" type="password" />
+                    <Label htmlFor="currentPassword" className="text-center block">Current Password</Label>
+                    <Input id="currentPassword" type="password" className="text-center" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="newPassword">New Password</Label>
-                    <Input id="newPassword" type="password" />
+                    <Label htmlFor="newPassword" className="text-center block">New Password</Label>
+                    <Input id="newPassword" type="password" className="text-center" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                    <Input id="confirmPassword" type="password" />
+                    <Label htmlFor="confirmPassword" className="text-center block">Confirm New Password</Label>
+                    <Input id="confirmPassword" type="password" className="text-center" />
                   </div>
-                  <Button>Change Password</Button>
+                  <div className="flex justify-center">
+                    <Button>Change Password</Button>
+                  </div>
                 </form>
               </CardContent>
             </Card>
 
             <Card className="w-full shadow-sm">
-              <CardHeader>
+              <CardHeader className="text-center">
                 <CardTitle>Notification Settings</CardTitle>
                 <CardDescription>
                   Manage how you receive notifications
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div className="space-y-4 max-w-lg mx-auto">
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <Label className="text-base">Email Notifications</Label>
