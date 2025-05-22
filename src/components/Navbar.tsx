@@ -11,9 +11,16 @@ const Navbar: React.FC = () => {
   const user = getCurrentUser();
   const token = getAuthToken();
 
-  const handleLogout = () => {
-    logoutUser();
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      // Ensure navigation happens after logout is complete
+      navigate('/login', { replace: true });
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Even if there's an error, still try to navigate to login
+      navigate('/login', { replace: true });
+    }
   };
 
   return (

@@ -1,4 +1,3 @@
-
 import { User, UserRole } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
 import { API_ENDPOINTS, isLocalhost } from './config';
@@ -104,6 +103,8 @@ export const clearCurrentUser = (): void => {
   try {
     localStorage.removeItem(USER_STORAGE_KEY);
     localStorage.removeItem(TOKEN_STORAGE_KEY);
+    sessionStorage.removeItem(USER_STORAGE_KEY);
+    sessionStorage.removeItem(TOKEN_STORAGE_KEY);
   } catch (error) {
     console.error('Error clearing user from storage:', error);
   }
@@ -337,8 +338,34 @@ export const registerUser = async (
 // Logout API
 export const logoutUser = async (): Promise<void> => {
   console.log('API Call: Logout');
+  
+  // If we're in a deployed environment, try to call the real logout API
+  const isDeployed = !isLocalhost();
+  
+  if (!isDeployed) {
+    try {
+      // Try to call the real logout API
+      const token = getAuthToken();
+      if (token) {
+        await fetch(API_ENDPOINTS.auth.logout, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error logging out with API:', error);
+      // Continue with local logout regardless of API success
+    }
+  }
+  
   await mockApiDelay(200);
   clearCurrentUser();
+  
+  // Return a resolved promise to ensure the calling code can await this
+  return Promise.resolve();
 };
 
 // Change password API
