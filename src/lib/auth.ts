@@ -1,7 +1,12 @@
+
 import { User, UserRole } from '@/types';
 
 // Mock API response delay function for consistent behavior
 const mockApiDelay = (ms: number = 300) => new Promise<void>(resolve => setTimeout(resolve, ms));
+
+// Storage keys
+const USER_STORAGE_KEY = 'trustchain_user';
+const TOKEN_STORAGE_KEY = 'trustchain_auth_token';
 
 // Mock user database
 const mockUsers: User[] = [
@@ -56,7 +61,7 @@ const mockUsers: User[] = [
 // Get current user from session storage
 export const getCurrentUser = (): User | null => {
   try {
-    const userJson = localStorage.getItem('trustchain_user');
+    const userJson = localStorage.getItem(USER_STORAGE_KEY);
     return userJson ? JSON.parse(userJson) : null;
   } catch (error) {
     console.error('Error retrieving user from storage:', error);
@@ -67,16 +72,36 @@ export const getCurrentUser = (): User | null => {
 // Set current user in session storage
 export const setCurrentUser = (user: User): void => {
   try {
-    localStorage.setItem('trustchain_user', JSON.stringify(user));
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
   } catch (error) {
     console.error('Error setting user in storage:', error);
+  }
+};
+
+// Get auth token from storage
+export const getAuthToken = (): string | null => {
+  try {
+    return localStorage.getItem(TOKEN_STORAGE_KEY);
+  } catch (error) {
+    console.error('Error retrieving auth token from storage:', error);
+    return null;
+  }
+};
+
+// Set auth token in storage
+export const setAuthToken = (token: string): void => {
+  try {
+    localStorage.setItem(TOKEN_STORAGE_KEY, token);
+  } catch (error) {
+    console.error('Error setting auth token in storage:', error);
   }
 };
 
 // Clear current user from session storage
 export const clearCurrentUser = (): void => {
   try {
-    localStorage.removeItem('trustchain_user');
+    localStorage.removeItem(USER_STORAGE_KEY);
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
   } catch (error) {
     console.error('Error clearing user from storage:', error);
   }
@@ -154,7 +179,7 @@ export const loginUser = async (email: string, password: string): Promise<User> 
     if (!isDeployed) {
       try {
         console.log('Attempting to call real login API endpoint');
-        const response = await fetch('http://127.0.0.1:3055/api/trustchain/v1/auth/login', {
+        const response = await fetch('http://127.0.0.1:3056/api/trustchain/v1/auth/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -164,13 +189,21 @@ export const loginUser = async (email: string, password: string): Promise<User> 
 
         if (response.ok) {
           console.log('API login successful');
-          const userData = await response.json();
+          const responseData = await response.json();
+          
+          // Store the auth token
+          if (responseData.auth_token) {
+            setAuthToken(responseData.auth_token);
+            console.log('Auth token stored successfully');
+          }
+          
+          const userData = responseData.user;
           
           // Transform API response to match our User type
           const user: User = {
-            id: userData.id || crypto.randomUUID(),
-            firstName: userData.firstName || userData.first_name || '',
-            lastName: userData.lastName || userData.last_name || '',
+            id: userData.user_id || crypto.randomUUID(),
+            firstName: userData.first_name || '',
+            lastName: userData.last_name || '',
             email: userData.email,
             role: (userData.role as UserRole) || 'app-owner'
           };
@@ -179,6 +212,8 @@ export const loginUser = async (email: string, password: string): Promise<User> 
           return user;
         } else {
           console.log('API login failed with status', response.status);
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || 'Invalid email or password');
         }
       } catch (error) {
         console.error('API login error:', error);
@@ -193,6 +228,11 @@ export const loginUser = async (email: string, password: string): Promise<User> 
       // In a real implementation, we would verify the password here
       // For demo purposes, any password works
       console.log('Mock login successful');
+      
+      // Set a mock token for consistency
+      const mockToken = `mock_jwt_${crypto.randomUUID()}`;
+      setAuthToken(mockToken);
+      
       setCurrentUser(mockUser);
       return mockUser;
     }

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Lock, Eye, EyeOff, User } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { loginUser, isAuthenticated, getUserRoleByEmail } from '@/lib/auth';
+import { loginUser, isAuthenticated, getUserRoleByEmail, getAuthToken } from '@/lib/auth';
 import { toast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 
@@ -46,10 +46,14 @@ const Login = () => {
     
     try {
       const user = await loginUser(email, password);
+      const token = getAuthToken();
+      
       toast({
         title: "Login successful",
         description: `Welcome back, ${user.firstName}!`,
       });
+      
+      console.log('Auth token available:', !!token);
       navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error);

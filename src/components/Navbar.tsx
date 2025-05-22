@@ -3,12 +3,13 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
-import { logoutUser, getCurrentUser } from '@/lib/auth';
+import { logoutUser, getCurrentUser, getAuthToken } from '@/lib/auth';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const user = getCurrentUser();
+  const token = getAuthToken();
 
   const handleLogout = () => {
     logoutUser();
