@@ -1,4 +1,3 @@
-
 import { User, UserRole } from '@/types';
 
 // Mock API response delay function for consistent behavior
@@ -225,14 +224,14 @@ export const registerUser = async (
     if (!isDeployed) {
       try {
         console.log('Attempting to call real register API endpoint');
-        const response = await fetch('http://127.0.0.1:4079/trustchain/v1/user/register', {
+        const response = await fetch('http://127.0.0.1:3056/api/trustchain/v1/auth/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            firstName,
-            lastName,
+            first_name: firstName,
+            last_name: lastName,
             email,
             password,
             role
@@ -241,13 +240,14 @@ export const registerUser = async (
 
         if (response.ok) {
           console.log('API registration successful');
-          const userData = await response.json();
+          const responseData = await response.json();
+          const userData = responseData.user;
           
           // Transform API response to match our User type
           const user: User = {
-            id: userData.id || crypto.randomUUID(),
-            firstName: userData.firstName || userData.first_name || '',
-            lastName: userData.lastName || userData.last_name || '',
+            id: userData.user_id || crypto.randomUUID(),
+            firstName: userData.first_name || '',
+            lastName: userData.last_name || '',
             email: userData.email,
             role: (userData.role as UserRole) || role
           };
@@ -255,10 +255,16 @@ export const registerUser = async (
           setCurrentUser(user);
           return user;
         } else {
-          console.log('API registration failed with status', response.status);
+          const errorData = await response.json().catch(() => ({}));
+          console.log('API registration failed with status', response.status, errorData);
+          throw new Error(errorData.message || 'Registration failed');
         }
       } catch (error) {
         console.error('API registration error:', error);
+        // Only throw if it's an API error with a message
+        if (error instanceof Error && error.message !== 'Registration failed') {
+          throw error;
+        }
         // Fall through to mock registration if API fails
       }
     }
