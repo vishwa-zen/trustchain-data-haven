@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Navbar from '@/components/Navbar';
@@ -161,92 +160,94 @@ const TokenManagement = () => {
       <Navbar />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex-1 p-6 pt-20 overflow-auto">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">
-                {appId ? `${applicationName} - Access Keys` : 'Access Key Management'}
-              </h1>
-              <p className="text-muted-foreground">
-                Manage access keys for your applications
-              </p>
+        <div className="flex flex-1 justify-center">
+          <main className="w-full max-w-5xl pt-20 px-6 pb-6 overflow-auto">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight">
+                  {appId ? `${applicationName} - Access Keys` : 'Access Key Management'}
+                </h1>
+                <p className="text-muted-foreground">
+                  Manage access keys for your applications
+                </p>
+              </div>
+              <Button onClick={handleCreateNewToken}>
+                <Key className="mr-2 h-4 w-4" />
+                Create New Key
+              </Button>
             </div>
-            <Button onClick={handleCreateNewToken}>
-              <Key className="mr-2 h-4 w-4" />
-              Create New Key
-            </Button>
-          </div>
 
-          <div className="mb-6">
-            <Input
-              placeholder="Search keys or applications..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-sm"
-            />
-          </div>
+            <div className="mb-6">
+              <Input
+                placeholder="Search keys or applications..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="max-w-sm"
+              />
+            </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Access Keys</CardTitle>
-              <CardDescription>
-                API Access Keys work across all your applications, while Application Access Keys are assigned to specific applications
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Application</TableHead>
-                    <TableHead>Key</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead>Expires</TableHead>
-                    <TableHead>Last Used</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredTokens.map((token) => (
-                    <TableRow key={token.id}>
-                      <TableCell className="font-medium">{token.name}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center">
-                          {getApplicationCell(token)}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <span className="font-mono">{token.token.substring(0, 8)}...</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleCopyToken(token.token)}
-                          >
-                            <Copy className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                      <TableCell>{formatDate(token.createdAt)}</TableCell>
-                      <TableCell>{formatDate(token.expiresAt)}</TableCell>
-                      <TableCell>{formatDate(token.lastUsed)}</TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleRegenerateToken(token.id)}
-                        >
-                          <RefreshCw className="h-3 w-3 mr-2" />
-                          Regenerate
-                        </Button>
-                      </TableCell>
+            <Card>
+              <CardHeader>
+                <CardTitle>Access Keys</CardTitle>
+                <CardDescription>
+                  API Access Keys work across all your applications, while Application Access Keys are assigned to specific applications
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Application</TableHead>
+                      <TableHead>Key</TableHead>
+                      <TableHead>Created</TableHead>
+                      <TableHead>Expires</TableHead>
+                      <TableHead>Last Used</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </main>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredTokens.map((token) => (
+                      <TableRow key={token.id}>
+                        <TableCell className="font-medium">{token.name}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center">
+                            {getApplicationCell(token)}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center space-x-2">
+                            <span className="font-mono">{token.token.substring(0, 8)}...</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleCopyToken(token.token)}
+                            >
+                              <Copy className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                        <TableCell>{formatDate(token.createdAt)}</TableCell>
+                        <TableCell>{formatDate(token.expiresAt)}</TableCell>
+                        <TableCell>{formatDate(token.lastUsed)}</TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleRegenerateToken(token.id)}
+                          >
+                            <RefreshCw className="h-3 w-3 mr-2" />
+                            Regenerate
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </main>
+        </div>
       </div>
     </div>
   );
