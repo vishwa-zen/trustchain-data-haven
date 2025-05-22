@@ -49,10 +49,10 @@ const Settings = () => {
   };
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex min-h-screen bg-background">
       <Navbar />
       <AppSidebar />
-      <div className="flex-1 flex justify-center items-center overflow-auto">
+      <main className="flex-1 pt-16 flex justify-center">
         <div className="w-full max-w-3xl px-4 py-8">
           <div className="mb-8 text-center">
             <h1 className="text-2xl font-bold tracking-tight">Account Settings</h1>
@@ -201,7 +201,7 @@ const Settings = () => {
             </Card>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
