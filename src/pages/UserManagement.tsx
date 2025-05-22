@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import Navbar from '@/components/Navbar';
@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { PlusCircle, Search, UserPlus } from 'lucide-react';
-import { getCurrentUser, hasRole } from '@/lib/auth';
+import { getCurrentUser, hasRole, registerUser, getAllUsers } from '@/lib/auth';
 import { toast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { User, UserRole } from '@/types';
@@ -21,39 +21,40 @@ const UserManagement = () => {
   const user = getCurrentUser();
   const [searchTerm, setSearchTerm] = useState('');
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [newUser, setNewUser] = useState({
     firstName: '',
     lastName: '',
     email: '',
     role: 'app-owner' as UserRole,
+    password: '', // Add password field for API
   });
   
-  // Mock user data
-  const [users, setUsers] = useState<User[]>([
-    {
-      id: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
-      firstName: 'Vishwanath',
-      lastName: 'Mallenahalli',
-      email: 'vishwanath.mallenahalli@zentience.co',
-      role: 'app-owner'
-    },
-    {
-      id: '7a1c5c8d-6b2f-4e3a-8d9c-1f3a6b2c5d4e',
-      firstName: 'Admin',
-      lastName: 'User',
-      email: 'admin@trustchain.com',
-      role: 'admin'
-    },
-    {
-      id: '2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e',
-      firstName: 'Data',
-      lastName: 'Steward',
-      email: 'steward@trustchain.com',
-      role: 'data-steward'
+  // State for users list
+  const [users, setUsers] = useState<User[]>([]);
+  
+  // Load users on component mount
+  useEffect(() => {
+    if (user) {
+      loadUsers();
     }
-  ]);
+  }, [user]);
 
-  React.useEffect(() => {
+  const loadUsers = async () => {
+    try {
+      const usersList = await getAllUsers();
+      setUsers(usersList);
+    } catch (error) {
+      console.error('Failed to load users:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load users',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  useEffect(() => {
     if (!user) {
       navigate('/login');
     } else if (!hasRole(['admin'])) {
@@ -74,31 +75,74 @@ const UserManagement = () => {
         return <Badge className="bg-blue-600">Data Steward</Badge>;
       case 'app-owner':
         return <Badge className="bg-green-600">App Owner</Badge>;
+      case 'cto-user':
+        return <Badge className="bg-yellow-600">CTO</Badge>;
+      case 'dpo-user':
+        return <Badge className="bg-orange-600">DPO</Badge>;
+      case 'csio-user':
+        return <Badge className="bg-red-600">CSIO</Badge>;
       default:
         return null;
     }
   };
 
-  const handleCreateUser = () => {
-    const newUserId = crypto.randomUUID();
-    const userToAdd = {
-      ...newUser,
-      id: newUserId
-    };
+  const handleCreateUser = async () => {
+    // Validate form
+    if (!newUser.firstName || !newUser.lastName || !newUser.email || !newUser.role) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Generate a random password if not provided
+    const password = newUser.password || `${newUser.firstName}${Math.floor(Math.random() * 10000)}!`;
     
-    setUsers([...users, userToAdd]);
-    setNewUser({
-      firstName: '',
-      lastName: '',
-      email: '',
-      role: 'app-owner' as UserRole,
-    });
-    setOpen(false);
+    setIsLoading(true);
     
-    toast({
-      title: "User Created",
-      description: `New ${newUser.role} user added successfully`,
-    });
+    try {
+      // Call the register user API with admin privileges
+      const createdUser = await registerUser(
+        newUser.firstName,
+        newUser.lastName,
+        newUser.email,
+        password,
+        newUser.role
+      );
+      
+      // Add the new user to the list
+      setUsers(prevUsers => [...prevUsers, createdUser]);
+      
+      // Reset form
+      setNewUser({
+        firstName: '',
+        lastName: '',
+        email: '',
+        role: 'app-owner' as UserRole,
+        password: '',
+      });
+      
+      setOpen(false);
+      
+      toast({
+        title: "User Created",
+        description: `New ${newUser.role} user added successfully`,
+      });
+      
+      // Refresh users list
+      loadUsers();
+    } catch (error) {
+      console.error('Error creating user:', error);
+      toast({
+        title: "Failed to Create User",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const filteredUsers = users.filter(user => 
@@ -163,6 +207,16 @@ const UserManagement = () => {
                     />
                   </div>
                   <div className="space-y-2">
+                    <Label htmlFor="password">Password (Optional)</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={newUser.password}
+                      onChange={(e) => setNewUser({...newUser, password: e.target.value})}
+                      placeholder="Leave blank to generate random password"
+                    />
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="role">Role</Label>
                     <Select 
                       value={newUser.role} 
@@ -175,12 +229,17 @@ const UserManagement = () => {
                         <SelectItem value="app-owner">App Owner</SelectItem>
                         <SelectItem value="data-steward">Data Steward</SelectItem>
                         <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="cto-user">CTO</SelectItem>
+                        <SelectItem value="dpo-user">DPO</SelectItem>
+                        <SelectItem value="csio-user">CSIO</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button onClick={handleCreateUser}>Create User</Button>
+                  <Button onClick={handleCreateUser} disabled={isLoading}>
+                    {isLoading ? "Creating..." : "Create User"}
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -217,21 +276,29 @@ const UserManagement = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredUsers.map((user) => (
-                      <TableRow key={user.id}>
-                        <TableCell className="font-medium">{user.firstName} {user.lastName}</TableCell>
-                        <TableCell>{user.email}</TableCell>
-                        <TableCell>{getRoleBadge(user.role)}</TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                          >
-                            Edit
-                          </Button>
+                    {filteredUsers.length > 0 ? (
+                      filteredUsers.map((user) => (
+                        <TableRow key={user.id}>
+                          <TableCell className="font-medium">{user.firstName} {user.lastName}</TableCell>
+                          <TableCell>{user.email}</TableCell>
+                          <TableCell>{getRoleBadge(user.role)}</TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                            >
+                              Edit
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-center py-4 text-muted-foreground">
+                          No users found
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )}
                   </TableBody>
                 </Table>
               </CardContent>
