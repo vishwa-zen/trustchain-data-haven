@@ -1,10 +1,9 @@
-
 /**
  * API Configuration
  * This file centralizes all API endpoint URLs for easier maintenance
  */
 
-const API_BASE_URL = "http://127.0.0.1:3058/api/trustchain/v1";
+const API_BASE_URL = "http://127.0.0.1:3070/api/trustchain/v1";
 
 export const API_ENDPOINTS = {
   // Auth endpoints

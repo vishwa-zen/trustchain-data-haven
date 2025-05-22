@@ -1,4 +1,3 @@
-
 import { ConsentApproval, ConsentRequest, FieldLevelConsent, Vault, AppRegistration, VaultTable, VaultField, BatchFieldConsent, GroupedConsentRequest } from "@/types";
 import { getCurrentUser, getAuthToken } from "@/lib/auth";
 import { API_ENDPOINTS, isLocalhost } from "./config";
@@ -15,7 +14,6 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
   await mockApiDelay();
   
   return [
-    // Analytics Dashboard app with multiple fields under the customers dataset
     {
       appId: "abc123",
       appName: "Analytics Dashboard",
@@ -28,7 +26,7 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
       status: "requested",
       requestedAt: "2025-04-10T14:30:00Z",
       expiryDate: "2026-04-10T14:30:00Z",
-      groupId: "req1" // Same groupId for fields requested together
+      groupId: "req1"
     },
     {
       appId: "abc123",
@@ -42,7 +40,7 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
       status: "requested",
       requestedAt: "2025-04-10T14:30:00Z",
       expiryDate: "2026-04-10T14:30:00Z",
-      groupId: "req1" // Same groupId for fields requested together
+      groupId: "req1"
     },
     {
       appId: "abc123",
@@ -56,7 +54,7 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
       status: "requested",
       requestedAt: "2025-04-10T14:30:00Z",
       expiryDate: "2026-04-10T14:30:00Z",
-      groupId: "req1" // Same groupId for fields requested together
+      groupId: "req1"
     },
     {
       appId: "abc123",
@@ -70,7 +68,7 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
       status: "requested",
       requestedAt: "2025-04-10T14:35:00Z",
       expiryDate: "2026-04-10T14:35:00Z",
-      groupId: "req2" // Different groupId for a separate request
+      groupId: "req2"
     },
     {
       appId: "abc123",
@@ -84,9 +82,8 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
       status: "requested",
       requestedAt: "2025-04-10T14:35:00Z",
       expiryDate: "2026-04-10T14:35:00Z",
-      groupId: "req2" // Same groupId as orderDate
+      groupId: "req2"
     },
-    // Customer Portal app with multiple fields under different datasets
     {
       appId: "def456",
       appName: "Customer Portal",
@@ -143,7 +140,6 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
       expiryDate: "2026-04-12T10:20:00Z",
       groupId: "req4"
     },
-    // Support System app
     {
       appId: "ghi789",
       appName: "Support System",
@@ -179,7 +175,6 @@ export async function getConsentRequests(): Promise<ConsentRequest[]> {
 export async function getGroupedConsentRequests(): Promise<GroupedConsentRequest[]> {
   const requests = await getConsentRequests();
   
-  // Group requests by their groupId
   const groupedMap = requests.reduce((acc, request) => {
     const groupId = request.groupId || request.appId + request.dataSetName + request.requestedAt;
     
@@ -197,13 +192,11 @@ export async function getGroupedConsentRequests(): Promise<GroupedConsentRequest
       };
     }
     
-    // Add this field to the group
     acc[groupId].fields.push({
       fieldName: request.fieldName,
       actions: request.actions
     });
     
-    // Merge purposes if needed
     request.purpose.forEach(p => {
       if (!acc[groupId].purpose.includes(p)) {
         acc[groupId].purpose.push(p);
@@ -300,7 +293,6 @@ export async function approveFieldConsent(
 ): Promise<void> {
   console.log(`API Call: Approving field consent: ${appId} - ${dataSetName}.${fieldName} - ${actions.join(', ')}`);
   await mockApiDelay(500);
-  // In a real implementation, this would update a database record
   return;
 }
 
@@ -313,7 +305,6 @@ export async function rejectFieldConsent(
 ): Promise<void> {
   console.log(`API Call: Rejecting field consent: ${appId} - ${dataSetName}.${fieldName}`);
   await mockApiDelay(500);
-  // In a real implementation, this would update a database record
   return;
 }
 
@@ -327,7 +318,6 @@ export async function approveBatchFieldConsent(
   console.log('Fields:', fields);
   console.log('Reason:', reason);
   await mockApiDelay(800);
-  // In a real implementation, this would update multiple database records
   return;
 }
 
@@ -341,7 +331,6 @@ export async function rejectBatchFieldConsent(
   console.log('Fields:', fields);
   console.log('Reason:', reason);
   await mockApiDelay(800);
-  // In a real implementation, this would update multiple database records
   return;
 }
 
@@ -360,7 +349,6 @@ export async function tokenizeData({ userId, vaultId, appId, data }: {
   console.log('Data to tokenize:', data);
   await mockApiDelay(700);
   
-  // Create mock tokens for each field
   const tokens: Record<string, string> = {};
   Object.keys(data).forEach(key => {
     tokens[key] = `tk_${Math.random().toString(36).substring(2, 15)}_${key}`;
@@ -390,7 +378,6 @@ export async function detokenizeData({
   console.log('Access key:', accessKey);
   await mockApiDelay(800);
   
-  // Create mock data for the detokenized values
   const data: Record<string, any> = {};
   tokens.forEach(token => {
     const fieldMatch = token.match(/tk_[a-z0-9]+_([a-z_]+)/i);
@@ -430,6 +417,51 @@ export async function detokenizeData({
 
 // Get all vaults
 export async function getVaults(): Promise<Vault[]> {
+  console.log('API Call: Getting all vaults');
+  
+  const isDeployed = !isLocalhost();
+  
+  try {
+    if (!isDeployed) {
+      const user = getCurrentUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+      
+      const response = await fetch(API_ENDPOINTS.vaults.getAll, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getAuthToken()}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Vaults fetched successfully:', data);
+        
+        const vaults: Vault[] = data.vaults.map((vault: any) => ({
+          id: vault.vault_id,
+          userId: vault.user_id,
+          vaultName: vault.vault_name,
+          vaultDesc: vault.vault_desc,
+          createdAt: vault.created_at,
+          updatedAt: vault.updated_at,
+          status: vault.status,
+          tables: vault.tables || []
+        }));
+        
+        return vaults;
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('API error fetching vaults:', errorData);
+        throw new Error(errorData.message || 'Failed to fetch vaults');
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching vaults with API:', error);
+  }
+  
   await mockApiDelay(600);
   
   return [
@@ -679,168 +711,101 @@ export async function getVaults(): Promise<Vault[]> {
   ];
 }
 
-// Get user's applications
-export async function getApplicationsByUser(userId: string): Promise<AppRegistration[]> {
-  console.log(`API Call: Getting applications for user ${userId}`);
-  await mockApiDelay(600);
-  
-  return [
-    {
-      id: "app1",
-      userId: userId,
-      vaultId: "vault1",
-      name: "CRM Dashboard",
-      description: "Customer relationship management dashboard",
-      status: "approved",
-      dataSets: [
-        {
-          name: "customers",
-          accessToken: "at_customers_12345",
-          fields: [
-            { name: "id", actions: ["read"] },
-            { name: "name", actions: ["read"] },
-            { name: "email", actions: ["read", "write"] }
-          ],
-          purpose: ["Customer Management"],
-          status: "approved",
-          expiryDate: "2026-05-15T00:00:00Z"
-        },
-        {
-          name: "orders",
-          accessToken: "at_orders_67890",
-          fields: [
-            { name: "id", actions: ["read"] },
-            { name: "amount", actions: ["read"] },
-            { name: "date", actions: ["read"] }
-          ],
-          purpose: ["Order Processing"],
-          status: "approved",
-          expiryDate: "2026-05-15T00:00:00Z"
-        }
-      ],
-      clientId: "client_id_12345",
-      clientSecret: "client_secret_12345",
-      redirectUris: ["https://app.example.com/auth/callback"],
-      createdAt: "2025-01-10T09:00:00Z"
-    },
-    {
-      id: "app2",
-      userId: userId,
-      vaultId: "vault1",
-      name: "Analytics Portal",
-      description: "Data analysis and visualization tool",
-      status: "pending",
-      dataSets: [],
-      clientId: "client_id_67890",
-      clientSecret: "client_secret_67890",
-      redirectUris: ["https://analytics.example.com/auth/callback"],
-      createdAt: "2025-02-15T11:30:00Z"
-    },
-    {
-      id: "app3",
-      userId: userId,
-      vaultId: "vault2",
-      name: "Internal Admin Tool",
-      description: "Administrative tool for internal use",
-      status: "rejected",
-      dataSets: [],
-      clientId: "client_id_abcdef",
-      clientSecret: "client_secret_abcdef",
-      redirectUris: ["https://admin.example.com/auth/callback"],
-      createdAt: "2025-03-20T13:45:00Z"
-    }
-  ];
-}
-
 // Get vault by ID
 export async function getVaultById(vaultId: string): Promise<Vault> {
   console.log(`API Call: Getting vault with ID ${vaultId}`);
+  
+  const isDeployed = !isLocalhost();
+  
+  try {
+    if (!isDeployed) {
+      const user = getCurrentUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+      
+      const response = await fetch(API_ENDPOINTS.vaults.getById(vaultId), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getAuthToken()}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Vault fetched successfully:', data);
+        
+        const vault: Vault = {
+          id: data.vault.vault_id,
+          userId: data.vault.user_id,
+          vaultName: data.vault.vault_name,
+          vaultDesc: data.vault.vault_desc,
+          createdAt: data.vault.created_at,
+          updatedAt: data.vault.updated_at,
+          tables: data.vault.tables || []
+        };
+        
+        return vault;
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('API error fetching vault:', errorData);
+        throw new Error(errorData.message || 'Failed to fetch vault');
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching vault with API:', error);
+  }
+  
   await mockApiDelay(400);
   
-  const vaults = [
-    {
-      id: "vault1",
-      userId: "user1",
-      vaultName: "Customer Data Vault",
-      vaultDesc: "Stores sensitive customer information",
-      createdAt: "2025-01-15T10:30:00Z",
-      tables: [
-        {
-          tableName: "customers",
-          description: "Customer personal information",
-          purpose: ["Identity Verification", "Contact Management"],
-          fields: [
-            { 
-              name: "id", 
-              type: "string", 
-              sensitivity: "LOW", 
-              accessControl: ["admin", "user"] 
-            },
-            { 
-              name: "name", 
-              type: "string", 
-              sensitivity: "MEDIUM", 
-              accessControl: ["admin", "user"] 
-            }
-          ]
-        },
-        {
-          tableName: "payments",
-          description: "Payment information",
-          purpose: ["Payment Processing", "Financial Records"],
-          fields: [
-            { 
-              name: "id", 
-              type: "string", 
-              sensitivity: "LOW", 
-              accessControl: ["admin"] 
-            },
-            { 
-              name: "amount", 
-              type: "number", 
-              sensitivity: "HIGH", 
-              accessControl: ["admin"] 
-            }
-          ]
-        }
-      ]
-    },
-    {
-      id: "vault2",
-      userId: "user2",
-      vaultName: "Finance Vault",
-      vaultDesc: "Stores financial records and payment information",
-      createdAt: "2025-02-20T14:45:00Z",
-      tables: [
-        {
-          tableName: "transactions",
-          description: "Financial transaction records",
-          purpose: ["Accounting", "Audit"],
-          fields: [
-            { 
-              name: "id", 
-              type: "string", 
-              sensitivity: "LOW", 
-              accessControl: ["admin"] 
-            },
-            { 
-              name: "amount", 
-              type: "number", 
-              sensitivity: "HIGH", 
-              accessControl: ["admin"] 
-            }
-          ]
-        }
-      ]
-    }
-  ];
-  
-  const vault = vaults.find(v => v.id === vaultId);
-  if (vault) {
-    return vault as Vault;
-  } else {
-    throw new Error(`Vault with ID ${vaultId} not found`);
-  }
+  return {
+    id: "vault1",
+    userId: "user1",
+    vaultName: "Customer Data Vault",
+    vaultDesc: "Stores sensitive customer information",
+    createdAt: "2025-01-15T10:30:00Z",
+    tables: [
+      {
+        tableName: "customers",
+        description: "Customer personal information",
+        purpose: ["Identity Verification", "Contact Management"],
+        fields: [
+          { 
+            name: "id", 
+            type: "string", 
+            sensitivity: "LOW", 
+            accessControl: ["admin", "user"] 
+          },
+          { 
+            name: "name", 
+            type: "string", 
+            sensitivity: "MEDIUM", 
+            accessControl: ["admin", "user"] 
+          }
+        ]
+      },
+      {
+        tableName: "payments",
+        description: "Payment information",
+        purpose: ["Payment Processing", "Financial Records"],
+        fields: [
+          { 
+            name: "id", 
+            type: "string", 
+            sensitivity: "LOW", 
+            accessControl: ["admin"] 
+          },
+          { 
+            name: "amount", 
+            type: "number", 
+            sensitivity: "HIGH", 
+            accessControl: ["admin"] 
+          }
+        ]
+      }
+    ]
+  };
 }
 
 // Create vault tables
@@ -860,12 +825,10 @@ export async function createVault(
 ): Promise<Vault> {
   console.log('API Call: Creating vault:', { vaultName, vaultDesc });
   
-  // Check if we're in development or deployed environment
   const isDeployed = !isLocalhost();
   
   try {
     if (!isDeployed) {
-      // Try to use the real API in development
       const user = getCurrentUser();
       if (!user) {
         throw new Error('User not authenticated');
@@ -888,7 +851,6 @@ export async function createVault(
         const data = await response.json();
         console.log('Vault created successfully:', data);
         
-        // Transform API response to match our Vault type
         const newVault: Vault = {
           id: data.vault.vault_id,
           userId: data.vault.user_id,
@@ -907,15 +869,13 @@ export async function createVault(
     }
   } catch (error) {
     console.error('Error creating vault with API:', error);
-    // Fall through to mock implementation
   }
   
-  // Use mock implementation as fallback or in production
   await mockApiDelay(700);
   
   const newVault: Vault = {
     id: `vault_${Math.random().toString(36).substring(2, 9)}`,
-    userId: "user1", // Assuming current user
+    userId: "user1",
     vaultName: vaultName,
     vaultDesc: vaultDesc,
     createdAt: new Date().toISOString(),
@@ -937,7 +897,7 @@ export async function registerApplication(appData: {
   const newApp: AppRegistration = {
     id: `app_${Math.random().toString(36).substring(2, 9)}`,
     userId: appData.owner,
-    vaultId: "vault1", // Default vault
+    vaultId: "vault1",
     name: appData.name,
     description: appData.description,
     status: "pending",
