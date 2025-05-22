@@ -64,6 +64,7 @@ export const buildApiUrl = (path: string) => `${API_BASE_URL}${path}`;
  */
 export const isLocalhost = () => 
   window.location.hostname.includes('localhost') || 
+  window.location.hostname.includes("192.168.0.104") ||
   window.location.hostname.includes('127.0.0.1');
 
 export const isProduction = () => !isLocalhost();
