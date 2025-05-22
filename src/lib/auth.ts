@@ -1,8 +1,11 @@
 
 import { User, UserRole } from '@/types';
 
-// Mock user database for fallback
-const fallbackUsers: User[] = [
+// Mock API response delay function for consistent behavior
+const mockApiDelay = (ms: number = 300) => new Promise<void>(resolve => setTimeout(resolve, ms));
+
+// Mock user database
+const mockUsers: User[] = [
   {
     id: 'c7a22ea6-6fcb-40cc-8515-7f54ce47cd39',
     firstName: 'Vishwanath',
@@ -47,36 +50,111 @@ const fallbackUsers: User[] = [
   }
 ];
 
-// Local storage functions for user sessions
+/**
+ * Session Management Functions
+ */
+
+// Get current user from session storage
 export const getCurrentUser = (): User | null => {
-  const userJson = localStorage.getItem('trustchain_user');
-  return userJson ? JSON.parse(userJson) : null;
+  try {
+    const userJson = localStorage.getItem('trustchain_user');
+    return userJson ? JSON.parse(userJson) : null;
+  } catch (error) {
+    console.error('Error retrieving user from storage:', error);
+    return null;
+  }
 };
 
+// Set current user in session storage
 export const setCurrentUser = (user: User): void => {
-  localStorage.setItem('trustchain_user', JSON.stringify(user));
+  try {
+    localStorage.setItem('trustchain_user', JSON.stringify(user));
+  } catch (error) {
+    console.error('Error setting user in storage:', error);
+  }
 };
 
+// Clear current user from session storage
 export const clearCurrentUser = (): void => {
-  localStorage.removeItem('trustchain_user');
+  try {
+    localStorage.removeItem('trustchain_user');
+  } catch (error) {
+    console.error('Error clearing user from storage:', error);
+  }
+};
+
+/**
+ * User Management APIs
+ */
+
+// Get user by email
+export const getUserByEmail = (email: string): User | undefined => {
+  return mockUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
 };
 
 // Get user role by email
-export const getUserRoleByEmail = (email: string): string | null => {
-  const user = fallbackUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+export const getUserRoleByEmail = (email: string): UserRole | null => {
+  const user = getUserByEmail(email);
   return user ? user.role : null;
 };
 
-// Login function that uses mock data instead of API call
+// Get all users
+export const getAllUsers = async (): Promise<User[]> => {
+  console.log('API Call: Getting all users');
+  await mockApiDelay(400);
+  return [...mockUsers];
+};
+
+// Get user by ID
+export const getUserById = async (id: string): Promise<User | null> => {
+  console.log(`API Call: Getting user with ID ${id}`);
+  await mockApiDelay(200);
+  
+  const user = mockUsers.find(u => u.id === id);
+  return user || null;
+};
+
+// Update user profile
+export const updateUserProfile = async (
+  userId: string, 
+  updates: Partial<Omit<User, 'id' | 'role'>>
+): Promise<User | null> => {
+  console.log(`API Call: Updating profile for user ${userId}`, updates);
+  await mockApiDelay(500);
+  
+  const userIndex = mockUsers.findIndex(u => u.id === userId);
+  if (userIndex === -1) return null;
+  
+  const updatedUser = {
+    ...mockUsers[userIndex],
+    ...updates
+  };
+  
+  // In a real implementation, this would update a database record
+  
+  // If this is the current logged-in user, update the session
+  const currentUser = getCurrentUser();
+  if (currentUser && currentUser.id === userId) {
+    setCurrentUser(updatedUser);
+  }
+  
+  return updatedUser;
+};
+
+// Login API
 export const loginUser = async (email: string, password: string): Promise<User> => {
+  console.log(`API Call: Login attempt for ${email}`);
+  await mockApiDelay(600);
+  
   try {
     // For demo purposes, check if we're in a deployed environment or localhost
     const isDeployed = !window.location.hostname.includes('localhost') && 
-                       !window.location.hostname.includes('127.0.0.1');
+                      !window.location.hostname.includes('127.0.0.1');
     
     // Only try the API call if we're in development on localhost
     if (!isDeployed) {
       try {
+        console.log('Attempting to call real login API endpoint');
         const response = await fetch('http://127.0.0.1:3055/api/trustchain/v1/auth/login', {
           method: 'POST',
           headers: {
@@ -86,6 +164,7 @@ export const loginUser = async (email: string, password: string): Promise<User> 
         });
 
         if (response.ok) {
+          console.log('API login successful');
           const userData = await response.json();
           
           // Transform API response to match our User type
@@ -99,6 +178,8 @@ export const loginUser = async (email: string, password: string): Promise<User> 
           
           setCurrentUser(user);
           return user;
+        } else {
+          console.log('API login failed with status', response.status);
         }
       } catch (error) {
         console.error('API login error:', error);
@@ -108,8 +189,11 @@ export const loginUser = async (email: string, password: string): Promise<User> 
     
     // Mock login for both development and production
     console.log('Using mock login for authentication');
-    const mockUser = fallbackUsers.find(u => u.email === email);
+    const mockUser = getUserByEmail(email);
     if (mockUser) {
+      // In a real implementation, we would verify the password here
+      // For demo purposes, any password works
+      console.log('Mock login successful');
       setCurrentUser(mockUser);
       return mockUser;
     }
@@ -121,7 +205,7 @@ export const loginUser = async (email: string, password: string): Promise<User> 
   }
 };
 
-// Register function using mock data instead of API
+// Register API
 export const registerUser = async (
   firstName: string,
   lastName: string,
@@ -129,14 +213,18 @@ export const registerUser = async (
   password: string,
   role: UserRole
 ): Promise<User> => {
+  console.log(`API Call: Register attempt for ${email}`);
+  await mockApiDelay(800);
+  
   try {
     // For demo purposes, check if we're in a deployed environment
     const isDeployed = !window.location.hostname.includes('localhost') && 
-                       !window.location.hostname.includes('127.0.0.1');
+                      !window.location.hostname.includes('127.0.0.1');
     
     // Only try the API call if we're in development on localhost
     if (!isDeployed) {
       try {
+        console.log('Attempting to call real register API endpoint');
         const response = await fetch('http://127.0.0.1:4079/trustchain/v1/user/register', {
           method: 'POST',
           headers: {
@@ -152,6 +240,7 @@ export const registerUser = async (
         });
 
         if (response.ok) {
+          console.log('API registration successful');
           const userData = await response.json();
           
           // Transform API response to match our User type
@@ -165,6 +254,8 @@ export const registerUser = async (
           
           setCurrentUser(user);
           return user;
+        } else {
+          console.log('API registration failed with status', response.status);
         }
       } catch (error) {
         console.error('API registration error:', error);
@@ -175,7 +266,7 @@ export const registerUser = async (
     // Mock registration for both development and production
     console.log('Using mock registration');
     // Check if user already exists in mock data
-    if (fallbackUsers.some(u => u.email === email)) {
+    if (mockUsers.some(u => u.email.toLowerCase() === email.toLowerCase())) {
       throw new Error('User with this email already exists');
     }
     
@@ -187,6 +278,8 @@ export const registerUser = async (
       role
     };
     
+    // In a real implementation, we would save this user to a database
+    console.log('Mock registration successful');
     setCurrentUser(newUser);
     return newUser;
   } catch (error) {
@@ -195,10 +288,31 @@ export const registerUser = async (
   }
 };
 
-// Logout function
-export const logoutUser = (): void => {
+// Logout API
+export const logoutUser = async (): Promise<void> => {
+  console.log('API Call: Logout');
+  await mockApiDelay(200);
   clearCurrentUser();
 };
+
+// Change password API
+export const changePassword = async (
+  userId: string, 
+  currentPassword: string, 
+  newPassword: string
+): Promise<boolean> => {
+  console.log(`API Call: Changing password for user ${userId}`);
+  await mockApiDelay(700);
+  
+  // In a real implementation, we would verify the current password
+  // and update the password hash in the database
+  
+  return true;
+};
+
+/**
+ * Authentication Utility Functions
+ */
 
 // Check if user is authenticated
 export const isAuthenticated = (): boolean => {
@@ -215,8 +329,45 @@ export const hasRole = (requiredRoles: UserRole[]): boolean => {
 
 // Generate access token
 export const generateAccessToken = (): string => {
-  return crypto.randomUUID();
+  return `jwt_${crypto.randomUUID()}`;
 };
 
-// Export UserRole for external use
+// Request password reset
+export const requestPasswordReset = async (email: string): Promise<boolean> => {
+  console.log(`API Call: Password reset requested for ${email}`);
+  await mockApiDelay(500);
+  
+  const user = getUserByEmail(email);
+  if (!user) {
+    // In a real implementation, we would not reveal whether the email exists
+    // for security reasons, but would still return success
+    return true;
+  }
+  
+  // In a real implementation, we would:
+  // 1. Generate a reset token
+  // 2. Store it in the database with the user ID and expiration time
+  // 3. Send an email to the user with a reset link
+  
+  return true;
+};
+
+// Reset password with token
+export const resetPassword = async (
+  resetToken: string,
+  newPassword: string
+): Promise<boolean> => {
+  console.log(`API Call: Reset password with token ${resetToken}`);
+  await mockApiDelay(700);
+  
+  // In a real implementation, we would:
+  // 1. Verify that the token exists and is not expired
+  // 2. Find the associated user
+  // 3. Update the user's password
+  // 4. Invalidate the token
+  
+  return true;
+};
+
+// Export UserRole type
 export type { UserRole };

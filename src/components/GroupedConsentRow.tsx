@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { GroupedConsentRequest } from '@/types';
 import { Clock, ArrowUpRight, Check, X } from 'lucide-react';
-import { approveFieldConsent, rejectFieldConsent, approveBatchFieldConsent, rejectBatchFieldConsent } from '@/lib/vault';
+import { approveBatchFieldConsent, rejectBatchFieldConsent } from '@/lib/consent';
 import { toast } from '@/hooks/use-toast';
+import { formatDate } from '@/lib/utils';
 
 interface GroupedConsentRowProps {
   group: GroupedConsentRequest;
@@ -22,14 +23,6 @@ const GroupedConsentRow: React.FC<GroupedConsentRowProps> = ({
   onOpenDetail
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -165,7 +158,7 @@ const GroupedConsentRow: React.FC<GroupedConsentRowProps> = ({
       <TableCell>
         <div className="flex items-center text-sm">
           <Clock className="h-3 w-3 mr-1 text-muted-foreground" />
-          {formatDate(group.expiryDate)}
+          {formatDate(new Date(group.expiryDate))}
         </div>
       </TableCell>
       <TableCell>
