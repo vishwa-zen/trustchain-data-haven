@@ -9,6 +9,7 @@ import { toast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { v4 as uuidv4 } from 'uuid';
+import { API_ENDPOINTS } from '@/lib/config';
 
 interface TokenizeFormProps {
   vaultId: string;

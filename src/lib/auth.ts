@@ -1,5 +1,7 @@
+
 import { User, UserRole } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
+import { API_ENDPOINTS, isLocalhost } from './config';
 
 // Mock API response delay function for consistent behavior
 const mockApiDelay = (ms: number = 300) => new Promise<void>(resolve => setTimeout(resolve, ms));
@@ -172,14 +174,13 @@ export const loginUser = async (email: string, password: string): Promise<User> 
   
   try {
     // For demo purposes, check if we're in a deployed environment or localhost
-    const isDeployed = !window.location.hostname.includes('localhost') && 
-                      !window.location.hostname.includes('127.0.0.1');
+    const isDeployed = !isLocalhost();
     
     // Only try the API call if we're in development on localhost
     if (!isDeployed) {
       try {
         console.log('Attempting to call real login API endpoint');
-        const response = await fetch('http://127.0.0.1:3056/api/trustchain/v1/auth/login', {
+        const response = await fetch(API_ENDPOINTS.auth.login, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -257,14 +258,13 @@ export const registerUser = async (
   
   try {
     // For demo purposes, check if we're in a deployed environment
-    const isDeployed = !window.location.hostname.includes('localhost') && 
-                      !window.location.hostname.includes('127.0.0.1');
+    const isDeployed = !isLocalhost();
     
     // Only try the API call if we're in development on localhost
     if (!isDeployed) {
       try {
         console.log('Attempting to call real register API endpoint');
-        const response = await fetch('http://127.0.0.1:3056/api/trustchain/v1/auth/register', {
+        const response = await fetch(API_ENDPOINTS.auth.register, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
