@@ -1,5 +1,7 @@
 
 import { ConsentApproval, ConsentRequest, FieldLevelConsent, Vault, AppRegistration, VaultTable, VaultField, BatchFieldConsent, GroupedConsentRequest } from "@/types";
+import { getCurrentUser, getAuthToken } from "@/lib/auth";
+import { API_ENDPOINTS, isLocalhost } from "./config";
 
 // Mock API response delay function for consistent behavior
 const mockApiDelay = (ms: number = 500) => new Promise<void>(resolve => setTimeout(resolve, ms));
@@ -857,6 +859,58 @@ export async function createVault(
   vaultDesc: string
 ): Promise<Vault> {
   console.log('API Call: Creating vault:', { vaultName, vaultDesc });
+  
+  // Check if we're in development or deployed environment
+  const isDeployed = !isLocalhost();
+  
+  try {
+    if (!isDeployed) {
+      // Try to use the real API in development
+      const user = getCurrentUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+      
+      const response = await fetch(API_ENDPOINTS.vaults.create, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getAuthToken()}`
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          vault_name: vaultName,
+          vault_desc: vaultDesc
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Vault created successfully:', data);
+        
+        // Transform API response to match our Vault type
+        const newVault: Vault = {
+          id: data.vault.vault_id,
+          userId: data.vault.user_id,
+          vaultName: data.vault.vault_name,
+          vaultDesc: data.vault.vault_desc,
+          createdAt: new Date().toISOString(),
+          tables: []
+        };
+        
+        return newVault;
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('API error creating vault:', errorData);
+        throw new Error(errorData.message || 'Failed to create vault');
+      }
+    }
+  } catch (error) {
+    console.error('Error creating vault with API:', error);
+    // Fall through to mock implementation
+  }
+  
+  // Use mock implementation as fallback or in production
   await mockApiDelay(700);
   
   const newVault: Vault = {

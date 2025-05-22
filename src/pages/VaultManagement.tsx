@@ -87,7 +87,7 @@ const VaultManagement = () => {
       console.error('Error creating vault:', error);
       toast({
         title: "Error",
-        description: "Failed to create vault",
+        description: error instanceof Error ? error.message : "Failed to create vault",
         variant: "destructive"
       });
     } finally {

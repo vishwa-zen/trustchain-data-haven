@@ -4,7 +4,7 @@
  * This file centralizes all API endpoint URLs for easier maintenance
  */
 
-const API_BASE_URL = "http://127.0.0.1:3056/api/trustchain/v1";
+const API_BASE_URL = "http://127.0.0.1:3058/api/trustchain/v1";
 
 export const API_ENDPOINTS = {
   // Auth endpoints
@@ -37,7 +37,7 @@ export const API_ENDPOINTS = {
   vaults: {
     getAll: `${API_BASE_URL}/vaults`,
     getById: (vaultId: string) => `${API_BASE_URL}/vaults/${vaultId}`,
-    create: `${API_BASE_URL}/vaults`,
+    create: `${API_BASE_URL}/vault`,
     update: (vaultId: string) => `${API_BASE_URL}/vaults/${vaultId}`,
     delete: (vaultId: string) => `${API_BASE_URL}/vaults/${vaultId}`,
   },
