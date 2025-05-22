@@ -1,6 +1,5 @@
-
 import { AppRegistration, DataSet } from '@/types';
-import { mockApiDelay, generateId } from '@/utils';
+import { mockApiDelay, generateId } from '@/lib/utils';
 
 // Mock application data storage
 let mockApplications: AppRegistration[] = [
