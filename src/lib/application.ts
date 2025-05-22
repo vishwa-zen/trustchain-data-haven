@@ -1,359 +1,203 @@
 
-import { AppRegistration, DataSet, DataSetFieldAction } from '@/types';
-import { mockApiDelay } from '@/lib/utils';
+import { AppRegistration, DataSet } from '@/types';
+import { mockApiDelay, generateId } from '@/utils';
+
+// Mock application data storage
+let mockApplications: AppRegistration[] = [
+  {
+    id: 'app-1',
+    name: 'KYC Application',
+    description: 'Customer verification system',
+    status: 'approved',
+    userId: 'user-1',
+    vaultId: 'vault-1',
+    dataSets: [
+      {
+        name: 'Customer Verification',
+        accessToken: 'access-token-1',
+        fields: [
+          { name: 'fullName', actions: ['read'] },
+          { name: 'email', actions: ['read'] },
+          { name: 'nationalId', actions: ['read'] }
+        ],
+        purpose: ['Identity Verification', 'Fraud Prevention'],
+        status: 'approved',
+        expiryDate: '2026-05-22T00:00:00Z'
+      }
+    ],
+    clientId: 'client-123',
+    clientSecret: 'secret-456',
+    redirectUris: ['https://app.example.com/callback'],
+    createdAt: '2025-04-10T08:30:00Z',
+    ownerId: 'user-1'
+  },
+  {
+    id: 'app-2',
+    name: 'Risk Assessment Tool',
+    description: 'Financial risk analysis system',
+    status: 'pending',
+    userId: 'user-1',
+    vaultId: 'vault-2',
+    dataSets: [
+      {
+        name: 'Financial Data',
+        accessToken: 'access-token-2',
+        fields: [
+          { name: 'creditScore', actions: ['read'] },
+          { name: 'incomeLevel', actions: ['read'] },
+          { name: 'financialHistory', actions: ['read'] }
+        ],
+        purpose: ['Risk Assessment', 'Credit Decisioning'],
+        status: 'requested',
+        expiryDate: '2026-06-15T00:00:00Z'
+      }
+    ],
+    createdAt: '2025-05-01T10:15:00Z',
+    ownerId: 'user-1'
+  },
+  {
+    id: 'app-3',
+    name: 'Compliance Monitor',
+    description: 'Regulatory compliance monitoring',
+    status: 'rejected',
+    userId: 'user-2',
+    vaultId: 'vault-3',
+    dataSets: [],
+    createdAt: '2025-03-22T16:40:00Z',
+    ownerId: 'user-2'
+  }
+];
 
 /**
- * Application Management APIs
+ * Get all registered applications
  */
+export const getAllApplications = async (): Promise<AppRegistration[]> => {
+  await mockApiDelay();
+  return [...mockApplications];
+};
 
-// Get all applications
-export async function getAllApplications(): Promise<AppRegistration[]> {
-  console.log('API Call: Getting all applications');
-  await mockApiDelay(700);
-  
-  return [
-    {
-      id: "app1",
-      userId: "user1",
-      vaultId: "vault1",
-      name: "CRM Dashboard",
-      description: "Customer relationship management dashboard",
-      status: "approved",
-      dataSets: getDataSets("app1"),
-      clientId: "client_id_12345",
-      clientSecret: "client_secret_12345",
-      redirectUris: ["https://app.example.com/auth/callback"],
-      createdAt: "2025-01-10T09:00:00Z"
-    },
-    {
-      id: "app2",
-      userId: "user2",
-      vaultId: "vault1",
-      name: "Analytics Portal",
-      description: "Data analysis and visualization tool",
-      status: "pending",
-      dataSets: [],
-      clientId: "client_id_67890",
-      clientSecret: "client_secret_67890",
-      redirectUris: ["https://analytics.example.com/auth/callback"],
-      createdAt: "2025-02-15T11:30:00Z"
-    },
-    {
-      id: "app3",
-      userId: "user3",
-      vaultId: "vault2",
-      name: "Internal Admin Tool",
-      description: "Administrative tool for internal use",
-      status: "rejected",
-      dataSets: [],
-      clientId: "client_id_abcdef",
-      clientSecret: "client_secret_abcdef",
-      redirectUris: ["https://admin.example.com/auth/callback"],
-      createdAt: "2025-03-20T13:45:00Z"
-    },
-    {
-      id: "abc123",
-      userId: "user1",
-      vaultId: "vault1",
-      name: "Analytics Dashboard",
-      description: "Business intelligence and analytics platform",
-      status: "approved",
-      dataSets: getDataSets("abc123"),
-      clientId: "client_id_abc123",
-      clientSecret: "client_secret_abc123",
-      redirectUris: ["https://analytics-dashboard.example.com/auth/callback"],
-      createdAt: "2025-01-05T08:15:00Z"
-    },
-    {
-      id: "def456",
-      userId: "user2",
-      vaultId: "vault2",
-      name: "Customer Portal",
-      description: "Self-service customer portal",
-      status: "approved",
-      dataSets: getDataSets("def456"),
-      clientId: "client_id_def456",
-      clientSecret: "client_secret_def456",
-      redirectUris: ["https://customer-portal.example.com/auth/callback"],
-      createdAt: "2025-02-08T10:20:00Z"
-    },
-    {
-      id: "ghi789",
-      userId: "user3",
-      vaultId: "vault3",
-      name: "Support System",
-      description: "Customer service and ticketing system",
-      status: "approved",
-      dataSets: getDataSets("ghi789"),
-      clientId: "client_id_ghi789",
-      clientSecret: "client_secret_ghi789",
-      redirectUris: ["https://support-system.example.com/auth/callback"],
-      createdAt: "2025-03-12T14:40:00Z"
-    }
-  ];
-}
+/**
+ * Get application by ID
+ */
+export const getApplicationById = async (id: string): Promise<AppRegistration | null> => {
+  await mockApiDelay();
+  const app = mockApplications.find(a => a.id === id);
+  return app ? { ...app } : null;
+};
 
-// Helper function to get datasets for an application
-function getDataSets(appId: string): DataSet[] {
-  switch (appId) {
-    case "app1":
-      return [
-        {
-          name: "customers",
-          accessToken: "at_customers_12345",
-          fields: [
-            { name: "id", actions: ["read"] },
-            { name: "name", actions: ["read"] },
-            { name: "email", actions: ["read", "write"] }
-          ],
-          purpose: ["Customer Management"],
-          status: "approved",
-          expiryDate: "2026-05-15T00:00:00Z"
-        },
-        {
-          name: "orders",
-          accessToken: "at_orders_67890",
-          fields: [
-            { name: "id", actions: ["read"] },
-            { name: "amount", actions: ["read"] },
-            { name: "date", actions: ["read"] }
-          ],
-          purpose: ["Order Processing"],
-          status: "approved",
-          expiryDate: "2026-05-15T00:00:00Z"
-        }
-      ];
-    case "abc123":
-      return [
-        {
-          name: "customers",
-          accessToken: "at_customers_abc123",
-          fields: [
-            { name: "email", actions: ["read"] },
-            { name: "phone", actions: ["read", "write"] },
-            { name: "address", actions: ["read"] }
-          ],
-          purpose: ["Customer Communication", "Account Verification", "Shipping"],
-          status: "approved",
-          expiryDate: "2026-04-10T14:30:00Z"
-        },
-        {
-          name: "orders",
-          accessToken: "at_orders_abc123",
-          fields: [
-            { name: "orderDate", actions: ["read"] },
-            { name: "totalAmount", actions: ["read"] }
-          ],
-          purpose: ["Analytics"],
-          status: "approved",
-          expiryDate: "2026-04-10T14:35:00Z"
-        }
-      ];
-    case "def456":
-      return [
-        {
-          name: "customers",
-          accessToken: "at_customers_def456",
-          fields: [
-            { name: "name", actions: ["read"] },
-            { name: "email", actions: ["read", "write"] }
-          ],
-          purpose: ["User Interface", "Communication"],
-          status: "approved",
-          expiryDate: "2026-04-12T10:20:00Z"
-        },
-        {
-          name: "orders",
-          accessToken: "at_orders_def456",
-          fields: [
-            { name: "amount", actions: ["read"] },
-            { name: "payment_method", actions: ["read"] }
-          ],
-          purpose: ["Order Processing", "Payment Processing"],
-          status: "approved",
-          expiryDate: "2026-04-12T10:15:00Z"
-        }
-      ];
-    case "ghi789":
-      return [
-        {
-          name: "tickets",
-          accessToken: "at_tickets_ghi789",
-          fields: [
-            { name: "status", actions: ["read", "write"] },
-            { name: "priority", actions: ["read"] }
-          ],
-          purpose: ["Customer Support"],
-          status: "approved",
-          expiryDate: "2026-04-08T16:45:00Z"
-        }
-      ];
-    default:
-      return [];
-  }
-}
+/**
+ * Get applications by user ID
+ */
+export const getApplicationsByUser = async (userId: string): Promise<AppRegistration[]> => {
+  await mockApiDelay();
+  return mockApplications.filter(a => a.userId === userId || a.ownerId === userId).map(app => ({ ...app }));
+};
 
-// Get application by ID
-export async function getApplicationById(appId: string): Promise<AppRegistration | null> {
-  console.log(`API Call: Getting application with ID ${appId}`);
-  await mockApiDelay(400);
-  
-  const allApps = await getAllApplications();
-  return allApps.find(app => app.id === appId) || null;
-}
+/**
+ * Get applications by vault ID
+ */
+export const getApplicationsByVault = async (vaultId: string): Promise<AppRegistration[]> => {
+  await mockApiDelay();
+  return mockApplications.filter(a => a.vaultId === vaultId).map(app => ({ ...app }));
+};
 
-// Get applications by user ID
-export async function getApplicationsByUser(userId: string): Promise<AppRegistration[]> {
-  console.log(`API Call: Getting applications for user ${userId}`);
-  await mockApiDelay(600);
-  
-  const allApps = await getAllApplications();
-  return allApps.filter(app => app.userId === userId);
-}
-
-// Create new application
-export async function createApplication(appData: {
-  name: string;
-  description: string;
-  owner: string;
-  vaultId?: string;
-}): Promise<AppRegistration> {
-  console.log('API Call: Creating application:', appData);
-  await mockApiDelay(800);
+/**
+ * Create a new application
+ */
+export const createApplication = async (application: Omit<AppRegistration, 'id' | 'createdAt'>): Promise<AppRegistration> => {
+  await mockApiDelay();
   
   const newApp: AppRegistration = {
-    id: `app_${Math.random().toString(36).substring(2, 9)}`,
-    userId: appData.owner,
-    vaultId: appData.vaultId || "vault1", // Default vault
-    name: appData.name,
-    description: appData.description,
-    status: "pending",
-    dataSets: [],
-    clientId: `client_${Math.random().toString(36).substring(2, 10)}`,
-    clientSecret: `secret_${Math.random().toString(36).substring(2, 15)}`,
-    redirectUris: [],
+    ...application,
+    id: generateId('app'),
     createdAt: new Date().toISOString()
   };
   
-  // In a real implementation, this would save to a database
-  
-  return newApp;
-}
+  mockApplications.push(newApp);
+  return { ...newApp };
+};
 
-// Update application
-export async function updateApplication(
-  appId: string,
-  updates: Partial<Omit<AppRegistration, 'id' | 'userId' | 'createdAt' | 'clientId' | 'clientSecret'>>
-): Promise<AppRegistration | null> {
-  console.log(`API Call: Updating application ${appId}:`, updates);
-  await mockApiDelay(700);
+/**
+ * Update an existing application
+ */
+export const updateApplication = async (id: string, updates: Partial<AppRegistration>): Promise<AppRegistration | null> => {
+  await mockApiDelay();
   
-  const app = await getApplicationById(appId);
-  if (!app) return null;
+  const index = mockApplications.findIndex(a => a.id === id);
+  if (index === -1) return null;
   
-  const updatedApp = {
-    ...app,
+  // Ensure we're using a valid status value
+  if (updates.status && !['requested', 'approved', 'rejected', 'pending'].includes(updates.status as string)) {
+    throw new Error('Invalid status value');
+  }
+  
+  mockApplications[index] = {
+    ...mockApplications[index],
     ...updates
   };
   
-  // In a real implementation, this would update a database record
-  
-  return updatedApp;
-}
+  return { ...mockApplications[index] };
+};
 
-// Delete application
-export async function deleteApplication(appId: string): Promise<boolean> {
-  console.log(`API Call: Deleting application ${appId}`);
-  await mockApiDelay(600);
+/**
+ * Delete an application
+ */
+export const deleteApplication = async (id: string): Promise<boolean> => {
+  await mockApiDelay();
   
-  // In a real implementation, this would delete from a database
+  const initialLength = mockApplications.length;
+  mockApplications = mockApplications.filter(a => a.id !== id);
   
-  return true;
-}
+  return mockApplications.length < initialLength;
+};
 
-// Approve application
-export async function approveApplication(appId: string): Promise<AppRegistration | null> {
-  console.log(`API Call: Approving application ${appId}`);
-  await mockApiDelay(500);
+/**
+ * Approve an application
+ */
+export const approveApplication = async (id: string): Promise<AppRegistration | null> => {
+  await mockApiDelay();
   
-  const app = await getApplicationById(appId);
-  if (!app) return null;
+  const app = await updateApplication(id, { 
+    status: 'approved', 
+    clientId: generateId('client'),
+    clientSecret: generateId('secret')
+  });
   
-  const updatedApp = {
-    ...app,
-    status: 'approved'
-  };
-  
-  // In a real implementation, this would update a database record
-  
-  return updatedApp;
-}
+  return app;
+};
 
-// Reject application
-export async function rejectApplication(appId: string): Promise<AppRegistration | null> {
-  console.log(`API Call: Rejecting application ${appId}`);
-  await mockApiDelay(500);
+/**
+ * Reject an application
+ */
+export const rejectApplication = async (id: string, reason?: string): Promise<AppRegistration | null> => {
+  await mockApiDelay();
   
-  const app = await getApplicationById(appId);
-  if (!app) return null;
-  
-  const updatedApp = {
-    ...app,
+  const app = await updateApplication(id, { 
     status: 'rejected'
-  };
+  });
   
-  // In a real implementation, this would update a database record
-  
-  return updatedApp;
-}
+  return app;
+};
 
-// Generate access token for application
-export async function generateApplicationToken(appId: string): Promise<string> {
-  console.log(`API Call: Generating access token for app ${appId}`);
-  await mockApiDelay(500);
-  
-  const token = `access_token_${Math.random().toString(36).substring(2, 15)}`;
-  return token;
-}
-
-// Reset client secret
-export async function resetClientSecret(appId: string): Promise<string> {
-  console.log(`API Call: Resetting client secret for app ${appId}`);
-  await mockApiDelay(600);
-  
-  const newSecret = `client_secret_${Math.random().toString(36).substring(2, 15)}`;
-  
-  // In a real implementation, this would update a database record
-  
-  return newSecret;
-}
-
-// Add redirect URI
-export async function addRedirectUri(appId: string, uri: string): Promise<string[]> {
-  console.log(`API Call: Adding redirect URI ${uri} for app ${appId}`);
-  await mockApiDelay(400);
+/**
+ * Get application data sets
+ */
+export const getApplicationDataSets = async (appId: string): Promise<DataSet[]> => {
+  await mockApiDelay();
   
   const app = await getApplicationById(appId);
-  if (!app) return [];
-  
-  const newUris = [...(app.redirectUris || []), uri];
-  
-  // In a real implementation, this would update a database record
-  
-  return newUris;
-}
+  return app?.dataSets || [];
+};
 
-// Remove redirect URI
-export async function removeRedirectUri(appId: string, uri: string): Promise<string[]> {
-  console.log(`API Call: Removing redirect URI ${uri} for app ${appId}`);
-  await mockApiDelay(400);
+/**
+ * Add data set to application
+ */
+export const addDataSetToApplication = async (appId: string, dataSet: DataSet): Promise<boolean> => {
+  await mockApiDelay();
   
-  const app = await getApplicationById(appId);
-  if (!app) return [];
+  const app = mockApplications.find(a => a.id === appId);
+  if (!app) return false;
   
-  const newUris = (app.redirectUris || []).filter(u => u !== uri);
-  
-  // In a real implementation, this would update a database record
-  
-  return newUris;
-}
+  app.dataSets = [...(app.dataSets || []), dataSet];
+  return true;
+};
