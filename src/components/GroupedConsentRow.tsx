@@ -129,13 +129,15 @@ const GroupedConsentRow: React.FC<GroupedConsentRowProps> = ({
       </TableCell>
       <TableCell>
         <div className="flex flex-col">
-          <span>{group.dataSetName}</span>
-          <span className="text-xs text-muted-foreground">
-            {group.fields.map(f => f.fieldName).join(', ')}
-            <Badge variant="outline" className="ml-1 text-xs">
-              {group.fields.length} fields
+          <span className="font-medium mb-1">{group.dataSetName}</span>
+          <div className="flex flex-col space-y-1 text-xs text-muted-foreground">
+            {group.fields.map((field, index) => (
+              <span key={index} className="ml-1">{field.fieldName}</span>
+            ))}
+            <Badge variant="outline" className="mt-1 text-xs w-fit">
+              {group.fields.length} field{group.fields.length !== 1 ? 's' : ''}
             </Badge>
-          </span>
+          </div>
         </div>
       </TableCell>
       <TableCell>
