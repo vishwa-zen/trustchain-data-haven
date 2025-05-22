@@ -52,8 +52,8 @@ const Settings = () => {
     <div className="flex min-h-screen bg-background">
       <Navbar />
       <AppSidebar />
-      <main className="flex-1 flex items-center justify-center">
-        <div className="w-full max-w-3xl px-4 py-8">
+      <main className="flex-1 flex flex-col items-center">
+        <div className="container mx-auto max-w-3xl px-4 py-8">
           <div className="mb-8">
             <h1 className="text-2xl font-bold tracking-tight">Account Settings</h1>
             <p className="text-muted-foreground">
