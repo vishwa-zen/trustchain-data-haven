@@ -53,15 +53,15 @@ const Settings = () => {
       <div className="flex w-full h-full">
         <Navbar />
         <AppSidebar />
-        <main className="flex-1 p-6 pt-20 overflow-auto">
-          <div className="mb-6 text-center">
+        <main className="flex-1 p-6 pt-20 overflow-auto flex flex-col items-center">
+          <div className="mb-6 text-center w-full">
             <h1 className="text-2xl font-bold tracking-tight">Account Settings</h1>
             <p className="text-muted-foreground">
               Manage your account preferences and security settings
             </p>
           </div>
 
-          <div className="space-y-8 max-w-3xl mx-auto">
+          <div className="space-y-8 w-full max-w-3xl">
             <Card className="w-full shadow-sm">
               <CardHeader className="text-center">
                 <CardTitle>Profile Information</CardTitle>
