@@ -1,7 +1,7 @@
-
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { type ClassValue } from "clsx";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Utility for combining Tailwind CSS classes
@@ -52,7 +52,7 @@ export function formatDateTime(date: Date | string): string {
  * Generate a random ID
  */
 export function generateId(prefix: string = 'id'): string {
-  return `${prefix}_${Math.random().toString(36).substring(2, 12)}`;
+  return `${prefix}_${uuidv4().split('-')[0]}`;
 }
 
 /**

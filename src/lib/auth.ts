@@ -1,5 +1,5 @@
-
 import { User, UserRole } from '@/types';
+import { v4 as uuidv4 } from 'uuid';
 
 // Mock API response delay function for consistent behavior
 const mockApiDelay = (ms: number = 300) => new Promise<void>(resolve => setTimeout(resolve, ms));
@@ -201,7 +201,7 @@ export const loginUser = async (email: string, password: string): Promise<User> 
           
           // Transform API response to match our User type
           const user: User = {
-            id: userData.user_id || crypto.randomUUID(),
+            id: userData.user_id || uuidv4(),
             firstName: userData.first_name || '',
             lastName: userData.last_name || '',
             email: userData.email,
@@ -230,7 +230,7 @@ export const loginUser = async (email: string, password: string): Promise<User> 
       console.log('Mock login successful');
       
       // Set a mock token for consistency
-      const mockToken = `mock_jwt_${crypto.randomUUID()}`;
+      const mockToken = `mock_jwt_${uuidv4()}`;
       setAuthToken(mockToken);
       
       setCurrentUser(mockUser);
@@ -285,7 +285,7 @@ export const registerUser = async (
           
           // Transform API response to match our User type
           const user: User = {
-            id: userData.user_id || crypto.randomUUID(),
+            id: userData.user_id || uuidv4(),
             firstName: userData.first_name || '',
             lastName: userData.last_name || '',
             email: userData.email,
@@ -317,7 +317,7 @@ export const registerUser = async (
     }
     
     const newUser: User = {
-      id: crypto.randomUUID(),
+      id: uuidv4(),
       firstName,
       lastName,
       email,
@@ -375,7 +375,7 @@ export const hasRole = (requiredRoles: UserRole[]): boolean => {
 
 // Generate access token
 export const generateAccessToken = (): string => {
-  return `jwt_${crypto.randomUUID()}`;
+  return `jwt_${uuidv4()}`;
 };
 
 // Request password reset

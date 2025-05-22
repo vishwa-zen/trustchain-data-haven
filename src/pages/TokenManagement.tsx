@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Navbar from '@/components/Navbar';
@@ -9,6 +10,7 @@ import { Key, RefreshCw, Copy } from 'lucide-react';
 import { getCurrentUser } from '@/lib/auth';
 import { toast } from 'sonner';
 import { useNavigate, useParams } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 
 const TokenManagement = () => {
   const navigate = useNavigate();
@@ -25,7 +27,7 @@ const TokenManagement = () => {
       type: 'api_token',
       applicationName: 'All Applications',
       applicationId: null,
-      token: 'tk_live_' + crypto.randomUUID().split('-')[0],
+      token: 'tk_live_' + uuidv4().split('-')[0],
       createdAt: '2025-04-15T10:30:00Z',
       expiresAt: '2026-04-15T10:30:00Z',
       lastUsed: '2025-05-10T14:22:33Z',
@@ -36,7 +38,7 @@ const TokenManagement = () => {
       type: 'access_key',
       applicationName: 'Payment Gateway',
       applicationId: 'app-2',
-      token: 'app_tk_' + crypto.randomUUID().split('-')[0],
+      token: 'app_tk_' + uuidv4().split('-')[0],
       createdAt: '2025-03-22T08:15:00Z',
       expiresAt: '2025-09-22T08:15:00Z',
       lastUsed: '2025-05-11T09:45:12Z',
@@ -47,7 +49,7 @@ const TokenManagement = () => {
       type: 'access_key',
       applicationName: 'KYC Application',
       applicationId: 'app-1',
-      token: 'app_tk_' + crypto.randomUUID().split('-')[0],
+      token: 'app_tk_' + uuidv4().split('-')[0],
       createdAt: '2025-04-10T11:20:00Z',
       expiresAt: '2025-10-10T11:20:00Z',
       lastUsed: '2025-05-12T16:30:45Z',
@@ -91,8 +93,8 @@ const TokenManagement = () => {
   const handleRegenerateToken = (id: string) => {
     const newToken = 
       tokens.find(t => t.id === id)?.type === 'api_token' 
-        ? 'tk_live_' + crypto.randomUUID().split('-')[0] 
-        : 'app_tk_' + crypto.randomUUID().split('-')[0];
+        ? 'tk_live_' + uuidv4().split('-')[0] 
+        : 'app_tk_' + uuidv4().split('-')[0];
     
     setTokens(tokens.map(token => 
       token.id === id 
@@ -129,12 +131,12 @@ const TokenManagement = () => {
 
   const handleCreateNewToken = () => {
     const newToken = {
-      id: crypto.randomUUID(),
+      id: uuidv4(),
       name: appId ? 'Application Access Key' : 'API Access Key',
       type: appId ? 'access_key' : 'api_token',
       applicationName: applicationName || 'All Applications',
       applicationId: appId || null,
-      token: appId ? 'app_tk_' + crypto.randomUUID().split('-')[0] : 'tk_live_' + crypto.randomUUID().split('-')[0],
+      token: appId ? 'app_tk_' + uuidv4().split('-')[0] : 'tk_live_' + uuidv4().split('-')[0],
       createdAt: new Date().toISOString(),
       expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // 1 year from now
       lastUsed: new Date().toISOString(),
