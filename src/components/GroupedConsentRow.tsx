@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { TableRow, TableCell } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { GroupedConsentRequest } from '@/types';
-import { Clock, ArrowUpRight, Check, X } from 'lucide-react';
+import { Clock, ArrowUpRight, Check, X, Eye, EyeOff } from 'lucide-react';
 import { approveBatchFieldConsent, rejectBatchFieldConsent } from '@/lib/consent';
 import { toast } from '@/hooks/use-toast';
 import { formatDate } from '@/lib/utils';
@@ -37,6 +36,23 @@ const GroupedConsentRow: React.FC<GroupedConsentRowProps> = ({
       default:
         return <Badge className="bg-gray-500">Unknown</Badge>;
     }
+  };
+
+  // If no custom renderFieldWithAccess is provided, use this default implementation
+  const defaultRenderFieldWithAccess = (field: { fieldName: string, actions: string[] }) => {
+    const hasRead = field.actions.includes('read');
+    const hasWrite = field.actions.includes('write');
+    
+    return (
+      <div className="flex items-center justify-between">
+        <span>{field.fieldName}</span>
+        <div className="flex space-x-1">
+          {hasRead && <Eye className="h-3 w-3 text-blue-500" aria-label="Read access" />}
+          {hasWrite && <span className="text-green-500 font-bold text-xs ml-1">W</span>}
+          {!hasWrite && hasRead && <EyeOff className="h-3 w-3 text-gray-400" aria-label="Read-only access" />}
+        </div>
+      </div>
+    );
   };
 
   const handleApprove = async () => {
@@ -131,7 +147,7 @@ const GroupedConsentRow: React.FC<GroupedConsentRowProps> = ({
                 {renderFieldWithAccess ? (
                   renderFieldWithAccess(field)
                 ) : (
-                  field.fieldName
+                  defaultRenderFieldWithAccess(field)
                 )}
               </div>
             ))}

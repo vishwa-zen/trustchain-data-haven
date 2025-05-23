@@ -135,9 +135,9 @@ const GroupedConsentPage = () => {
       <div className="flex items-center justify-between">
         <span>{field.fieldName}</span>
         <div className="flex space-x-1">
-          {hasRead && <Eye className="h-3 w-3 text-blue-500" title="Read access" />}
+          {hasRead && <Eye className="h-3 w-3 text-blue-500" aria-label="Read access" />}
           {hasWrite && <span className="text-green-500 font-bold text-xs ml-1">W</span>}
-          {!hasWrite && hasRead && <EyeOff className="h-3 w-3 text-gray-400" title="Read-only access" />}
+          {!hasWrite && hasRead && <EyeOff className="h-3 w-3 text-gray-400" aria-label="Read-only access" />}
         </div>
       </div>
     );
