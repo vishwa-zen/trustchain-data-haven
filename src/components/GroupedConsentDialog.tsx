@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { GroupedConsentRequest, ConsentBatchApprovalRequest } from '@/types';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Check, X } from "lucide-react";
+import { Check, X, Eye, EyeOff } from "lucide-react";
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { approveBatchFieldConsent, rejectBatchFieldConsent } from '@/lib/consent';
@@ -17,13 +16,15 @@ interface GroupedConsentDialogProps {
   onOpenChange: (open: boolean) => void;
   groupedRequest: GroupedConsentRequest | null;
   onReload: () => void;
+  renderFieldWithAccess?: (field: { fieldName: string, actions: string[] }) => React.ReactNode;
 }
 
 const GroupedConsentDialog: React.FC<GroupedConsentDialogProps> = ({
   open,
   onOpenChange,
   groupedRequest,
-  onReload
+  onReload,
+  renderFieldWithAccess
 }) => {
   const [selectedFields, setSelectedFields] = useState<Record<string, {
     selected: boolean;
@@ -235,6 +236,23 @@ const GroupedConsentDialog: React.FC<GroupedConsentDialogProps> = ({
     }
   };
 
+  // Helper function to render access icons if renderFieldWithAccess not provided
+  const defaultRenderFieldWithAccess = (field: { fieldName: string, actions: string[] }) => {
+    const hasRead = field.actions.includes('read');
+    const hasWrite = field.actions.includes('write');
+    
+    return (
+      <div className="flex items-center justify-between">
+        <span>{field.fieldName}</span>
+        <div className="flex space-x-1">
+          {hasRead && <Eye className="h-3 w-3 text-blue-500" title="Read access" />}
+          {hasWrite && <span className="text-green-500 font-bold text-xs ml-1">W</span>}
+          {!hasWrite && hasRead && <EyeOff className="h-3 w-3 text-gray-400" title="Read-only access" />}
+        </div>
+      </div>
+    );
+  };
+
   if (!groupedRequest) return null;
 
   return (
@@ -297,7 +315,9 @@ const GroupedConsentDialog: React.FC<GroupedConsentDialogProps> = ({
                         onCheckedChange={(checked) => handleFieldSelectionChange(field.fieldName, !!checked)}
                       />
                     </TableCell>
-                    <TableCell>{field.fieldName}</TableCell>
+                    <TableCell>
+                      {renderFieldWithAccess ? renderFieldWithAccess(field) : defaultRenderFieldWithAccess(field)}
+                    </TableCell>
                     <TableCell>
                       <Checkbox 
                         checked={selectedFields[field.fieldName]?.readAccess} 
@@ -316,6 +336,23 @@ const GroupedConsentDialog: React.FC<GroupedConsentDialogProps> = ({
                 ))}
               </TableBody>
             </Table>
+          </div>
+          
+          <div className="flex items-center mt-3 justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
+                <Eye className="h-3 w-3 text-blue-500" />
+                <span className="text-xs">Read access</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="text-green-500 font-bold text-xs">W</span>
+                <span className="text-xs">Write access</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <EyeOff className="h-3 w-3 text-gray-400" />
+                <span className="text-xs">Read-only access</span>
+              </div>
+            </div>
           </div>
           
           <div className="space-y-2">

@@ -14,13 +14,15 @@ interface GroupedConsentRowProps {
   onReload: () => void;
   onViewApp: (appId: string) => void;
   onOpenDetail: (groupId: string) => void;
+  renderFieldWithAccess?: (field: { fieldName: string, actions: string[] }) => React.ReactNode;
 }
 
 const GroupedConsentRow: React.FC<GroupedConsentRowProps> = ({ 
   group, 
   onReload, 
   onViewApp,
-  onOpenDetail
+  onOpenDetail,
+  renderFieldWithAccess
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -125,7 +127,13 @@ const GroupedConsentRow: React.FC<GroupedConsentRowProps> = ({
           <span className="font-medium mb-1">{group.dataSetName}</span>
           <div className="flex flex-col space-y-1 text-xs text-muted-foreground">
             {group.fields.map((field, index) => (
-              <span key={index} className="ml-1">{field.fieldName}</span>
+              <div key={index} className="ml-1">
+                {renderFieldWithAccess ? (
+                  renderFieldWithAccess(field)
+                ) : (
+                  field.fieldName
+                )}
+              </div>
             ))}
             <Badge variant="outline" className="mt-1 text-xs w-fit">
               {group.fields.length} field{group.fields.length !== 1 ? 's' : ''}
@@ -134,7 +142,7 @@ const GroupedConsentRow: React.FC<GroupedConsentRowProps> = ({
         </div>
       </TableCell>
       <TableCell>
-        <div className="flex gap-1">
+        <div className="flex gap-1 flex-wrap">
           {/* Show unique actions across all fields */}
           {Array.from(new Set(group.fields.flatMap(f => f.actions))).map(action => (
             <Badge key={action} variant="outline" className="text-xs">
