@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Check, X } from "lucide-react";
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { approveBatchFieldConsent, rejectBatchFieldConsent, buildConsentApprovalRequest } from '@/lib/consent';
+import { approveBatchFieldConsent, rejectBatchFieldConsent } from '@/lib/consent';
 import { toast } from '@/hooks/use-toast';
 import { getCurrentUser } from '@/lib/auth';
 

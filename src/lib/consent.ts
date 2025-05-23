@@ -1,4 +1,5 @@
-import { ConsentApproval, ConsentRequest, FieldLevelConsent, GroupedConsentRequest, ConsentBatchApprovalRequest, ConsentRequestItem } from '@/types';
+
+import { ConsentApproval, ConsentRequest, FieldLevelConsent, GroupedConsentRequest, ConsentBatchApprovalRequest, ConsentRequestItem, ApiConsentApplication } from '@/types';
 import { mockApiDelay } from '@/lib/utils';
 import { getCurrentUser } from '@/lib/auth';
 
@@ -6,118 +7,159 @@ import { getCurrentUser } from '@/lib/auth';
  * Consent Management APIs
  */
 
+// Mock data in the new API format
+const mockApiConsentApplications: ApiConsentApplication[] = [
+  {
+    id: "6822930b1d641d9f48bea60f",
+    app_id: "542cd442-9e08-47dd-8f10-2211317c58cd",
+    name: "KYC-App",
+    description: "An application for data processing using KYC details",
+    user_id: "c7a22ea6-6fcb-40cc-8515-7f54ce47cd39",
+    status: "approved",
+    data_sets: [
+      {
+        name: "user_profile",
+        fields: [
+          { name: "first_name", actions: ["read", "write"] },
+          { name: "last_name", actions: ["read", "write"] },
+          { name: "email", actions: ["read", "write"] },
+          { name: "phone_number", actions: ["read", "write"] }
+        ],
+        purpose: ["verification", "analysis"],
+        expiry_date: "2025-12-31T23:59:59Z"
+      },
+      {
+        name: "finance_profile",
+        fields: [
+          { name: "pan_number", actions: ["read", "write"] },
+          { name: "aadhar_number", actions: ["read", "write"] }
+        ],
+        purpose: ["verification", "analysis"],
+        expiry_date: "2026-01-31T23:59:59Z"
+      }
+    ],
+    created_at: "2025-05-13T00:32:11.197Z",
+    updated_at: "2025-05-13T00:32:11.197Z",
+    vault_id: "2288e11a-658f-421c-9359-79c969316303",
+    access_token: ""
+  },
+  {
+    id: "682293851d641d9f48bea610",
+    app_id: "d07a3490-5427-4edc-9932-e1e7870aa0a1",
+    name: "Customer Verification Service",
+    description: "An application that reads and verifies customer identity using KYC data",
+    user_id: "f91b6ec4-2c78-4cf9-a70a-5e0b91a689d4",
+    status: "approved",
+    data_sets: [
+      {
+        name: "user_profile",
+        fields: [
+          { name: "first_name", actions: ["read"] },
+          { name: "last_name", actions: ["read"] },
+          { name: "email", actions: ["read"] },
+          { name: "phone_number", actions: ["read"] }
+        ],
+        purpose: ["verification", "analysis"],
+        expiry_date: "2025-12-31T23:59:59Z"
+      },
+      {
+        name: "finance_profile",
+        fields: [
+          { name: "pan_number", actions: ["read"] },
+          { name: "aadhar_number", actions: ["read"] }
+        ],
+        purpose: ["verification", "analysis"],
+        expiry_date: "2026-01-31T23:59:59Z"
+      }
+    ],
+    created_at: "2025-05-13T00:34:13.585Z",
+    updated_at: "2025-05-13T00:34:13.585Z",
+    vault_id: "2288e11a-658f-421c-9359-79c969316303",
+    access_token: ""
+  },
+  {
+    id: "682f2a2588a53619f9cbfe91",
+    app_id: "0d23dc0a-647c-4d6c-9bc7-6f9be750c70c",
+    name: "Tax Cal 01",
+    description: "Tax Cal 01",
+    user_id: "c7a22ea6-6fcb-40cc-8515-7f54ce47cd39",
+    status: "pending",
+    data_sets: [
+      {
+        name: "tax_data",
+        fields: [
+          { name: "pan_number", actions: ["read", "write"] },
+          { name: "phone_number", actions: ["read", "write"] }
+        ],
+        purpose: ["verification", "authorization"],
+        expiry_date: "0001-01-01T00:00:00Z"
+      }
+    ],
+    created_at: "2025-05-22T13:44:05.249Z",
+    updated_at: "2025-05-22T13:44:05.249Z",
+    vault_id: "bae929e9-8a33-41f1-b589-f18fe64f5fd5",
+    access_token: ""
+  }
+];
+
+// Transform API data to GroupedConsentRequest format
+function transformApiDataToGroupedRequests(apiData: ApiConsentApplication[]): GroupedConsentRequest[] {
+  const groupedRequests: GroupedConsentRequest[] = [];
+  
+  apiData.forEach(app => {
+    app.data_sets.forEach(dataSet => {
+      const groupId = `${app.app_id}_${dataSet.name}`;
+      
+      groupedRequests.push({
+        groupId,
+        appId: app.app_id,
+        appName: app.name,
+        dataSetName: dataSet.name,
+        fields: dataSet.fields.map(field => ({
+          fieldName: field.name,
+          actions: field.actions
+        })),
+        purpose: dataSet.purpose,
+        status: app.status === 'pending' ? 'requested' : app.status,
+        requestedAt: app.created_at,
+        expiryDate: dataSet.expiry_date
+      });
+    });
+  });
+  
+  return groupedRequests;
+}
+
 // Get consent requests by status
 export async function getConsentRequestsByStatus(status?: 'requested' | 'approved' | 'rejected'): Promise<ConsentRequest[]> {
   console.log(`API Call: Getting consent requests with status: ${status || 'all'}`);
   await mockApiDelay(500);
 
-  // Mock data
-  const allRequests = [
-    // Analytics Dashboard app
-    {
-      appId: "abc123",
-      appName: "Analytics Dashboard",
-      userId: "user1",
-      vaultId: "vault1",
-      dataSetName: "customers",
-      fieldName: "email",
-      actions: ["read"],
-      purpose: ["Customer Communication"],
-      status: "requested",
-      requestedAt: "2025-04-10T14:30:00Z",
-      expiryDate: "2026-04-10T14:30:00Z",
-      groupId: "req1"
-    },
-    {
-      appId: "abc123",
-      appName: "Analytics Dashboard",
-      userId: "user1",
-      vaultId: "vault1",
-      dataSetName: "customers",
-      fieldName: "name",
-      actions: ["read", "write"],
-      purpose: ["Customer Communication"],
-      status: "approved",
-      requestedAt: "2025-04-08T10:15:00Z",
-      expiryDate: "2026-04-08T10:15:00Z",
-      groupId: "req7"
-    },
-    {
-      appId: "abc123",
-      appName: "Analytics Dashboard",
-      userId: "user1",
-      vaultId: "vault1",
-      dataSetName: "customers",
-      fieldName: "address",
-      actions: ["read"],
-      purpose: ["Shipping"],
-      status: "rejected",
-      requestedAt: "2025-04-07T11:20:00Z",
-      expiryDate: "2026-04-07T11:20:00Z",
-      groupId: "req8"
-    },
-    // Customer Portal app
-    {
-      appId: "def456",
-      appName: "Customer Portal",
-      userId: "user2",
-      vaultId: "vault2",
-      dataSetName: "orders",
-      fieldName: "amount",
-      actions: ["read"],
-      purpose: ["Order Processing"],
-      status: "requested",
-      requestedAt: "2025-04-12T10:15:00Z",
-      expiryDate: "2026-04-12T10:15:00Z",
-      groupId: "req3"
-    },
-    {
-      appId: "def456",
-      appName: "Customer Portal",
-      userId: "user2",
-      vaultId: "vault2",
-      dataSetName: "orders",
-      fieldName: "payment_method",
-      actions: ["read"],
-      purpose: ["Payment Processing"],
-      status: "approved",
-      requestedAt: "2025-04-09T14:35:00Z",
-      expiryDate: "2026-04-09T14:35:00Z",
-      groupId: "req9"
-    },
-    // Support System app
-    {
-      appId: "ghi789",
-      appName: "Support System",
-      userId: "user3",
-      vaultId: "vault3",
-      dataSetName: "tickets",
-      fieldName: "status",
-      actions: ["read", "write"],
-      purpose: ["Customer Support"],
-      status: "approved",
-      requestedAt: "2025-04-08T16:45:00Z",
-      expiryDate: "2026-04-08T16:45:00Z",
-      groupId: "req5"
-    },
-    {
-      appId: "ghi789",
-      appName: "Support System",
-      userId: "user3",
-      vaultId: "vault3",
-      dataSetName: "tickets",
-      fieldName: "priority",
-      actions: ["read", "write"],
-      purpose: ["Customer Support"],
-      status: "rejected",
-      requestedAt: "2025-04-08T16:45:00Z",
-      expiryDate: "2026-04-08T16:45:00Z",
-      groupId: "req6"
-    }
-  ] as ConsentRequest[];
+  // Transform grouped data to individual consent requests for backward compatibility
+  const groupedRequests = transformApiDataToGroupedRequests(mockApiConsentApplications);
+  const individualRequests: ConsentRequest[] = [];
+  
+  groupedRequests.forEach(group => {
+    group.fields.forEach(field => {
+      individualRequests.push({
+        appId: group.appId,
+        appName: group.appName,
+        userId: "user1", // Mock user ID
+        vaultId: "vault1", // Mock vault ID
+        dataSetName: group.dataSetName,
+        fieldName: field.fieldName,
+        actions: field.actions,
+        purpose: group.purpose,
+        status: group.status,
+        requestedAt: group.requestedAt,
+        expiryDate: group.expiryDate,
+        groupId: group.groupId
+      });
+    });
+  });
 
   // Filter by status if provided
-  return status ? allRequests.filter(request => request.status === status) : allRequests;
+  return status ? individualRequests.filter(request => request.status === status) : individualRequests;
 }
 
 // Get all consent requests
@@ -149,48 +191,12 @@ export async function getConsentRequestsByApp(appId: string): Promise<ConsentReq
   return allRequests.filter(request => request.appId === appId);
 }
 
-// Get grouped consent requests
+// Get grouped consent requests using the new API format
 export async function getGroupedConsentRequests(): Promise<GroupedConsentRequest[]> {
   console.log('API Call: Getting grouped consent requests');
+  await mockApiDelay(500);
   
-  // Get all consent requests
-  const requests = await getAllConsentRequests();
-  
-  // Group requests by their groupId
-  const groupedMap = requests.reduce((acc, request) => {
-    const groupId = request.groupId || request.appId + request.dataSetName + request.requestedAt;
-    
-    if (!acc[groupId]) {
-      acc[groupId] = {
-        groupId,
-        appId: request.appId,
-        appName: request.appName,
-        dataSetName: request.dataSetName,
-        fields: [],
-        purpose: [...request.purpose],
-        status: request.status,
-        requestedAt: request.requestedAt,
-        expiryDate: request.expiryDate
-      };
-    }
-    
-    // Add this field to the group
-    acc[groupId].fields.push({
-      fieldName: request.fieldName,
-      actions: request.actions
-    });
-    
-    // Merge purposes if needed
-    request.purpose.forEach(p => {
-      if (!acc[groupId].purpose.includes(p)) {
-        acc[groupId].purpose.push(p);
-      }
-    });
-    
-    return acc;
-  }, {} as Record<string, GroupedConsentRequest>);
-  
-  return Object.values(groupedMap);
+  return transformApiDataToGroupedRequests(mockApiConsentApplications);
 }
 
 // Get pending grouped consent requests

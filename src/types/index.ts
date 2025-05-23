@@ -1,3 +1,4 @@
+
 // Make sure UserRole is properly exported
 export type UserRole = 'app-owner' | 'data-steward' | 'admin' | 'cto-user' | 'dpo-user' | 'csio-user';
 
@@ -139,7 +140,34 @@ export interface BatchFieldConsent {
   writeAccess: boolean;
 }
 
-// New interface for grouped consent requests
+// Updated interface for the new API response format
+export interface ApiDataSetField {
+  name: string;
+  actions: ('read' | 'write')[];
+}
+
+export interface ApiDataSet {
+  name: string;
+  fields: ApiDataSetField[];
+  purpose: string[];
+  expiry_date: string;
+}
+
+export interface ApiConsentApplication {
+  id: string;
+  app_id: string;
+  name: string;
+  description: string;
+  user_id: string;
+  status: 'approved' | 'pending' | 'rejected';
+  data_sets: ApiDataSet[];
+  created_at: string;
+  updated_at: string;
+  vault_id: string;
+  access_token: string;
+}
+
+// Updated grouped consent request interface
 export interface GroupedConsentRequest {
   groupId: string;
   appId: string;
