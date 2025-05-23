@@ -14,10 +14,10 @@ export const mockApiConsentApplications: ApiConsentApplication[] = [
       {
         "name": "user_profile",
         "fields": [
-          { "name": "first_name", "actions": ["read", "write"] },
-          { "name": "last_name", "actions": ["read", "write"] },
-          { "name": "email", "actions": ["read", "write"] },
-          { "name": "phone_number", "actions": ["read", "write"] }
+          { "name": "first_name", "actions": ["read", "write"] as ('read' | 'write')[] },
+          { "name": "last_name", "actions": ["read", "write"] as ('read' | 'write')[] },
+          { "name": "email", "actions": ["read", "write"] as ('read' | 'write')[] },
+          { "name": "phone_number", "actions": ["read", "write"] as ('read' | 'write')[] }
         ],
         "purpose": ["verification", "analysis"],
         "expiry_date": "2025-12-31T23:59:59Z"
@@ -25,8 +25,8 @@ export const mockApiConsentApplications: ApiConsentApplication[] = [
       {
         "name": "finance_profile",
         "fields": [
-          { "name": "pan_number", "actions": ["read", "write"] },
-          { "name": "aadhar_number", "actions": ["read", "write"] }
+          { "name": "pan_number", "actions": ["read", "write"] as ('read' | 'write')[] },
+          { "name": "aadhar_number", "actions": ["read", "write"] as ('read' | 'write')[] }
         ],
         "purpose": ["verification", "analysis"],
         "expiry_date": "2026-01-31T23:59:59Z"
@@ -48,10 +48,10 @@ export const mockApiConsentApplications: ApiConsentApplication[] = [
       {
         "name": "user_profile",
         "fields": [
-          { "name": "first_name", "actions": ["read"] },
-          { "name": "last_name", "actions": ["read"] },
-          { "name": "email", "actions": ["read"] },
-          { "name": "phone_number", "actions": ["read"] }
+          { "name": "first_name", "actions": ["read"] as ('read' | 'write')[] },
+          { "name": "last_name", "actions": ["read"] as ('read' | 'write')[] },
+          { "name": "email", "actions": ["read"] as ('read' | 'write')[] },
+          { "name": "phone_number", "actions": ["read"] as ('read' | 'write')[] }
         ],
         "purpose": ["verification", "analysis"],
         "expiry_date": "2025-12-31T23:59:59Z"
@@ -59,8 +59,8 @@ export const mockApiConsentApplications: ApiConsentApplication[] = [
       {
         "name": "finance_profile",
         "fields": [
-          { "name": "pan_number", "actions": ["read"] },
-          { "name": "aadhar_number", "actions": ["read"] }
+          { "name": "pan_number", "actions": ["read"] as ('read' | 'write')[] },
+          { "name": "aadhar_number", "actions": ["read"] as ('read' | 'write')[] }
         ],
         "purpose": ["verification", "analysis"],
         "expiry_date": "2026-01-31T23:59:59Z"
@@ -82,8 +82,8 @@ export const mockApiConsentApplications: ApiConsentApplication[] = [
       {
         "name": "tax_data",
         "fields": [
-          { "name": "pan_number", "actions": ["read", "write"] },
-          { "name": "phone_number", "actions": ["read", "write"] }
+          { "name": "pan_number", "actions": ["read", "write"] as ('read' | 'write')[] },
+          { "name": "phone_number", "actions": ["read", "write"] as ('read' | 'write')[] }
         ],
         "purpose": ["verification", "authorization"],
         "expiry_date": "0001-01-01T00:00:00Z"
@@ -96,13 +96,13 @@ export const mockApiConsentApplications: ApiConsentApplication[] = [
   }
 ];
 
-// Mock approval history data
+// Mock approval history data - fixing the actions type here
 export const mockApprovalHistory = [
   {
     appId: "abc123",
     dataSetName: "customers",
     fieldName: "name",
-    actions: ["read"],
+    actions: ["read"] as ('read' | 'write')[],
     approved: true,
     approvedBy: "Jane Smith",
     approvedAt: "2025-04-01T10:35:00Z",
@@ -112,7 +112,7 @@ export const mockApprovalHistory = [
     appId: "abc123",
     dataSetName: "customers",
     fieldName: "email",
-    actions: ["read"],
+    actions: ["read"] as ('read' | 'write')[],
     approved: true,
     approvedBy: "Jane Smith",
     approvedAt: "2025-04-01T10:30:00Z",
@@ -122,7 +122,7 @@ export const mockApprovalHistory = [
     appId: "abc123",
     dataSetName: "transactions",
     fieldName: "amount",
-    actions: ["read"],
+    actions: ["read"] as ('read' | 'write')[],
     approved: false,
     approvedBy: "John Doe",
     approvedAt: "2025-04-02T14:20:00Z",
@@ -132,7 +132,7 @@ export const mockApprovalHistory = [
     appId: "def456",
     dataSetName: "orders",
     fieldName: "payment_method",
-    actions: ["read"],
+    actions: ["read"] as ('read' | 'write')[],
     approved: true,
     approvedBy: "Sarah Johnson",
     approvedAt: "2025-04-09T14:35:00Z",
@@ -142,7 +142,7 @@ export const mockApprovalHistory = [
     appId: "ghi789",
     dataSetName: "tickets",
     fieldName: "status",
-    actions: ["read", "write"],
+    actions: ["read", "write"] as ('read' | 'write')[],
     approved: true,
     approvedBy: "Mike Wilson",
     approvedAt: "2025-04-08T16:45:00Z",
@@ -152,7 +152,7 @@ export const mockApprovalHistory = [
     appId: "ghi789",
     dataSetName: "tickets",
     fieldName: "priority",
-    actions: ["read", "write"],
+    actions: ["read", "write"] as ('read' | 'write')[],
     approved: false,
     approvedBy: "Mike Wilson",
     approvedAt: "2025-04-08T16:50:00Z",
@@ -160,55 +160,55 @@ export const mockApprovalHistory = [
   }
 ];
 
-// Mock field consents
+// Mock field consents - fixing the actions type here as well
 export const mockFieldConsents = (appId: string) => [
   {
     appId,
     dataSetName: "customers",
     fieldName: "id",
-    actions: ["read"],
+    actions: ["read"] as ('read' | 'write')[],
     approved: true
   },
   {
     appId,
     dataSetName: "customers",
     fieldName: "name",
-    actions: ["read"],
+    actions: ["read"] as ('read' | 'write')[],
     approved: true
   },
   {
     appId,
     dataSetName: "customers",
     fieldName: "email",
-    actions: ["read", "write"],
+    actions: ["read", "write"] as ('read' | 'write')[],
     approved: true
   },
   {
     appId,
     dataSetName: "customers",
     fieldName: "phone",
-    actions: ["read"],
+    actions: ["read"] as ('read' | 'write')[],
     approved: false
   },
   {
     appId,
     dataSetName: "transactions",
     fieldName: "id",
-    actions: ["read"],
+    actions: ["read"] as ('read' | 'write')[],
     approved: true
   },
   {
     appId,
     dataSetName: "transactions",
     fieldName: "amount",
-    actions: ["read"],
+    actions: ["read"] as ('read' | 'write')[],
     approved: false
   },
   {
     appId,
     dataSetName: "transactions",
     fieldName: "date",
-    actions: ["read"],
+    actions: ["read"] as ('read' | 'write')[],
     approved: true
   }
 ];
