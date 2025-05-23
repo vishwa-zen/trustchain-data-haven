@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -14,7 +15,8 @@ import { toast } from '@/hooks/use-toast';
 import { GroupedConsentRequest } from '@/types';
 import GroupedConsentRow from '@/components/GroupedConsentRow';
 import GroupedConsentDialog from '@/components/GroupedConsentDialog';
-import { getGroupedConsentRequests } from '@/lib/consent';
+import { getGroupedConsentRequests, ConsentApplication, fetchConsentApplications } from '@/lib/consent';
+import { config } from '@/lib/config';
 
 const GroupedConsentPage = () => {
   const navigate = useNavigate();
@@ -53,8 +55,30 @@ const GroupedConsentPage = () => {
 
   const loadGroupedConsentRequests = async () => {
     setLoading(true);
+    console.log("Loading consent requests...");
     try {
-      const requests = await getGroupedConsentRequests();
+      // First try to fetch from the real API
+      let requests: GroupedConsentRequest[] = [];
+      try {
+        const apiUrl = `${config.API_BASE_URL}/trustchain/v1/consents`;
+        console.log("Fetching from API:", apiUrl);
+        const consentApps = await fetchConsentApplications(apiUrl);
+        console.log("API response:", consentApps);
+        
+        // Convert ConsentApplication objects to GroupedConsentRequest format
+        const groupedRequests: GroupedConsentRequest[] = [];
+        consentApps.forEach(app => {
+          const appRequests = app.toGroupedConsentRequests();
+          groupedRequests.push(...appRequests);
+        });
+        requests = groupedRequests;
+      } catch (apiError) {
+        console.error("API error, falling back to mock data:", apiError);
+        // Fall back to mock data if API fails
+        requests = await getGroupedConsentRequests();
+      }
+      
+      console.log("Setting grouped requests:", requests);
       setGroupedRequests(requests);
       setFilteredRequests(requests);
     } catch (error) {

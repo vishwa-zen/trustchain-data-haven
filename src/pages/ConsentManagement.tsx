@@ -9,13 +9,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Shield, Search, Check, X, Clock, ArrowUpRight, FileText, ArrowRight as ArrowRightIcon } from 'lucide-react';
+import { Shield, Search, Check, X, Clock, ArrowUpRight, FileText } from 'lucide-react';
 import { isAuthenticated, hasRole } from '@/lib/auth';
 import { toast } from '@/hooks/use-toast';
 import { GroupedConsentRequest } from '@/types';
 import GroupedConsentRow from '@/components/GroupedConsentRow';
 import GroupedConsentDialog from '@/components/GroupedConsentDialog';
-import { getGroupedConsentRequests } from '@/lib/consent';
+import { getGroupedConsentRequests, ConsentApplication, fetchConsentApplications } from '@/lib/consent';
+import { config } from '@/lib/config';
 
 const ConsentManagement = () => {
   const navigate = useNavigate();
@@ -54,8 +55,30 @@ const ConsentManagement = () => {
 
   const loadGroupedConsentRequests = async () => {
     setLoading(true);
+    console.log("Loading consent requests...");
     try {
-      const requests = await getGroupedConsentRequests();
+      // First try to fetch from the real API
+      let requests: GroupedConsentRequest[] = [];
+      try {
+        const apiUrl = `${config.API_BASE_URL}/trustchain/v1/consents`;
+        console.log("Fetching from API:", apiUrl);
+        const consentApps = await fetchConsentApplications(apiUrl);
+        console.log("API response:", consentApps);
+        
+        // Convert ConsentApplication objects to GroupedConsentRequest format
+        const groupedRequests: GroupedConsentRequest[] = [];
+        consentApps.forEach(app => {
+          const appRequests = app.toGroupedConsentRequests();
+          groupedRequests.push(...appRequests);
+        });
+        requests = groupedRequests;
+      } catch (apiError) {
+        console.error("API error, falling back to mock data:", apiError);
+        // Fall back to mock data if API fails
+        requests = await getGroupedConsentRequests();
+      }
+      
+      console.log("Setting grouped requests:", requests);
       setGroupedRequests(requests);
       setFilteredRequests(requests);
     } catch (error) {
@@ -108,7 +131,7 @@ const ConsentManagement = () => {
       <div className="flex w-full h-full">
         <Navbar />
         <AppSidebar />
-        <main className="main-content">
+        <main className="flex-1 p-6 pt-20 overflow-auto">
           <div className="page-container">
             <div className="content-section">
               <h1 className="text-2xl font-bold flex items-center">
