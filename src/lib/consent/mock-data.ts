@@ -1,4 +1,3 @@
-
 import { ApiConsentApplication } from '@/types';
 
 // Mock data using the provided API response
@@ -14,8 +13,8 @@ export const mockApiConsentApplications: ApiConsentApplication[] = [
       {
         "name": "user_profile",
         "fields": [
-          { "name": "first_name", "actions": ["read", "write"] as ('read' | 'write')[] },
-          { "name": "last_name", "actions": ["read", "write"] as ('read' | 'write')[] },
+          { "name": "first_name", "actions": ["read"] as ('read' | 'write')[] },
+          { "name": "last_name", "actions": ["read"] as ('read' | 'write')[] },
           { "name": "email", "actions": ["read", "write"] as ('read' | 'write')[] },
           { "name": "phone_number", "actions": ["read", "write"] as ('read' | 'write')[] }
         ],
