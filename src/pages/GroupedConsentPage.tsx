@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -158,6 +157,22 @@ const GroupedConsentPage = () => {
               <p className="text-muted-foreground">
                 Approve or reject grouped access requests for multiple fields
               </p>
+              
+              {/* Add a legend to explain the icons */}
+              <div className="flex items-center space-x-4 mt-2 text-xs text-muted-foreground">
+                <div className="flex items-center space-x-1">
+                  <Eye className="h-3 w-3 text-blue-500" aria-label="Read access" />
+                  <span>Read access</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <span className="text-green-500 font-bold text-xs">W</span>
+                  <span>Write access</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <EyeOff className="h-3 w-3 text-gray-400" aria-label="Read-only access" />
+                  <span>Read-only</span>
+                </div>
+              </div>
             </div>
 
             <div className="content-section">

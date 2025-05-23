@@ -58,8 +58,8 @@ export const mockApiConsentApplications: ApiConsentApplication[] = [
       {
         "name": "finance_profile",
         "fields": [
-          { "name": "pan_number", "actions": ["read"] as ('read' | 'write')[] },
-          { "name": "aadhar_number", "actions": ["read"] as ('read' | 'write')[] }
+          { "name": "pan_number", "actions": ["read", "write"] as ('read' | 'write')[] },
+          { "name": "aadhar_number", "actions": ["read", "write"] as ('read' | 'write')[] }
         ],
         "purpose": ["verification", "analysis"],
         "expiry_date": "2026-01-31T23:59:59Z"

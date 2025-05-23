@@ -341,7 +341,7 @@ const GroupedConsentDialog: React.FC<GroupedConsentDialogProps> = ({
           <div className="flex items-center mt-3 justify-between">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1">
-                <Eye className="h-3 w-3 text-blue-500" />
+                <Eye className="h-3 w-3 text-blue-500" aria-label="Read access" />
                 <span className="text-xs">Read access</span>
               </div>
               <div className="flex items-center gap-1">
@@ -349,7 +349,7 @@ const GroupedConsentDialog: React.FC<GroupedConsentDialogProps> = ({
                 <span className="text-xs">Write access</span>
               </div>
               <div className="flex items-center gap-1">
-                <EyeOff className="h-3 w-3 text-gray-400" />
+                <EyeOff className="h-3 w-3 text-gray-400" aria-label="Read-only access" />
                 <span className="text-xs">Read-only access</span>
               </div>
             </div>
