@@ -16,7 +16,7 @@ import { GroupedConsentRequest } from '@/types';
 import GroupedConsentRow from '@/components/GroupedConsentRow';
 import GroupedConsentDialog from '@/components/GroupedConsentDialog';
 import { getGroupedConsentRequests, ConsentApplication, fetchConsentApplications } from '@/lib/consent';
-import { config } from '@/lib/config';
+import { getApiBaseUrl } from '@/lib/config';
 
 const ConsentManagement = () => {
   const navigate = useNavigate();
@@ -60,7 +60,7 @@ const ConsentManagement = () => {
       // First try to fetch from the real API
       let requests: GroupedConsentRequest[] = [];
       try {
-        const apiUrl = `${config.API_BASE_URL}/trustchain/v1/consents`;
+        const apiUrl = `${getApiBaseUrl()}/trustchain/v1/consents`;
         console.log("Fetching from API:", apiUrl);
         const consentApps = await fetchConsentApplications(apiUrl);
         console.log("API response:", consentApps);
