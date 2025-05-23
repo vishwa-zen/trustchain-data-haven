@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { GroupedConsentRequest } from '@/types';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -8,8 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Check, X } from "lucide-react";
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { approveBatchFieldConsent, rejectBatchFieldConsent } from '@/lib/vault';
+import { approveBatchFieldConsent, rejectBatchFieldConsent, buildConsentApprovalRequest } from '@/lib/consent';
 import { toast } from '@/hooks/use-toast';
+import { getCurrentUser } from '@/lib/auth';
 
 interface GroupedConsentDialogProps {
   open: boolean;
@@ -28,6 +28,7 @@ const GroupedConsentDialog: React.FC<GroupedConsentDialogProps> = ({
     selected: boolean;
     readAccess: boolean;
     writeAccess: boolean;
+    dataSetName: string;
   }>>({});
   const [reason, setReason] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -38,13 +39,15 @@ const GroupedConsentDialog: React.FC<GroupedConsentDialogProps> = ({
         selected: boolean;
         readAccess: boolean;
         writeAccess: boolean;
+        dataSetName: string;
       }> = {};
       
       groupedRequest.fields.forEach(field => {
         initialFields[field.fieldName] = {
           selected: true,
           readAccess: field.actions.includes('read'),
-          writeAccess: field.actions.includes('write')
+          writeAccess: field.actions.includes('write'),
+          dataSetName: groupedRequest.dataSetName
         };
       });
       
@@ -109,6 +112,26 @@ const GroupedConsentDialog: React.FC<GroupedConsentDialogProps> = ({
         });
         setIsProcessing(false);
         return;
+      }
+      
+      // For demonstration purposes, let's log what the consent request would look like
+      const currentUser = getCurrentUser();
+      if (currentUser && groupedRequest.appId) {
+        const approvalRequest = buildConsentApprovalRequest(
+          currentUser.id,
+          groupedRequest.appId,
+          "2288e11a-658f-421c-9359-79c969316303", // Mock vault ID 
+          currentUser.role === 'dpo-user' ? 'DPO-GROUP' : 'ADMIN-GROUP',
+          Object.entries(selectedFields).reduce((acc, [fieldName, data]) => {
+            acc[fieldName] = {
+              ...data,
+              purposes: groupedRequest.purpose
+            };
+            return acc;
+          }, {} as Record<string, any>)
+        );
+        
+        console.log('Generated Consent Approval Request:', approvalRequest);
       }
       
       await approveBatchFieldConsent(

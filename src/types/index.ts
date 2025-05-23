@@ -154,3 +154,23 @@ export interface GroupedConsentRequest {
   requestedAt: string;
   expiryDate: string;
 }
+
+// New interface to match the API request format for consent approvals
+export interface ConsentRequestItem {
+  field_name: string;
+  purposes: string[];
+  status: string;
+  expiry_date: string;
+  approval_status: string;
+  dataset_name: string;
+  approval_threshold: number;
+  access_type: ('read' | 'write')[];
+}
+
+export interface ConsentBatchApprovalRequest {
+  user_id: string;
+  app_id: string;
+  vault_id: string;
+  approver_group_name: string;
+  consents: ConsentRequestItem[];
+}
