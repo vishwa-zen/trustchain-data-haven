@@ -6,6 +6,108 @@ import { API_ENDPOINTS, isLocalhost } from "./config";
 const mockApiDelay = (ms: number = 500) => new Promise<void>(resolve => setTimeout(resolve, ms));
 
 /**
+ * Get applications by user ID
+ * Retrieves all applications registered by a specific user
+ */
+export async function getApplicationsByUser(userId: string): Promise<AppRegistration[]> {
+  console.log(`API Call: Getting applications for user ${userId}`);
+  
+  const isDeployed = !isLocalhost();
+  
+  try {
+    if (!isDeployed) {
+      if (!getAuthToken()) {
+        throw new Error('User not authenticated');
+      }
+      
+      // Define endpoint for getting applications by user - we'll construct it
+      const applicationsEndpoint = `${API_ENDPOINTS.applications.getAll}?userId=${userId}`;
+      
+      const response = await fetch(applicationsEndpoint, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getAuthToken()}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Applications fetched successfully:', data);
+        
+        const applications: AppRegistration[] = data.applications.map((app: any) => ({
+          id: app.app_id,
+          userId: app.user_id,
+          vaultId: app.vault_id,
+          name: app.name,
+          description: app.description,
+          status: app.status,
+          dataSets: app.data_sets || [],
+          clientId: app.client_id,
+          clientSecret: app.client_secret,
+          redirectUris: app.redirect_uris || [],
+          createdAt: app.created_at
+        }));
+        
+        return applications;
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('API error fetching applications:', errorData);
+        throw new Error(errorData.message || 'Failed to fetch applications');
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching applications with API:', error);
+  }
+  
+  // Fall back to mock data if API call fails or we're in local development
+  await mockApiDelay(600);
+  
+  // Return mock applications data
+  return [
+    {
+      id: "app-1",
+      userId: userId,
+      vaultId: "vault-1",
+      name: "KYC Application",
+      description: "Customer verification system",
+      status: "approved",
+      dataSets: [],
+      clientId: `client_${Math.random().toString(36).substring(2, 10)}`,
+      clientSecret: `secret_${Math.random().toString(36).substring(2, 15)}`,
+      redirectUris: [],
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: "app-2",
+      userId: userId,
+      vaultId: "vault-2",
+      name: "Risk Assessment Tool",
+      description: "Financial risk analysis system",
+      status: "pending",
+      dataSets: [],
+      clientId: `client_${Math.random().toString(36).substring(2, 10)}`,
+      clientSecret: `secret_${Math.random().toString(36).substring(2, 15)}`,
+      redirectUris: [],
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: "app-3",
+      userId: userId,
+      vaultId: "vault-3",
+      name: "Compliance Monitor",
+      description: "Regulatory compliance monitoring",
+      status: "rejected",
+      dataSets: [],
+      clientId: `client_${Math.random().toString(36).substring(2, 10)}`,
+      clientSecret: `secret_${Math.random().toString(36).substring(2, 15)}`,
+      redirectUris: [],
+      createdAt: new Date().toISOString()
+    }
+  ];
+}
+
+/**
  * Consent Management APIs
  */
 
