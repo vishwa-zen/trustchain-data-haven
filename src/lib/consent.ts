@@ -394,57 +394,68 @@ export function buildConsentApprovalRequest(
   };
 }
 
-// Enhanced approveBatchFieldConsent function that uses the new request format
+// Updated approveBatchFieldConsent function that accepts the entire consent request object
 export async function approveBatchFieldConsent(
   appId: string,
-  fields: { dataSetName: string; fieldName: string; actions: ("read" | "write")[] }[],
+  consentRequest: ConsentBatchApprovalRequest | { dataSetName: string; fieldName: string; actions: ("read" | "write")[] }[],
   reason?: string
 ): Promise<void> {
-  console.log(`API Call: Batch approving ${fields.length} fields for app ${appId}`);
-  console.log('Fields:', fields);
-  console.log('Reason:', reason);
-  
-  // Get current user for the user_id
-  const currentUser = getCurrentUser();
-  if (!currentUser) throw new Error('User not authenticated');
-  
-  // In a real implementation, we would get the vault_id from somewhere
-  // For now, use a mock vault ID
-  const vaultId = "2288e11a-658f-421c-9359-79c969316303"; 
-  
-  // Create a map of selected fields in the format needed by buildConsentApprovalRequest
-  const selectedFields: Record<string, {
-    selected: boolean;
-    readAccess: boolean;
-    writeAccess: boolean;
-    dataSetName: string;
-    purposes?: string[];
-  }> = {};
-  
-  fields.forEach(field => {
-    selectedFields[field.fieldName] = {
-      selected: true,
-      readAccess: field.actions.includes('read'),
-      writeAccess: field.actions.includes('write'),
-      dataSetName: field.dataSetName,
-      purposes: ["verification", "analysis"] // Default purposes
-    };
-  });
-  
-  // Build the consent approval request
-  const approvalRequest = buildConsentApprovalRequest(
-    currentUser.id,
-    appId,
-    vaultId,
-    currentUser.role === 'dpo-user' ? 'DPO-GROUP' : 'ADMIN-GROUP',
-    selectedFields
-  );
-  
-  console.log('Approval request payload:', approvalRequest);
-  
-  // TODO: In a real implementation, send the approval request to the API
-  // For now, just wait a moment to simulate the API call
-  await mockApiDelay(800);
+  // Check if we're passing a complete consent request object or the old format
+  if (Array.isArray(consentRequest)) {
+    console.log(`API Call: Batch approving ${consentRequest.length} fields for app ${appId} (old format)`);
+    console.log('Fields:', consentRequest);
+    
+    // Get current user for the user_id
+    const currentUser = getCurrentUser();
+    if (!currentUser) throw new Error('User not authenticated');
+    
+    // In a real implementation, we would get the vault_id from somewhere
+    // For now, use a mock vault ID
+    const vaultId = "2288e11a-658f-421c-9359-79c969316303"; 
+    
+    // Create a map of selected fields in the format needed by buildConsentApprovalRequest
+    const selectedFields: Record<string, {
+      selected: boolean;
+      readAccess: boolean;
+      writeAccess: boolean;
+      dataSetName: string;
+      purposes?: string[];
+    }> = {};
+    
+    consentRequest.forEach(field => {
+      selectedFields[field.fieldName] = {
+        selected: true,
+        readAccess: field.actions.includes('read'),
+        writeAccess: field.actions.includes('write'),
+        dataSetName: field.dataSetName,
+        purposes: ["verification", "analysis"] // Default purposes
+      };
+    });
+    
+    // Build the consent approval request
+    const approvalRequest = buildConsentApprovalRequest(
+      currentUser.id,
+      appId,
+      vaultId,
+      currentUser.role === 'dpo-user' ? 'DPO-GROUP' : 'ADMIN-GROUP',
+      selectedFields
+    );
+    
+    console.log('Generated approval request payload:', approvalRequest);
+    
+    // TODO: In a real implementation, send the approval request to the API
+    // For now, just wait a moment to simulate the API call
+    await mockApiDelay(800);
+  } else {
+    // New format - direct ConsentBatchApprovalRequest object
+    console.log(`API Call: Batch approving ${consentRequest.consents.length} fields for app ${appId} (new format)`);
+    console.log('Approval request payload:', consentRequest);
+    console.log('Reason:', reason);
+    
+    // TODO: In a real implementation, send the approval request to the API
+    // For now, just wait a moment to simulate the API call
+    await mockApiDelay(800);
+  }
 }
 
 // Use the same pattern for rejectBatchFieldConsent

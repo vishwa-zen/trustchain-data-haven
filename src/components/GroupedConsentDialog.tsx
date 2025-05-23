@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { GroupedConsentRequest } from '@/types';
+import { GroupedConsentRequest, ConsentBatchApprovalRequest } from '@/types';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
@@ -91,20 +92,37 @@ const GroupedConsentDialog: React.FC<GroupedConsentDialogProps> = ({
     
     setIsProcessing(true);
     try {
-      // Get all selected fields
-      const fieldsToApprove = Object.entries(selectedFields)
-        .filter(([_, data]) => data.selected)
-        .map(([fieldName, data]) => ({
-          dataSetName: groupedRequest.dataSetName,
-          fieldName,
-          actions: [
-            ...(data.readAccess ? ['read'] : []), 
-            ...(data.writeAccess ? ['write'] : [])
-          ] as ('read' | 'write')[]
-        }))
-        .filter(field => field.actions.length > 0);
+      // Get current user
+      const currentUser = getCurrentUser();
+      if (!currentUser) {
+        toast({
+          title: 'Authentication Error',
+          description: 'You must be logged in to approve consent requests',
+          variant: 'destructive'
+        });
+        setIsProcessing(false);
+        return;
+      }
       
-      if (fieldsToApprove.length === 0) {
+      // Get all selected fields and prepare the consent request object
+      const selectedFieldsData = Object.entries(selectedFields)
+        .filter(([_, data]) => data.selected)
+        .reduce((acc, [fieldName, data]) => {
+          // Only include fields that have at least one access type selected
+          if (data.readAccess || data.writeAccess) {
+            acc[fieldName] = {
+              selected: true,
+              readAccess: data.readAccess,
+              writeAccess: data.writeAccess,
+              dataSetName: data.dataSetName,
+              purposes: groupedRequest.purpose
+            };
+          }
+          return acc;
+        }, {} as Record<string, any>);
+      
+      // Check if any fields are selected
+      if (Object.keys(selectedFieldsData).length === 0) {
         toast({
           title: 'No fields selected',
           description: 'Please select at least one field with read or write access',
@@ -114,35 +132,23 @@ const GroupedConsentDialog: React.FC<GroupedConsentDialogProps> = ({
         return;
       }
       
-      // For demonstration purposes, let's log what the consent request would look like
-      const currentUser = getCurrentUser();
-      if (currentUser && groupedRequest.appId) {
-        const approvalRequest = buildConsentApprovalRequest(
-          currentUser.id,
-          groupedRequest.appId,
-          "2288e11a-658f-421c-9359-79c969316303", // Mock vault ID 
-          currentUser.role === 'dpo-user' ? 'DPO-GROUP' : 'ADMIN-GROUP',
-          Object.entries(selectedFields).reduce((acc, [fieldName, data]) => {
-            acc[fieldName] = {
-              ...data,
-              purposes: groupedRequest.purpose
-            };
-            return acc;
-          }, {} as Record<string, any>)
-        );
-        
-        console.log('Generated Consent Approval Request:', approvalRequest);
-      }
-      
-      await approveBatchFieldConsent(
+      // Build the complete consent approval request object
+      const approvalRequest: ConsentBatchApprovalRequest = buildConsentApprovalRequest(
+        currentUser.id,
         groupedRequest.appId,
-        fieldsToApprove,
-        reason || `Batch approved ${fieldsToApprove.length} fields`
+        "2288e11a-658f-421c-9359-79c969316303", // Mock vault ID 
+        currentUser.role === 'dpo-user' ? 'DPO-GROUP' : 'ADMIN-GROUP',
+        selectedFieldsData
       );
+      
+      console.log('Generated Consent Approval Request:', approvalRequest);
+      
+      // Pass the complete approval request object directly to the approve method
+      await approveBatchFieldConsent(groupedRequest.appId, approvalRequest, reason);
       
       toast({
         title: 'Consent Approved',
-        description: `Access to ${fieldsToApprove.length} fields has been approved`,
+        description: `Access to ${Object.keys(selectedFieldsData).length} fields has been approved`,
       });
       
       onReload();
