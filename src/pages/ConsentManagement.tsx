@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Shield, Search, Check, X, Clock, ArrowUpRight, FileText } from 'lucide-react';
+import { Shield, Search, Check, X, Clock, ArrowUpRight, FileText, Eye, EyeOff } from 'lucide-react';
 import { isAuthenticated, hasRole } from '@/lib/auth';
 import { toast } from '@/hooks/use-toast';
 import { GroupedConsentRequest } from '@/types';
@@ -85,7 +85,7 @@ const ConsentManagement = () => {
       console.error('Error loading grouped consent requests:', error);
       toast({
         title: 'Error',
-        description: 'Failed to load grouped consent requests',
+        description: 'Failed to load consent requests',
         variant: 'destructive'
       });
     } finally {
@@ -126,6 +126,23 @@ const ConsentManagement = () => {
     }
   };
 
+  // Helper function to render field with access icons
+  const renderFieldWithAccess = (field: { fieldName: string, actions: string[] }) => {
+    const hasRead = field.actions.includes('read');
+    const hasWrite = field.actions.includes('write');
+    
+    return (
+      <div className="flex items-center justify-between">
+        <span>{field.fieldName}</span>
+        <div className="flex space-x-1">
+          {hasRead && <Eye className="h-3 w-3 text-blue-500" aria-label="Read access" />}
+          {hasWrite && <span className="text-green-500 font-bold text-xs ml-1">W</span>}
+          {!hasWrite && hasRead && <EyeOff className="h-3 w-3 text-gray-400" aria-label="Read-only access" />}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="flex w-full h-full">
@@ -141,6 +158,22 @@ const ConsentManagement = () => {
               <p className="text-muted-foreground">
                 Approve or reject grouped access requests for multiple fields
               </p>
+              
+              {/* Add a legend to explain the icons */}
+              <div className="flex items-center space-x-4 mt-2 text-xs text-muted-foreground">
+                <div className="flex items-center space-x-1">
+                  <Eye className="h-3 w-3 text-blue-500" aria-label="Read access" />
+                  <span>Read access</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <span className="text-green-500 font-bold text-xs">W</span>
+                  <span>Write access</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <EyeOff className="h-3 w-3 text-gray-400" aria-label="Read-only access" />
+                  <span>Read-only</span>
+                </div>
+              </div>
             </div>
 
             <div className="content-section">
@@ -226,6 +259,7 @@ const ConsentManagement = () => {
                                     onReload={loadGroupedConsentRequests}
                                     onViewApp={handleViewApp}
                                     onOpenDetail={openDetailDialog}
+                                    renderFieldWithAccess={renderFieldWithAccess}
                                   />
                                 ))}
                               </TableBody>
@@ -279,6 +313,7 @@ const ConsentManagement = () => {
                                       onReload={loadGroupedConsentRequests}
                                       onViewApp={handleViewApp}
                                       onOpenDetail={openDetailDialog}
+                                      renderFieldWithAccess={renderFieldWithAccess}
                                     />
                                   ))}
                               </TableBody>
@@ -332,6 +367,7 @@ const ConsentManagement = () => {
                                       onReload={loadGroupedConsentRequests}
                                       onViewApp={handleViewApp}
                                       onOpenDetail={openDetailDialog}
+                                      renderFieldWithAccess={renderFieldWithAccess}
                                     />
                                   ))}
                               </TableBody>
@@ -385,6 +421,7 @@ const ConsentManagement = () => {
                                       onReload={loadGroupedConsentRequests}
                                       onViewApp={handleViewApp}
                                       onOpenDetail={openDetailDialog}
+                                      renderFieldWithAccess={renderFieldWithAccess}
                                     />
                                   ))}
                               </TableBody>
@@ -404,6 +441,7 @@ const ConsentManagement = () => {
               onOpenChange={setDetailDialogOpen}
               groupedRequest={selectedGroupedRequest}
               onReload={loadGroupedConsentRequests}
+              renderFieldWithAccess={renderFieldWithAccess}
             />
           </div>
         </main>
