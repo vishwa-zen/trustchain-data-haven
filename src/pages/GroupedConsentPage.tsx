@@ -9,12 +9,12 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Shield, Search } from 'lucide-react';
-import { getGroupedConsentRequests } from '@/lib/vault';
 import { isAuthenticated, hasRole } from '@/lib/auth';
 import { toast } from '@/hooks/use-toast';
 import { GroupedConsentRequest } from '@/types';
 import GroupedConsentRow from '@/components/GroupedConsentRow';
 import GroupedConsentDialog from '@/components/GroupedConsentDialog';
+import { getGroupedConsentRequests } from '@/lib/consent';
 
 const GroupedConsentPage = () => {
   const navigate = useNavigate();

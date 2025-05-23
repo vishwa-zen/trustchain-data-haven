@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -11,12 +10,12 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Shield, Search, Check, X, Clock, ArrowUpRight, FileText, ArrowRight as ArrowRightIcon } from 'lucide-react';
-import { getGroupedConsentRequests, approveBatchFieldConsent, rejectBatchFieldConsent } from '@/lib/vault';
 import { isAuthenticated, hasRole } from '@/lib/auth';
 import { toast } from '@/hooks/use-toast';
 import { GroupedConsentRequest } from '@/types';
 import GroupedConsentRow from '@/components/GroupedConsentRow';
 import GroupedConsentDialog from '@/components/GroupedConsentDialog';
+import { getGroupedConsentRequests } from '@/lib/consent';
 
 const ConsentManagement = () => {
   const navigate = useNavigate();
