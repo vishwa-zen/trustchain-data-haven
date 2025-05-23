@@ -374,9 +374,9 @@ export function buildConsentApprovalRequest(
         consents.push({
           field_name: fieldName,
           purposes: fieldData.purposes || ["verification", "analysis"], // Default purposes if none provided
-          status: "pending",
+          status: "approved", // Changed from "pending" to "approved"
           expiry_date: expiryDate.toISOString().split('T')[0] + "T23:59:59Z",
-          approval_status: "pending",
+          approval_status: "approved", // Changed from "pending" to "approved"
           dataset_name: fieldData.dataSetName,
           approval_threshold: 2,
           access_type: accessTypes

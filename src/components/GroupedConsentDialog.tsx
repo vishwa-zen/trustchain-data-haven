@@ -132,23 +132,43 @@ const GroupedConsentDialog: React.FC<GroupedConsentDialogProps> = ({
         return;
       }
       
-      // Build the complete consent approval request object
-      const approvalRequest: ConsentBatchApprovalRequest = buildConsentApprovalRequest(
-        currentUser.id,
-        groupedRequest.appId,
-        "2288e11a-658f-421c-9359-79c969316303", // Mock vault ID 
-        currentUser.role === 'dpo-user' ? 'DPO-GROUP' : 'ADMIN-GROUP',
-        selectedFieldsData
-      );
+      // Calculate expiry date (1 year from now)
+      const expiryDate = new Date();
+      expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+      const formattedExpiryDate = `${expiryDate.toISOString().split('T')[0]}T23:59:59Z`;
       
-      console.log('Generated Consent Approval Request:', approvalRequest);
+      // Create the complete consent request object
+      const consentRequest: ConsentBatchApprovalRequest = {
+        user_id: currentUser.id,
+        app_id: groupedRequest.appId,
+        vault_id: "2288e11a-658f-421c-9359-79c969316303", // Mock vault ID 
+        approver_group_name: currentUser.role === 'dpo-user' ? 'DPO-GROUP' : 'ADMIN-GROUP',
+        consents: Object.entries(selectedFieldsData).map(([fieldName, data]) => {
+          const accessTypes: ('read' | 'write')[] = [];
+          if (data.readAccess) accessTypes.push('read');
+          if (data.writeAccess) accessTypes.push('write');
+          
+          return {
+            field_name: fieldName,
+            purposes: data.purposes || ["verification", "analysis"],
+            status: "approved", // Set status to "approved" instead of "pending"
+            expiry_date: formattedExpiryDate,
+            approval_status: "approved", // Set approval_status to "approved" instead of "pending"
+            dataset_name: data.dataSetName,
+            approval_threshold: 2,
+            access_type: accessTypes
+          };
+        })
+      };
+      
+      console.log('Generated Consent Approval Request:', consentRequest);
       
       // Pass the complete approval request object directly to the approve method
-      await approveBatchFieldConsent(groupedRequest.appId, approvalRequest, reason);
+      await approveBatchFieldConsent(groupedRequest.appId, consentRequest, reason);
       
       toast({
         title: 'Consent Approved',
-        description: `Access to ${Object.keys(selectedFieldsData).length} fields has been approved`,
+        description: `Access to ${consentRequest.consents.length} fields has been approved`,
       });
       
       onReload();
@@ -223,7 +243,7 @@ const GroupedConsentDialog: React.FC<GroupedConsentDialogProps> = ({
         <DialogHeader>
           <DialogTitle>Grouped Consent Request</DialogTitle>
           <DialogDescription>
-            Manage access for multiple fields in {groupedRequest.dataSetName} dataset
+            Manage access for multiple fields in {groupedRequest?.dataSetName} dataset
           </DialogDescription>
         </DialogHeader>
         
