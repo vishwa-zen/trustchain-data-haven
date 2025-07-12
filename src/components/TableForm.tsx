@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { X, Plus } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { DATA_PURPOSES, getPurposeLabel } from '@/lib/constants';
+import { MultiSelect } from '@/components/ui/multi-select';
 
 interface TableFormProps {
   onSubmit: (table: VaultTable) => void;
@@ -19,7 +20,6 @@ const TableForm: React.FC<TableFormProps> = ({ onSubmit, onCancel }) => {
   const [tableName, setTableName] = useState('');
   const [description, setDescription] = useState('');
   const [purposes, setPurposes] = useState<string[]>([]);
-  const [selectedPurpose, setSelectedPurpose] = useState('');
   const [fields, setFields] = useState<VaultField[]>([]);
   const [currentField, setCurrentField] = useState<Partial<VaultField>>({
     name: '',
@@ -29,15 +29,6 @@ const TableForm: React.FC<TableFormProps> = ({ onSubmit, onCancel }) => {
   });
   const [accessControlInput, setAccessControlInput] = useState('');
 
-  const handleAddPurpose = () => {
-    if (!selectedPurpose || purposes.includes(selectedPurpose)) return;
-    setPurposes([...purposes, selectedPurpose]);
-    setSelectedPurpose('');
-  };
-
-  const handleRemovePurpose = (index: number) => {
-    setPurposes(purposes.filter((_, i) => i !== index));
-  };
 
   const handleAddAccessControl = () => {
     if (!accessControlInput.trim()) return;
@@ -135,48 +126,17 @@ const TableForm: React.FC<TableFormProps> = ({ onSubmit, onCancel }) => {
 
         <div>
           <Label>Purposes</Label>
-          <div className="flex gap-2">
-            <Select value={selectedPurpose} onValueChange={setSelectedPurpose}>
-              <SelectTrigger className="flex-1">
-                <SelectValue placeholder="Select a purpose" />
-              </SelectTrigger>
-              <SelectContent className="bg-background border border-border shadow-lg z-50">
-                {DATA_PURPOSES
-                  .filter(purpose => !purposes.includes(purpose.value))
-                  .map((purpose) => (
-                    <SelectItem key={purpose.value} value={purpose.value}>
-                      <div>
-                        <div className="font-medium">{purpose.label}</div>
-                        <div className="text-xs text-muted-foreground">{purpose.description}</div>
-                      </div>
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-            <Button type="button" onClick={handleAddPurpose} size="sm" disabled={!selectedPurpose}>
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          {purposes.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
-              {purposes.map((purpose, index) => (
-                <div 
-                  key={index}
-                  className="bg-vault-100 text-vault-800 px-2 py-1 rounded-md text-sm flex items-center"
-                >
-                  {getPurposeLabel(purpose)}
-                  <button
-                    type="button"
-                    onClick={() => handleRemovePurpose(index)}
-                    className="ml-2 text-vault-600 hover:text-vault-800"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
+          <MultiSelect
+            options={DATA_PURPOSES.map(purpose => ({
+              value: purpose.value,
+              label: purpose.label,
+              description: purpose.description
+            }))}
+            selected={purposes}
+            onChange={setPurposes}
+            placeholder="Select purposes for this table..."
+            className="mt-2"
+          />
         </div>
       </div>
 
