@@ -459,29 +459,39 @@ const AppRegistrationPage = () => {
                             <div>
                               <Label className="text-sm font-medium block mb-2">Purposes</Label>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {DATA_PURPOSES.map((purpose, i) => (
-                                  <div key={i}
-                                    className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                                      selectedTables[table.tableName].purpose.includes(purpose.value)
-                                        ? 'border-vault-600 bg-vault-50'
-                                        : 'border-gray-200 hover:border-vault-300 hover:bg-vault-25'
-                                    }`}
-                                    onClick={() => handlePurposeChange(table.tableName, purpose.value)}
-                                  >
-                                    <div className="flex items-start gap-2">
-                                       <Checkbox
-                                         checked={selectedTables[table.tableName].purpose.includes(purpose.value)}
-                                         className="mt-0.5 pointer-events-none"
-                                       />
-                                      <div className="flex-1">
-                                        <div className="font-medium text-sm">{purpose.label}</div>
-                                        <div className="text-xs text-muted-foreground mt-1">
-                                          {purpose.description}
+                                {DATA_PURPOSES.map((purpose, i) => {
+                                  const isSelected = selectedTables[table.tableName].purpose.includes(purpose.value);
+                                  return (
+                                    <div key={i}
+                                      className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                                        isSelected
+                                          ? 'border-vault-600 bg-vault-50 ring-1 ring-vault-600'
+                                          : 'border-gray-200 hover:border-vault-300 hover:bg-vault-25'
+                                      }`}
+                                      onClick={() => handlePurposeChange(table.tableName, purpose.value)}
+                                    >
+                                      <div className="flex items-start gap-2">
+                                        <div className={`mt-1 w-4 h-4 rounded border-2 flex items-center justify-center ${
+                                          isSelected 
+                                            ? 'border-vault-600 bg-vault-600' 
+                                            : 'border-gray-300'
+                                        }`}>
+                                          {isSelected && (
+                                            <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                            </svg>
+                                          )}
+                                        </div>
+                                        <div className="flex-1">
+                                          <div className="font-medium text-sm">{purpose.label}</div>
+                                          <div className="text-xs text-muted-foreground mt-1">
+                                            {purpose.description}
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
-                                ))}
+                                  );
+                                })}
                               </div>
                             </div>
                             
