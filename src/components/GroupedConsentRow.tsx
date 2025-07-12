@@ -7,6 +7,7 @@ import { Clock, ArrowUpRight, Check, X, Eye, EyeOff } from 'lucide-react';
 import { approveBatchFieldConsent, rejectBatchFieldConsent } from '@/lib/consent';
 import { toast } from '@/hooks/use-toast';
 import { formatDate } from '@/lib/utils';
+import { getPurposeLabel } from '@/lib/constants';
 
 interface GroupedConsentRowProps {
   group: GroupedConsentRequest;
@@ -171,7 +172,7 @@ const GroupedConsentRow: React.FC<GroupedConsentRowProps> = ({
         <div className="flex flex-col gap-1">
           {group.purpose.map((p, i) => (
             <Badge key={i} variant="secondary" className="text-xs mb-1">
-              {p}
+              {getPurposeLabel(p)}
             </Badge>
           ))}
         </div>

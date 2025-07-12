@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X, Plus } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { DATA_PURPOSES, getPurposeLabel } from '@/lib/constants';
 
 interface TableFormProps {
   onSubmit: (table: VaultTable) => void;
@@ -18,7 +19,7 @@ const TableForm: React.FC<TableFormProps> = ({ onSubmit, onCancel }) => {
   const [tableName, setTableName] = useState('');
   const [description, setDescription] = useState('');
   const [purposes, setPurposes] = useState<string[]>([]);
-  const [purposeInput, setPurposeInput] = useState('');
+  const [selectedPurpose, setSelectedPurpose] = useState('');
   const [fields, setFields] = useState<VaultField[]>([]);
   const [currentField, setCurrentField] = useState<Partial<VaultField>>({
     name: '',
@@ -29,9 +30,9 @@ const TableForm: React.FC<TableFormProps> = ({ onSubmit, onCancel }) => {
   const [accessControlInput, setAccessControlInput] = useState('');
 
   const handleAddPurpose = () => {
-    if (!purposeInput.trim()) return;
-    setPurposes([...purposes, purposeInput.trim()]);
-    setPurposeInput('');
+    if (!selectedPurpose || purposes.includes(selectedPurpose)) return;
+    setPurposes([...purposes, selectedPurpose]);
+    setSelectedPurpose('');
   };
 
   const handleRemovePurpose = (index: number) => {
@@ -135,13 +136,24 @@ const TableForm: React.FC<TableFormProps> = ({ onSubmit, onCancel }) => {
         <div>
           <Label>Purposes</Label>
           <div className="flex gap-2">
-            <Input 
-              value={purposeInput} 
-              onChange={(e) => setPurposeInput(e.target.value)}
-              placeholder="e.g., verification"
-              className="flex-1"
-            />
-            <Button type="button" onClick={handleAddPurpose} size="sm">
+            <Select value={selectedPurpose} onValueChange={setSelectedPurpose}>
+              <SelectTrigger className="flex-1">
+                <SelectValue placeholder="Select a purpose" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border border-border shadow-lg z-50">
+                {DATA_PURPOSES
+                  .filter(purpose => !purposes.includes(purpose.value))
+                  .map((purpose) => (
+                    <SelectItem key={purpose.value} value={purpose.value}>
+                      <div>
+                        <div className="font-medium">{purpose.label}</div>
+                        <div className="text-xs text-muted-foreground">{purpose.description}</div>
+                      </div>
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+            <Button type="button" onClick={handleAddPurpose} size="sm" disabled={!selectedPurpose}>
               <Plus className="h-4 w-4" />
             </Button>
           </div>
@@ -153,7 +165,7 @@ const TableForm: React.FC<TableFormProps> = ({ onSubmit, onCancel }) => {
                   key={index}
                   className="bg-vault-100 text-vault-800 px-2 py-1 rounded-md text-sm flex items-center"
                 >
-                  {purpose}
+                  {getPurposeLabel(purpose)}
                   <button
                     type="button"
                     onClick={() => handleRemovePurpose(index)}

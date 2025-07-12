@@ -15,6 +15,7 @@ import { isAuthenticated, hasRole, getCurrentUser } from '@/lib/auth';
 import { Vault, AppRegistration, DataSet, DataSetFieldAction } from '@/types';
 import { toast } from '@/hooks/use-toast';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription } from '@/components/ui/form';
+import { DATA_PURPOSES, getPurposeLabel } from '@/lib/constants';
 
 const AppRegistrationPage = () => {
   const navigate = useNavigate();
@@ -458,16 +459,17 @@ const AppRegistrationPage = () => {
                             <div>
                               <Label className="text-sm font-medium block mb-2">Purposes</Label>
                               <div className="flex flex-wrap gap-2">
-                                {table.purpose.map((purpose, i) => (
+                                {DATA_PURPOSES.map((purpose, i) => (
                                   <div key={i}
                                     className={`px-3 py-1 text-sm rounded-full cursor-pointer select-none transition-colors ${
-                                      selectedTables[table.tableName].purpose.includes(purpose)
+                                      selectedTables[table.tableName].purpose.includes(purpose.value)
                                         ? 'bg-vault-600 text-white'
                                         : 'bg-vault-100 text-vault-800 hover:bg-vault-200'
                                     }`}
-                                    onClick={() => handlePurposeChange(table.tableName, purpose)}
+                                    onClick={() => handlePurposeChange(table.tableName, purpose.value)}
+                                    title={purpose.description}
                                   >
-                                    {purpose}
+                                    {purpose.label}
                                   </div>
                                 ))}
                               </div>

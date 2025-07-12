@@ -8,6 +8,7 @@ import { Check, X, Eye, EyeOff } from "lucide-react";
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { approveBatchFieldConsent, rejectBatchFieldConsent } from '@/lib/consent';
+import { getPurposeLabel } from '@/lib/constants';
 import { toast } from '@/hooks/use-toast';
 import { getCurrentUser } from '@/lib/auth';
 
@@ -276,7 +277,7 @@ const GroupedConsentDialog: React.FC<GroupedConsentDialogProps> = ({
             <div className="flex flex-wrap gap-1">
               {groupedRequest.purpose.map((p, i) => (
                 <Badge key={i} variant="secondary">
-                  {p}
+                  {getPurposeLabel(p)}
                 </Badge>
               ))}
             </div>
