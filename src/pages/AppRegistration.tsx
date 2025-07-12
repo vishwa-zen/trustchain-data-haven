@@ -458,18 +458,28 @@ const AppRegistrationPage = () => {
                             
                             <div>
                               <Label className="text-sm font-medium block mb-2">Purposes</Label>
-                              <div className="flex flex-wrap gap-2">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 {DATA_PURPOSES.map((purpose, i) => (
                                   <div key={i}
-                                    className={`px-3 py-1 text-sm rounded-full cursor-pointer select-none transition-colors ${
+                                    className={`p-3 border rounded-lg cursor-pointer transition-colors ${
                                       selectedTables[table.tableName].purpose.includes(purpose.value)
-                                        ? 'bg-vault-600 text-white'
-                                        : 'bg-vault-100 text-vault-800 hover:bg-vault-200'
+                                        ? 'border-vault-600 bg-vault-50'
+                                        : 'border-gray-200 hover:border-vault-300 hover:bg-vault-25'
                                     }`}
                                     onClick={() => handlePurposeChange(table.tableName, purpose.value)}
-                                    title={purpose.description}
                                   >
-                                    {purpose.label}
+                                    <div className="flex items-start gap-2">
+                                       <Checkbox
+                                         checked={selectedTables[table.tableName].purpose.includes(purpose.value)}
+                                         className="mt-0.5 pointer-events-none"
+                                       />
+                                      <div className="flex-1">
+                                        <div className="font-medium text-sm">{purpose.label}</div>
+                                        <div className="text-xs text-muted-foreground mt-1">
+                                          {purpose.description}
+                                        </div>
+                                      </div>
+                                    </div>
                                   </div>
                                 ))}
                               </div>
