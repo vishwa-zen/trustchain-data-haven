@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, Clock, Shield, ArrowRight, FileCheck, Bell } from 'lucide-react';
+import Navbar from '@/components/Navbar';
 
 const KYCSuccess = () => {
   const navigate = useNavigate();
@@ -13,10 +14,12 @@ const KYCSuccess = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-green-50/20 to-background p-4">
-      <div className="max-w-2xl mx-auto pt-16">
-        {/* Success Animation */}
-        <div className="text-center mb-8">
+    <div className="min-h-screen bg-gradient-to-br from-background via-green-50/20 to-background">
+      <Navbar />
+      <div className="flex items-center justify-center min-h-screen pt-14 p-4">
+        <div className="max-w-2xl mx-auto w-full">
+          {/* Success Animation */}
+          <div className="text-center mb-8">
           <div className="relative inline-block">
             <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6 animate-scale-in">
               <CheckCircle className="h-12 w-12 text-green-600" />
@@ -147,9 +150,10 @@ const KYCSuccess = () => {
             </Button>
           </div>
           
-          <p className="text-xs text-muted-foreground">
-            © Zentience - All Rights Reserved. Your data is protected and secure.
-          </p>
+            <p className="text-xs text-muted-foreground">
+              © Zentience - All Rights Reserved. Your data is protected and secure.
+            </p>
+          </div>
         </div>
       </div>
     </div>

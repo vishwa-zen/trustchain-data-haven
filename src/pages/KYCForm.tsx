@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { CheckCircle, User, Mail, Phone, CreditCard, MapPin, ArrowRight, FileText } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { KYCData } from '@/types';
+import Navbar from '@/components/Navbar';
 
 const KYCForm = () => {
   const [loading, setLoading] = useState(false);
@@ -59,10 +60,12 @@ const KYCForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-background p-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8 pt-8">
+    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-background">
+      <Navbar />
+      <div className="flex items-center justify-center min-h-screen pt-14 p-4">
+        <div className="max-w-4xl mx-auto w-full">
+          {/* Header */}
+          <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
               <FileText className="h-6 w-6 text-primary" />
@@ -275,9 +278,10 @@ const KYCForm = () => {
           </CardContent>
         </Card>
 
-        {/* Footer */}
-        <div className="text-center mt-8 text-sm text-muted-foreground">
-          <p>© Zentience - All Rights Reserved. Your data is protected and secure.</p>
+          {/* Footer */}
+          <div className="text-center mt-8 text-sm text-muted-foreground">
+            <p>© Zentience - All Rights Reserved. Your data is protected and secure.</p>
+          </div>
         </div>
       </div>
     </div>
