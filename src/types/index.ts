@@ -1,6 +1,6 @@
 
 // Make sure UserRole is properly exported
-export type UserRole = 'app-owner' | 'data-steward' | 'admin' | 'cto-user' | 'dpo-user' | 'csio-user';
+export type UserRole = 'app-owner' | 'data-steward' | 'admin' | 'cto-user' | 'dpo-user' | 'csio-user' | 'customer';
 
 export interface User {
   id: string;
@@ -201,4 +201,14 @@ export interface ConsentBatchApprovalRequest {
   vault_id: string;
   approver_group_name: string;
   consents: ConsentRequestItem[];
+}
+
+// KYC (Know Your Customer) interface
+export interface KYCData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  aadhar: string;
+  address: string;
 }

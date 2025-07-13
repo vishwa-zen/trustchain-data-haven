@@ -52,6 +52,13 @@ const mockUsers: User[] = [
     lastName: 'User',
     email: 'csio@trustchain.com',
     role: 'csio-user'
+  },
+  {
+    id: '6f7a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c',
+    firstName: 'John',
+    lastName: 'Customer',
+    email: 'customer@example.com',
+    role: 'customer'
   }
 ];
 

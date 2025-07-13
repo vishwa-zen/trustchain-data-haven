@@ -19,6 +19,8 @@ import TokenManagement from '@/pages/TokenManagement';
 import ConsentManagement from '@/pages/ConsentManagement';
 import GroupedConsentPage from '@/pages/GroupedConsentPage';
 import UserManagement from '@/pages/UserManagement';
+import KYCForm from '@/pages/KYCForm';
+import KYCSuccess from '@/pages/KYCSuccess';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,6 +52,8 @@ const App: React.FC = () => {
           <Route path="/consent" element={<ConsentManagement />} />
           <Route path="/grouped-consent" element={<GroupedConsentPage />} />
           <Route path="/users" element={<UserManagement />} />
+          <Route path="/kyc" element={<KYCForm />} />
+          <Route path="/kyc-success" element={<KYCSuccess />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>

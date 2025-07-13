@@ -54,7 +54,13 @@ const Login = () => {
       });
       
       console.log('Auth token available:', !!token);
-      navigate('/dashboard');
+      
+      // Redirect customers to KYC form, others to dashboard
+      if (user.role === 'customer') {
+        navigate('/kyc');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (error) {
       console.error('Login error:', error);
       toast({
@@ -86,6 +92,8 @@ const Login = () => {
         return 'bg-rose-100 text-rose-800 border-rose-200';
       case 'csio-user':
         return 'bg-indigo-100 text-indigo-800 border-indigo-200';
+      case 'customer':
+        return 'bg-cyan-100 text-cyan-800 border-cyan-200';
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }
