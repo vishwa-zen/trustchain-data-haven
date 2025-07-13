@@ -17,7 +17,7 @@ const KYCSuccess = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-green-50/20 to-background">
       <Navbar />
       <div className="flex justify-center pt-20 pb-8 px-4">
-        <div className="max-w-2xl w-full">
+        <div className="max-w-2xl w-full mx-auto">
           {/* Success Animation */}
           <div className="text-center mb-8">
           <div className="relative inline-block">
